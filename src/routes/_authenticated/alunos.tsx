@@ -3,9 +3,9 @@ import { useMemo, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { z } from "zod";
 import { toast } from "sonner";
-import { Trash2 } from "lucide-react";
+import { Printer, Trash2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { useAlunos, useMe } from "@/lib/dados";
+import { useAlunos, useInstituicao, useMe, type Aluno } from "@/lib/dados";
 import { nomeClasse } from "@/lib/avaliacao";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,7 +13,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { ClasseSelect, PageTitle } from "@/components/escola";
+import { ClasseSelect, DocCabecalho, PageTitle } from "@/components/escola";
 
 export const Route = createFileRoute("/_authenticated/alunos")({
   head: () => ({ meta: [{ title: "Cadastro de Alunos — J. ZYMAR" }, { name: "description", content: "Registo de alunos." }] }),
@@ -35,10 +35,12 @@ const vazio = { nome: "", bi: "", telefone: "", idade: "", genero: "M", classe: 
 function Alunos() {
   const { data: me } = useMe();
   const { data: alunos } = useAlunos();
+  const { data: inst } = useInstituicao();
   const qc = useQueryClient();
   const [f, setF] = useState(vazio);
   const [pag, setPag] = useState(0);
   const [busca, setBusca] = useState("");
+  const [ficha, setFicha] = useState<Aluno | null>(null);
 
   const ordenados = useMemo(
     () => (alunos ?? []).slice().sort((a, b) => a.id - b.id).filter((a) => a.nome.toLowerCase().includes(busca.toLowerCase())),
@@ -65,6 +67,11 @@ function Alunos() {
     const { error } = await supabase.from("students").delete().eq("id", id);
     if (error) return void toast.error(error.message);
     qc.invalidateQueries({ queryKey: ["alunos"] });
+  }
+
+  function imprimirFicha(aluno: Aluno) {
+    setFicha(aluno);
+    window.setTimeout(() => window.print(), 0);
   }
 
   const set = (k: string) => (e: React.ChangeEvent<HTMLInputElement>) => setF({ ...f, [k]: e.target.value });
@@ -101,7 +108,10 @@ function Alunos() {
             <TableRow key={a.id}>
               <TableCell>{a.id}</TableCell><TableCell>{a.nome}</TableCell><TableCell>{a.bi}</TableCell><TableCell>{a.telefone}</TableCell>
               <TableCell>{a.idade}</TableCell><TableCell>{a.genero}</TableCell><TableCell>{nomeClasse(a.classe)}</TableCell>
-              <TableCell className="text-right"><Button size="icon" variant="ghost" onClick={() => eliminar(a.id)}><Trash2 className="h-4 w-4" /></Button></TableCell>
+              <TableCell className="flex justify-end gap-1">
+                <Button size="icon" variant="ghost" title="Imprimir ficha" onClick={() => imprimirFicha(a)}><Printer className="h-4 w-4" /></Button>
+                <Button size="icon" variant="ghost" title="Eliminar aluno" onClick={() => eliminar(a.id)}><Trash2 className="h-4 w-4" /></Button>
+              </TableCell>
             </TableRow>
           ))}
           {pagina.length === 0 && <TableRow><TableCell colSpan={8} className="text-center text-muted-foreground">Sem alunos.</TableCell></TableRow>}
@@ -112,6 +122,20 @@ function Alunos() {
         Página {pag + 1} de {total}
         <Button size="sm" variant="outline" disabled={pag + 1 >= total} onClick={() => setPag(pag + 1)}>Seguinte</Button>
       </div>
+      {ficha && <div className="print-area hidden print:block">
+        <div className="doc doc-a4 mx-auto">
+          <DocCabecalho inst={inst} titulo="Ficha do Aluno" sub={`Ano lectivo ${inst?.ano_lectivo ?? ""}`} />
+          <table className="mt-8"><tbody>
+            <tr><th className="esq">ID</th><td className="esq">{ficha.id}</td></tr>
+            <tr><th className="esq">Nome do Aluno</th><td className="esq">{ficha.nome}</td></tr>
+            <tr><th className="esq">BI / Cédula</th><td className="esq">{ficha.bi || "—"}</td></tr>
+            <tr><th className="esq">Telefone</th><td className="esq">{ficha.telefone || "—"}</td></tr>
+            <tr><th className="esq">Idade</th><td className="esq">{ficha.idade ?? "—"}</td></tr>
+            <tr><th className="esq">Género</th><td className="esq">{ficha.genero === "M" ? "Masculino" : "Feminino"}</td></tr>
+            <tr><th className="esq">Classe</th><td className="esq">{nomeClasse(ficha.classe)}</td></tr>
+          </tbody></table>
+        </div>
+      </div>}
     </div>
   );
 }

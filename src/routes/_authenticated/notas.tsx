@@ -45,6 +45,7 @@ function Notas() {
   const qual = isQualitativa(classe);
   const comExame = isClasseExame(classe) && tri === "3";
   const oral = comExame && disciplina ? temExameOral(disciplina.nome) : false;
+  const podeLancarNotas = !!me && (me.isStaff || me.isProfessor);
 
   useEffect(() => { setDisc(""); }, [classe]);
   useEffect(() => {
@@ -131,20 +132,20 @@ function Notas() {
                       <td className="p-2">{i + 1}</td><td className="p-2">{a.nome}</td>
                       {qual ? (
                         <td className="p-2">
-                          <Select value={l.qualitativo} onValueChange={(v) => upd(a.id, "qualitativo", v)}>
+                          <Select disabled={!podeLancarNotas} value={l.qualitativo} onValueChange={(v) => upd(a.id, "qualitativo", v)}>
                             <SelectTrigger className="w-36"><SelectValue placeholder="—" /></SelectTrigger>
                             <SelectContent>{QUALITATIVOS.map((q) => <SelectItem key={q} value={q}>{q}</SelectItem>)}</SelectContent>
                           </Select>
                         </td>
                       ) : (
                         <>
-                          <td className="p-2"><Input className="w-20" value={l.mac} onChange={(e) => upd(a.id, "mac", e.target.value)} /></td>
-                          <td className="p-2"><Input className="w-20" value={l.npt} onChange={(e) => upd(a.id, "npt", e.target.value)} /></td>
+                          <td className="p-2"><Input disabled={!podeLancarNotas} className="w-20" value={l.mac} onChange={(e) => upd(a.id, "mac", e.target.value)} /></td>
+                          <td className="p-2"><Input disabled={!podeLancarNotas} className="w-20" value={l.npt} onChange={(e) => upd(a.id, "npt", e.target.value)} /></td>
                           <td className={`p-2 font-semibold ${mt != null && mt < notaMinima(classe) ? "text-destructive" : "text-primary"}`}>{fmt(mt)}</td>
                         </>
                       )}
-                      {comExame && <td className="p-2"><Input className="w-20" value={l.exame_escrito} onChange={(e) => upd(a.id, "exame_escrito", e.target.value)} /></td>}
-                      {oral && <td className="p-2"><Input className="w-20" value={l.exame_oral} onChange={(e) => upd(a.id, "exame_oral", e.target.value)} /></td>}
+                      {comExame && <td className="p-2"><Input disabled={!podeLancarNotas} className="w-20" value={l.exame_escrito} onChange={(e) => upd(a.id, "exame_escrito", e.target.value)} /></td>}
+                      {oral && <td className="p-2"><Input disabled={!podeLancarNotas} className="w-20" value={l.exame_oral} onChange={(e) => upd(a.id, "exame_oral", e.target.value)} /></td>}
                       <td className="p-2"><Input className="w-16" type="number" min={0} disabled={!me?.podeLancarFaltas} value={l.faltas} onChange={(e) => upd(a.id, "faltas", e.target.value)} /></td>
                     </tr>
                   );
