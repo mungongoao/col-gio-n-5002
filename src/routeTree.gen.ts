@@ -13,11 +13,14 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedAlunosRouteImport } from './routes/_authenticated/alunos'
+import { Route as AuthenticatedBoletinsRouteImport } from './routes/_authenticated/boletins'
 import { Route as AuthenticatedConfiguracoesRouteImport } from './routes/_authenticated/configuracoes'
 import { Route as AuthenticatedDisciplinasRouteImport } from './routes/_authenticated/disciplinas'
 import { Route as AuthenticatedListaNominalRouteImport } from './routes/_authenticated/lista-nominal'
 import { Route as AuthenticatedNotasRouteImport } from './routes/_authenticated/notas'
 import { Route as AuthenticatedPainelRouteImport } from './routes/_authenticated/painel'
+import { Route as AuthenticatedPautasRouteImport } from './routes/_authenticated/pautas'
+import { Route as AuthenticatedUtilizadoresRouteImport } from './routes/_authenticated/utilizadores'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -36,6 +39,11 @@ const AuthRoute = AuthRouteImport.update({
 const AuthenticatedAlunosRoute = AuthenticatedAlunosRouteImport.update({
   id: '/alunos',
   path: '/alunos',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedBoletinsRoute = AuthenticatedBoletinsRouteImport.update({
+  id: '/boletins',
+  path: '/boletins',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedConfiguracoesRoute =
@@ -66,26 +74,43 @@ const AuthenticatedPainelRoute = AuthenticatedPainelRouteImport.update({
   path: '/painel',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedPautasRoute = AuthenticatedPautasRouteImport.update({
+  id: '/pautas',
+  path: '/pautas',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedUtilizadoresRoute =
+  AuthenticatedUtilizadoresRouteImport.update({
+    id: '/utilizadores',
+    path: '/utilizadores',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/alunos': typeof AuthenticatedAlunosRoute
+  '/boletins': typeof AuthenticatedBoletinsRoute
   '/configuracoes': typeof AuthenticatedConfiguracoesRoute
   '/disciplinas': typeof AuthenticatedDisciplinasRoute
   '/lista-nominal': typeof AuthenticatedListaNominalRoute
   '/notas': typeof AuthenticatedNotasRoute
   '/painel': typeof AuthenticatedPainelRoute
+  '/pautas': typeof AuthenticatedPautasRoute
+  '/utilizadores': typeof AuthenticatedUtilizadoresRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/alunos': typeof AuthenticatedAlunosRoute
+  '/boletins': typeof AuthenticatedBoletinsRoute
   '/configuracoes': typeof AuthenticatedConfiguracoesRoute
   '/disciplinas': typeof AuthenticatedDisciplinasRoute
   '/lista-nominal': typeof AuthenticatedListaNominalRoute
   '/notas': typeof AuthenticatedNotasRoute
   '/painel': typeof AuthenticatedPainelRoute
+  '/pautas': typeof AuthenticatedPautasRoute
+  '/utilizadores': typeof AuthenticatedUtilizadoresRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -93,11 +118,14 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
   '/_authenticated/alunos': typeof AuthenticatedAlunosRoute
+  '/_authenticated/boletins': typeof AuthenticatedBoletinsRoute
   '/_authenticated/configuracoes': typeof AuthenticatedConfiguracoesRoute
   '/_authenticated/disciplinas': typeof AuthenticatedDisciplinasRoute
   '/_authenticated/lista-nominal': typeof AuthenticatedListaNominalRoute
   '/_authenticated/notas': typeof AuthenticatedNotasRoute
   '/_authenticated/painel': typeof AuthenticatedPainelRoute
+  '/_authenticated/pautas': typeof AuthenticatedPautasRoute
+  '/_authenticated/utilizadores': typeof AuthenticatedUtilizadoresRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -105,32 +133,41 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/alunos'
+    | '/boletins'
     | '/configuracoes'
     | '/disciplinas'
     | '/lista-nominal'
     | '/notas'
     | '/painel'
+    | '/pautas'
+    | '/utilizadores'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/auth'
     | '/alunos'
+    | '/boletins'
     | '/configuracoes'
     | '/disciplinas'
     | '/lista-nominal'
     | '/notas'
     | '/painel'
+    | '/pautas'
+    | '/utilizadores'
   id:
     | '__root__'
     | '/'
     | '/_authenticated'
     | '/auth'
     | '/_authenticated/alunos'
+    | '/_authenticated/boletins'
     | '/_authenticated/configuracoes'
     | '/_authenticated/disciplinas'
     | '/_authenticated/lista-nominal'
     | '/_authenticated/notas'
     | '/_authenticated/painel'
+    | '/_authenticated/pautas'
+    | '/_authenticated/utilizadores'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -169,6 +206,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAlunosRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/boletins': {
+      id: '/_authenticated/boletins'
+      path: '/boletins'
+      fullPath: '/boletins'
+      preLoaderRoute: typeof AuthenticatedBoletinsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/configuracoes': {
       id: '/_authenticated/configuracoes'
       path: '/configuracoes'
@@ -204,25 +248,45 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPainelRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/pautas': {
+      id: '/_authenticated/pautas'
+      path: '/pautas'
+      fullPath: '/pautas'
+      preLoaderRoute: typeof AuthenticatedPautasRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/utilizadores': {
+      id: '/_authenticated/utilizadores'
+      path: '/utilizadores'
+      fullPath: '/utilizadores'
+      preLoaderRoute: typeof AuthenticatedUtilizadoresRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAlunosRoute: typeof AuthenticatedAlunosRoute
+  AuthenticatedBoletinsRoute: typeof AuthenticatedBoletinsRoute
   AuthenticatedConfiguracoesRoute: typeof AuthenticatedConfiguracoesRoute
   AuthenticatedDisciplinasRoute: typeof AuthenticatedDisciplinasRoute
   AuthenticatedListaNominalRoute: typeof AuthenticatedListaNominalRoute
   AuthenticatedNotasRoute: typeof AuthenticatedNotasRoute
   AuthenticatedPainelRoute: typeof AuthenticatedPainelRoute
+  AuthenticatedPautasRoute: typeof AuthenticatedPautasRoute
+  AuthenticatedUtilizadoresRoute: typeof AuthenticatedUtilizadoresRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAlunosRoute: AuthenticatedAlunosRoute,
+  AuthenticatedBoletinsRoute: AuthenticatedBoletinsRoute,
   AuthenticatedConfiguracoesRoute: AuthenticatedConfiguracoesRoute,
   AuthenticatedDisciplinasRoute: AuthenticatedDisciplinasRoute,
   AuthenticatedListaNominalRoute: AuthenticatedListaNominalRoute,
   AuthenticatedNotasRoute: AuthenticatedNotasRoute,
   AuthenticatedPainelRoute: AuthenticatedPainelRoute,
+  AuthenticatedPautasRoute: AuthenticatedPautasRoute,
+  AuthenticatedUtilizadoresRoute: AuthenticatedUtilizadoresRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =

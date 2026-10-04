@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { Printer } from "lucide-react";
-import { useAlunos, useDisciplinas, useInstituicao, useNotasClasse, type NotaRow } from "@/lib/dados";
+import { useAlunos, useDisciplinas, useInstituicao, useNotasClasse } from "@/lib/dados";
 import {
   fmt, isClasseExame, isQualitativa, mediaTrimestral, nomeClasse, notaMinima, resultadoFinal, resultadoTrimestre, resumoDisciplina, temExameOral,
 } from "@/lib/avaliacao";
@@ -182,4 +182,3 @@ function Pautas() {
   );
 }
 
-export type { NotaRow };
