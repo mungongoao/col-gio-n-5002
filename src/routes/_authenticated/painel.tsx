@@ -20,6 +20,7 @@ function Painel() {
     { l: "Disciplinas registadas", v: disc?.length ?? 0 },
     { l: "Ano lectivo", v: inst?.ano_lectivo ?? "" },
   ];
+  if (me?.isEncarregado) return <p>Sem permissão.</p>;
   return (
     <div>
       <PageTitle title={`Bem-vindo(a), ${me?.profile?.nome ?? ""}`} />

@@ -14,3 +14,5 @@
 - Permissions are enforced in the database (has_role/is_staff/can_grade RLS + credenciar/revogar RPCs); UI checks only hide controls.
 - Logo is stored as a data URL in institution_settings (single row id=1) — avoids a storage bucket for one small image.
 - User deletion goes through a server function with the admin client after an ADM role check.
+- Guardian access is modelled through guardian_students and protected by row-level policies; never expose unrelated students or grades.
+- Grade-field protection is enforced by a database trigger: only ADM and Coordenador may change absences, while grade permissions remain separate.

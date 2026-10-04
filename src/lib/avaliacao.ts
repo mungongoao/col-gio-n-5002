@@ -91,11 +91,23 @@ export function resultadoFinal(classe: string, resumos: { extra: boolean; r: Res
 }
 
 export function resultadoTrimestre(classe: string, medias: { extra: boolean; v: number | string | null }[]) {
+  return resultadoTrimestreDetalhado(classe, medias, 0);
+}
+
+const DISCIPLINAS_REPROVACAO_DIRECTA = /^(l[ií]ngua portuguesa|portugu[eê]s|matem[aá]tica|educa[cç][aã]o f[ií]sica)$/i;
+
+export function resultadoTrimestreDetalhado(
+  classe: string,
+  medias: { extra: boolean; v: number | string | null; disciplina?: string }[],
+  faltas: number,
+) {
   const curr = medias.filter((x) => !x.extra);
   if (curr.length === 0 || curr.some((x) => x.v == null)) return null;
+  if (faltas > 20) return rotuloResultado(classe, false);
   if (isQualitativa(classe)) return rotuloResultado(classe, true);
-  const neg = curr.filter((x) => Number(x.v) < notaMinima(classe)).length;
-  return rotuloResultado(classe, neg <= (isClasseExame(classe) ? 0 : 2));
+  const negativas = curr.filter((x) => Number(x.v) < notaMinima(classe));
+  const directa = negativas.some((x) => DISCIPLINAS_REPROVACAO_DIRECTA.test(x.disciplina?.trim() ?? ""));
+  return rotuloResultado(classe, !directa && negativas.length <= 3);
 }
 
 export const fmt = (n: number | null | undefined) => (n == null ? "—" : String(n).replace(".", ","));

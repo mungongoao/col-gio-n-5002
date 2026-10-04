@@ -179,15 +179,17 @@ h1, h2, h3 { font-family: var(--font-serif); }
 .doc th, .doc td { border: 1px solid black; padding: 2px 4px; text-align: center; font-size: 11px; }
 .doc td.esq { text-align: left; }
 .doc-a5 { width: 148mm; min-height: 210mm; padding: 8mm; page: boletim; }
-.doc-a4 { width: 297mm; padding: 8mm; page: pauta; }
+.doc-a4 { width: 210mm; min-height: 297mm; padding: 8mm; page: a4; }
+.doc-a3 { width: 420mm; min-height: 297mm; padding: 8mm; page: a3; }
 .neg { color: #c00; }
 
 @page boletim { size: A5 portrait; margin: 0; }
-@page pauta { size: A4 landscape; margin: 0; }
+@page a4 { size: A4 portrait; margin: 0; }
+@page a3 { size: A3 landscape; margin: 0; }
 
 @media print {
   body * { visibility: hidden; }
   .print-area, .print-area * { visibility: visible; }
   .print-area { position: absolute; left: 0; top: 0; }
-  .doc-a5, .doc-a4 { break-after: page; box-shadow: none !important; }
+  .doc-a5, .doc-a4, .doc-a3 { break-after: page; box-shadow: none !important; }
 }
