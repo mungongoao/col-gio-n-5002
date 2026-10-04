@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedAlunosRouteImport } from './routes/_authenticated/alunos'
+import { Route as AuthenticatedAproveitamentoRouteImport } from './routes/_authenticated/aproveitamento'
 import { Route as AuthenticatedBoletinsRouteImport } from './routes/_authenticated/boletins'
 import { Route as AuthenticatedConfiguracoesRouteImport } from './routes/_authenticated/configuracoes'
 import { Route as AuthenticatedDisciplinasRouteImport } from './routes/_authenticated/disciplinas'
@@ -41,6 +42,12 @@ const AuthenticatedAlunosRoute = AuthenticatedAlunosRouteImport.update({
   path: '/alunos',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedAproveitamentoRoute =
+  AuthenticatedAproveitamentoRouteImport.update({
+    id: '/aproveitamento',
+    path: '/aproveitamento',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedBoletinsRoute = AuthenticatedBoletinsRouteImport.update({
   id: '/boletins',
   path: '/boletins',
@@ -90,6 +97,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/alunos': typeof AuthenticatedAlunosRoute
+  '/aproveitamento': typeof AuthenticatedAproveitamentoRoute
   '/boletins': typeof AuthenticatedBoletinsRoute
   '/configuracoes': typeof AuthenticatedConfiguracoesRoute
   '/disciplinas': typeof AuthenticatedDisciplinasRoute
@@ -103,6 +111,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/alunos': typeof AuthenticatedAlunosRoute
+  '/aproveitamento': typeof AuthenticatedAproveitamentoRoute
   '/boletins': typeof AuthenticatedBoletinsRoute
   '/configuracoes': typeof AuthenticatedConfiguracoesRoute
   '/disciplinas': typeof AuthenticatedDisciplinasRoute
@@ -118,6 +127,7 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
   '/_authenticated/alunos': typeof AuthenticatedAlunosRoute
+  '/_authenticated/aproveitamento': typeof AuthenticatedAproveitamentoRoute
   '/_authenticated/boletins': typeof AuthenticatedBoletinsRoute
   '/_authenticated/configuracoes': typeof AuthenticatedConfiguracoesRoute
   '/_authenticated/disciplinas': typeof AuthenticatedDisciplinasRoute
@@ -133,6 +143,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/alunos'
+    | '/aproveitamento'
     | '/boletins'
     | '/configuracoes'
     | '/disciplinas'
@@ -146,6 +157,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/alunos'
+    | '/aproveitamento'
     | '/boletins'
     | '/configuracoes'
     | '/disciplinas'
@@ -160,6 +172,7 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/auth'
     | '/_authenticated/alunos'
+    | '/_authenticated/aproveitamento'
     | '/_authenticated/boletins'
     | '/_authenticated/configuracoes'
     | '/_authenticated/disciplinas'
@@ -204,6 +217,13 @@ declare module '@tanstack/react-router' {
       path: '/alunos'
       fullPath: '/alunos'
       preLoaderRoute: typeof AuthenticatedAlunosRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/aproveitamento': {
+      id: '/_authenticated/aproveitamento'
+      path: '/aproveitamento'
+      fullPath: '/aproveitamento'
+      preLoaderRoute: typeof AuthenticatedAproveitamentoRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/boletins': {
@@ -267,6 +287,7 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAlunosRoute: typeof AuthenticatedAlunosRoute
+  AuthenticatedAproveitamentoRoute: typeof AuthenticatedAproveitamentoRoute
   AuthenticatedBoletinsRoute: typeof AuthenticatedBoletinsRoute
   AuthenticatedConfiguracoesRoute: typeof AuthenticatedConfiguracoesRoute
   AuthenticatedDisciplinasRoute: typeof AuthenticatedDisciplinasRoute
@@ -279,6 +300,7 @@ interface AuthenticatedRouteRouteChildren {
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAlunosRoute: AuthenticatedAlunosRoute,
+  AuthenticatedAproveitamentoRoute: AuthenticatedAproveitamentoRoute,
   AuthenticatedBoletinsRoute: AuthenticatedBoletinsRoute,
   AuthenticatedConfiguracoesRoute: AuthenticatedConfiguracoesRoute,
   AuthenticatedDisciplinasRoute: AuthenticatedDisciplinasRoute,
