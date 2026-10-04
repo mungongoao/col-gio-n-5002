@@ -30,14 +30,14 @@ function Notas() {
   const { data: notas } = useNotasClasse(classe);
   const { data: atrib } = useQuery({
     queryKey: ["atribuicoes", me?.id],
-    enabled: !!me && !me.isStaff,
+    enabled: !!me && !me.isStaff && !me.isCoordenador,
     queryFn: async () => (await supabase.from("teacher_assignments").select("subject_id").eq("user_id", me!.id)).data ?? [],
   });
   const qc = useQueryClient();
   const [linhas, setLinhas] = useState<Record<number, Linha>>({});
 
   const permitidas = useMemo(
-    () => (disciplinas ?? []).filter((d) => me?.isStaff || atrib?.some((a) => a.subject_id === d.id)),
+    () => (disciplinas ?? []).filter((d) => me?.isStaff || me?.isCoordenador || atrib?.some((a) => a.subject_id === d.id)),
     [disciplinas, atrib, me],
   );
   const disciplina = permitidas.find((d) => d.id === disc);
@@ -73,7 +73,8 @@ function Notas() {
         mac: qual ? null : vals[0] ?? null, npt: qual ? null : vals[1] ?? null,
         qualitativo: qual ? l.qualitativo || null : null,
         exame_escrito: comExame ? vals[2] ?? null : null, exame_oral: oral ? vals[3] ?? null : null,
-        faltas: Math.max(0, parseInt(l.faltas) || 0), updated_at: new Date().toISOString(),
+        faltas: me?.podeLancarFaltas ? Math.max(0, parseInt(l.faltas) || 0) : Number(notas?.find((n) => n.student_id === a.id && n.subject_id === disciplina.id && n.trimestre === Number(tri))?.faltas ?? 0),
+        updated_at: new Date().toISOString(),
       });
     }
     const { error } = await supabase.from("grades").upsert(rows, { onConflict: "student_id,subject_id,trimestre" });
@@ -142,7 +143,7 @@ function Notas() {
                       )}
                       {comExame && <td className="p-2"><Input className="w-20" value={l.exame_escrito} onChange={(e) => upd(a.id, "exame_escrito", e.target.value)} /></td>}
                       {oral && <td className="p-2"><Input className="w-20" value={l.exame_oral} onChange={(e) => upd(a.id, "exame_oral", e.target.value)} /></td>}
-                      <td className="p-2"><Input className="w-16" type="number" min={0} value={l.faltas} onChange={(e) => upd(a.id, "faltas", e.target.value)} /></td>
+                      <td className="p-2"><Input className="w-16" type="number" min={0} disabled={!me?.podeLancarFaltas} value={l.faltas} onChange={(e) => upd(a.id, "faltas", e.target.value)} /></td>
                     </tr>
                   );
                 })}

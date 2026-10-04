@@ -2,13 +2,14 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import type { Nota } from "./avaliacao";
 
-export type Papel = "admin" | "pedagogico" | "coordenador" | "professor";
+export type Papel = "admin" | "pedagogico" | "coordenador" | "professor" | "encarregado";
 
 export const NOMES_PAPEL: Record<Papel, string> = {
   admin: "Administrador (ADM)",
   pedagogico: "Pedagógico",
   coordenador: "Coordenador",
   professor: "Professor",
+  encarregado: "Encarregado de Educação",
 };
 
 export function useMe() {
@@ -33,7 +34,10 @@ export function useMe() {
         isPedagogico: tem("pedagogico"),
         isStaff: tem("admin") || tem("pedagogico"),
         podeImprimirBoletim: tem("admin") || tem("coordenador"),
+        podeLancarFaltas: tem("admin") || tem("coordenador"),
         isProfessor: tem("professor"),
+        isCoordenador: tem("coordenador"),
+        isEncarregado: tem("encarregado"),
       };
     },
   });

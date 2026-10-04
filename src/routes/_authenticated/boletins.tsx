@@ -3,7 +3,7 @@ import { useState } from "react";
 import { Printer } from "lucide-react";
 import { useAlunos, useDisciplinas, useInstituicao, useMe, useNotasClasse, type Aluno } from "@/lib/dados";
 import {
-  fmt, isClasseExame, isQualitativa, mediaTrimestral, nomeClasse, notaMinima, resultadoFinal, resultadoTrimestre, resumoDisciplina,
+  fmt, isClasseExame, isQualitativa, mediaTrimestral, nomeClasse, notaMinima, resultadoFinal, resultadoTrimestreDetalhado, resumoDisciplina,
 } from "@/lib/avaliacao";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -81,8 +81,8 @@ function Boletim({ aluno, n, classe, tipo, inst, disciplinas, notas }: {
     return { d, r: null, n: ns.find((x) => x.trimestre === Number(tipo)) };
   });
   if (tipo === "final") resultado = resultadoFinal(classe, linhas.map((l) => ({ extra: l.d.extra, r: l.r! })))?.texto ?? null;
-  else resultado = resultadoTrimestre(classe, linhas.map((l) => ({ extra: l.d.extra, v: qual ? l.n?.qualitativo ?? null : mediaTrimestral(l.n) })));
   const faltas = notas.filter((x) => x.student_id === aluno.id && (tipo === "final" || x.trimestre === Number(tipo))).reduce((s, x) => s + (x.faltas ?? 0), 0);
+  if (tipo !== "final") resultado = resultadoTrimestreDetalhado(classe, linhas.map((l) => ({ extra: l.d.extra, disciplina: l.d.nome, v: qual ? l.n?.qualitativo ?? null : mediaTrimestral(l.n) })), faltas);
 
   return (
     <div className="doc doc-a5 shadow">

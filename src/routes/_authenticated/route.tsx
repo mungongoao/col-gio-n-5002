@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useMe, useInstituicao, NOMES_PAPEL } from "@/lib/dados";
 import { Button } from "@/components/ui/button";
 import {
-  LayoutDashboard, Settings, BookOpen, UserPlus, ListOrdered, PenLine, Table2, FileText, Users, LogOut,
+  LayoutDashboard, Settings, BookOpen, UserPlus, ListOrdered, PenLine, Table2, FileText, Users, LogOut, TrendingUp,
 } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated")({
@@ -49,14 +49,15 @@ function Layout() {
   }
 
   const links = [
-    { to: "/painel", label: "Painel", icon: LayoutDashboard, show: true },
+    { to: "/painel", label: "Painel", icon: LayoutDashboard, show: !me.isEncarregado },
+    { to: "/aproveitamento", label: "Aproveitamento", icon: TrendingUp, show: me.isEncarregado },
     { to: "/configuracoes", label: "Instituição", icon: Settings, show: me.isAdmin },
     { to: "/disciplinas", label: "Disciplinas", icon: BookOpen, show: me.isStaff },
     { to: "/alunos", label: "Cadastro de Alunos", icon: UserPlus, show: me.isStaff },
-    { to: "/lista-nominal", label: "Lista Nominal", icon: ListOrdered, show: true },
-    { to: "/notas", label: "Lançar Notas", icon: PenLine, show: me.isStaff || me.isProfessor },
-    { to: "/pautas", label: "Pautas", icon: Table2, show: true },
-    { to: "/boletins", label: "Boletins", icon: FileText, show: true },
+    { to: "/lista-nominal", label: "Lista Nominal", icon: ListOrdered, show: !me.isEncarregado },
+    { to: "/notas", label: "Lançar Notas", icon: PenLine, show: me.isStaff || me.isProfessor || me.isCoordenador },
+    { to: "/pautas", label: "Pautas", icon: Table2, show: !me.isEncarregado },
+    { to: "/boletins", label: "Boletins", icon: FileText, show: !me.isEncarregado },
     { to: "/utilizadores", label: "Utilizadores", icon: Users, show: me.isStaff },
   ] as const;
 

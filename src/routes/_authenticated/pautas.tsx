@@ -1,9 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { Printer } from "lucide-react";
-import { useAlunos, useDisciplinas, useInstituicao, useNotasClasse } from "@/lib/dados";
+import { supabase } from "@/integrations/supabase/client";
+import { useAlunos, useDisciplinas, useInstituicao, useMe, useNotasClasse } from "@/lib/dados";
 import {
-  fmt, isClasseExame, isQualitativa, mediaTrimestral, nomeClasse, notaMinima, resultadoFinal, resultadoTrimestre, resumoDisciplina, temExameOral,
+  cicloDe, fmt, isClasseExame, isQualitativa, mediaTrimestral, nomeClasse, notaMinima, resultadoFinal, resultadoTrimestreDetalhado, resumoDisciplina, temExameOral,
 } from "@/lib/avaliacao";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -16,6 +18,7 @@ export const Route = createFileRoute("/_authenticated/pautas")({
 });
 
 function Pautas() {
+  const { data: me } = useMe();
   const [tipo, setTipo] = useState("mini");
   const [classe, setClasse] = useState("1");
   const [disc, setDisc] = useState("");
@@ -24,6 +27,14 @@ function Pautas() {
   const { data: disciplinas = [] } = useDisciplinas(classe);
   const { data: alunos = [] } = useAlunos(classe);
   const { data: notas = [] } = useNotasClasse(classe);
+  const { data: atribuicoes = [] } = useQuery({
+    queryKey: ["atribuicoes-pautas", me?.id],
+    enabled: !!me?.isProfessor,
+    queryFn: async () => (await supabase.from("teacher_assignments").select("subject_id, subjects(classe)").eq("user_id", me?.id ?? "")).data ?? [],
+  });
+  const ciclosProfessor = useMemo(() => new Set(atribuicoes.map((a) => cicloDe(a.subjects?.classe ?? ""))), [atribuicoes]);
+  const podeVerClasse = !me?.isProfessor || ciclosProfessor.has(cicloDe(classe));
+  useEffect(() => { if (me?.isProfessor && tipo !== "tri") setTipo("tri"); }, [me?.isProfessor, tipo]);
   const notasDe = (aid: number, sid: string) => notas.filter((n) => n.student_id === aid && n.subject_id === sid);
   const nt = (aid: number, sid: string, t: number) => notas.find((n) => n.student_id === aid && n.subject_id === sid && n.trimestre === t);
   const qual = isQualitativa(classe);
@@ -38,9 +49,9 @@ function Pautas() {
   return (
     <div>
       <PageTitle title="Pautas">
-        <Tabs value={tipo} onValueChange={setTipo}>
+        {!me?.isProfessor && <Tabs value={tipo} onValueChange={setTipo}>
           <TabsList><TabsTrigger value="mini">Mini-Pauta</TabsTrigger><TabsTrigger value="tri">Trimestral</TabsTrigger><TabsTrigger value="final">Final</TabsTrigger></TabsList>
-        </Tabs>
+        </Tabs>}
         <ClasseSelect value={classe} onChange={(v) => { setClasse(v); setDisc(""); }} />
         {tipo === "mini" && (
           <Select value={disc} onValueChange={setDisc}>
@@ -57,9 +68,9 @@ function Pautas() {
         <Button variant="outline" onClick={() => window.print()}><Printer className="mr-2 h-4 w-4" />Imprimir / PDF</Button>
       </PageTitle>
 
-      {tipo === "mini" && !disciplina ? <p className="text-muted-foreground">Escolha a disciplina.</p> : (
+      {!podeVerClasse ? <p className="text-muted-foreground">Esta classe não pertence ao ciclo das suas disciplinas.</p> : tipo === "mini" && !disciplina ? <p className="text-muted-foreground">Escolha a disciplina.</p> : (
         <div className="print-area overflow-auto">
-          <div className="doc doc-a4 mx-auto shadow">
+          <div className={`doc mx-auto shadow ${tipo === "mini" ? "doc-a4" : "doc-a3"}`}>
             <DocCabecalho inst={inst} titulo={titulo} sub={sub} />
             <table>
               {tipo === "mini" && disciplina && (
@@ -127,7 +138,7 @@ function Pautas() {
                             <td key={d.id + "a"}>{fmt(n?.mac)}</td>, <td key={d.id + "b"}>{fmt(n?.npt)}</td>,
                             <td key={d.id + "c"} className={cls(v as number | null)}><b>{fmt(v as number | null)}</b></td>,
                           ])}
-                          <td><b>{resultadoTrimestre(classe, medias.map((m) => ({ extra: m.d.extra, v: m.v }))) ?? "—"}</b></td>
+                          <td><b>{resultadoTrimestreDetalhado(classe, medias.map((m) => ({ extra: m.d.extra, disciplina: m.d.nome, v: m.v })), medias.reduce((s, m) => s + (m.n?.faltas ?? 0), 0)) ?? "—"}</b></td>
                         </tr>
                       );
                     })}

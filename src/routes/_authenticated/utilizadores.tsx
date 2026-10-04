@@ -25,7 +25,7 @@ function Utilizadores() {
   const qc = useQueryClient();
   const eliminar = useServerFn(eliminarUsuario);
   const [cargo, setCargo] = useState<Record<string, Papel>>({});
-  const [atribuir, setAtribuir] = useState<{ id: string; nome: string } | null>(null);
+  const [atribuir, setAtribuir] = useState<{ id: string; nome: string; tipo: "disciplinas" | "educandos" } | null>(null);
 
   const { data: users = [] } = useQuery({
     queryKey: ["utilizadores"],
@@ -59,7 +59,7 @@ function Utilizadores() {
     catch (e) { toast.error((e as Error).message); }
   }
 
-  const papeisDisponiveis: Papel[] = me.isAdmin ? ["admin", "pedagogico", "coordenador", "professor"] : ["pedagogico", "coordenador", "professor"];
+  const papeisDisponiveis: Papel[] = me.isAdmin ? ["admin", "pedagogico", "coordenador", "professor", "encarregado"] : ["pedagogico", "coordenador", "professor", "encarregado"];
 
   return (
     <div>
@@ -91,7 +91,10 @@ function Utilizadores() {
                       <Button size="sm" onClick={() => credenciar(u.id, atual)}>{u.status === "APROVADO" ? "Actualizar" : "Credenciar"}</Button>
                       {u.status === "APROVADO" && <Button size="sm" variant="outline" onClick={() => revogar(u.id)}>Revogar</Button>}
                       {u.papeis.includes("professor") && u.status === "APROVADO" && (
-                        <Button size="sm" variant="secondary" onClick={() => setAtribuir({ id: u.id, nome: u.nome })}>Disciplinas</Button>
+                        <Button size="sm" variant="secondary" onClick={() => setAtribuir({ id: u.id, nome: u.nome, tipo: "disciplinas" })}>Disciplinas</Button>
+                      )}
+                      {u.papeis.includes("encarregado") && u.status === "APROVADO" && (
+                        <Button size="sm" variant="secondary" onClick={() => setAtribuir({ id: u.id, nome: u.nome, tipo: "educandos" })}>Educandos</Button>
                       )}
                       {me.isAdmin && <Button size="sm" variant="destructive" onClick={() => apagar(u.id)}>Eliminar</Button>}
                     </>
@@ -102,8 +105,32 @@ function Utilizadores() {
           })}
         </TableBody>
       </Table>
-      {atribuir && <Atribuicoes user={atribuir} onClose={() => setAtribuir(null)} />}
+      {atribuir?.tipo === "disciplinas" && <Atribuicoes user={atribuir} onClose={() => setAtribuir(null)} />}
+      {atribuir?.tipo === "educandos" && <Educandos user={atribuir} onClose={() => setAtribuir(null)} />}
     </div>
+  );
+}
+
+function Educandos({ user, onClose }: { user: { id: string; nome: string }; onClose: () => void }) {
+  const qc = useQueryClient();
+  const { data: alunos = [] } = useQuery({ queryKey: ["alunos-para-encarregado"], queryFn: async () => (await supabase.from("students").select("id,nome,classe").order("nome")).data ?? [] });
+  const { data: ligacoes = [] } = useQuery({ queryKey: ["educandos", user.id], queryFn: async () => (await supabase.from("guardian_students").select("student_id").eq("guardian_id", user.id)).data ?? [] });
+  async function toggle(studentId: number, on: boolean) {
+    const { error } = on
+      ? await supabase.from("guardian_students").insert({ guardian_id: user.id, student_id: studentId })
+      : await supabase.from("guardian_students").delete().eq("guardian_id", user.id).eq("student_id", studentId);
+    if (error) toast.error(error.message);
+    else qc.invalidateQueries({ queryKey: ["educandos", user.id] });
+  }
+  return (
+    <Dialog open onOpenChange={(o) => !o && onClose()}>
+      <DialogContent className="max-h-[80vh] overflow-auto">
+        <DialogHeader><DialogTitle>Educandos de {user.nome}</DialogTitle></DialogHeader>
+        <div className="space-y-2">
+          {alunos.map((a) => <label key={a.id} className="flex items-center gap-2 text-sm"><Checkbox checked={ligacoes.some((l) => l.student_id === a.id)} onCheckedChange={(v) => toggle(a.id, !!v)} />{a.nome} — {nomeClasse(a.classe)}</label>)}
+        </div>
+      </DialogContent>
+    </Dialog>
   );
 }
 

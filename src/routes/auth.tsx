@@ -92,6 +92,7 @@ function AuthPage() {
                       <SelectItem value="professor">Professor</SelectItem>
                       <SelectItem value="coordenador">Coordenador</SelectItem>
                       <SelectItem value="pedagogico">Pedagógico</SelectItem>
+                      <SelectItem value="encarregado">Encarregado de Educação</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
