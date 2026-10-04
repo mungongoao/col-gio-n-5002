@@ -1,24 +1,43 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { useInstituicao } from "@/lib/dados";
+import { Button } from "@/components/ui/button";
+import { GraduationCap } from "lucide-react";
 
-// No head() here: the home route inherits title/description/og/twitter from
-// __root.tsx, and ships no og:image so serve-time hosting can inject the
-// project's social preview (explicit og:image or latest screenshot).
 export const Route = createFileRoute("/")({
-  component: Index,
+  head: () => ({
+    meta: [
+      { title: "J. ZYMAR — Gestão Pedagógica" },
+      { name: "description", content: "Portal de gestão pedagógica: alunos, notas, pautas e boletins do Complexo Escolar J. ZYMAR." },
+      { property: "og:title", content: "J. ZYMAR — Gestão Pedagógica" },
+      { property: "og:description", content: "Alunos, notas, pautas e boletins num só lugar." },
+    ],
+  }),
+  component: Inicio,
 });
 
-// IMPORTANT: Replace this placeholder. See ./README.md for routing conventions.
-function Index() {
+function Inicio() {
+  const { data: inst } = useInstituicao();
   return (
-    <div
-      className="flex min-h-screen items-center justify-center"
-      style={{ backgroundColor: "#fcfbf8" }}
-    >
-      <img
-        data-lovable-blank-page-placeholder="REMOVE_THIS"
-        src="https://cdn.gpteng.co/blank-app-v1.svg"
-        alt="Your app will live here!"
-      />
+    <div className="flex min-h-screen flex-col bg-primary text-primary-foreground">
+      <main className="flex flex-1 flex-col items-center justify-center px-6 text-center">
+        <div className="mb-8 flex h-36 w-36 items-center justify-center overflow-hidden rounded-full bg-background p-3 shadow-xl">
+          {inst?.logo_url ? (
+            <img src={inst.logo_url} alt="Logótipo da instituição" className="h-full w-full object-contain" />
+          ) : (
+            <GraduationCap className="h-16 w-16 text-primary" />
+          )}
+        </div>
+        <p className="text-sm uppercase tracking-[0.25em] opacity-80">{inst?.republica ?? "República de Angola"}</p>
+        <p className="mt-1 text-sm opacity-80">{inst?.ministerio}</p>
+        <h1 className="mt-6 max-w-3xl text-4xl font-semibold leading-tight md:text-5xl">
+          {inst?.nome_escola ?? "Complexo Escolar Privado J. ZYMAR"}
+        </h1>
+        <p className="mt-4 text-lg opacity-85">Gestão Pedagógica · Ano lectivo {inst?.ano_lectivo ?? "2026/2027"}</p>
+        <Button asChild size="lg" variant="secondary" className="mt-10">
+          <Link to="/auth">Entrar no sistema</Link>
+        </Button>
+      </main>
+      <footer className="py-4 text-center text-xs opacity-70">{inst?.direccao_municipal}</footer>
     </div>
   );
 }

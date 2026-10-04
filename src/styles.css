@@ -142,3 +142,52 @@
     color: var(--color-foreground);
   }
 }
+
+/* Identidade J. ZYMAR — azul institucional */
+:root {
+  --background: oklch(0.985 0.004 250);
+  --foreground: oklch(0.26 0.03 255);
+  --primary: oklch(0.33 0.08 255);
+  --primary-foreground: oklch(0.98 0.005 250);
+  --secondary: oklch(0.94 0.02 250);
+  --secondary-foreground: oklch(0.3 0.07 255);
+  --accent: oklch(0.93 0.03 245);
+  --accent-foreground: oklch(0.3 0.08 255);
+  --ring: oklch(0.52 0.13 255);
+  --success: oklch(0.52 0.12 155);
+  --success-foreground: oklch(0.98 0 0);
+  --sidebar: oklch(0.3 0.075 255);
+  --sidebar-foreground: oklch(0.95 0.01 250);
+  --sidebar-accent: oklch(0.38 0.09 255);
+  --sidebar-accent-foreground: oklch(1 0 0);
+  --sidebar-border: oklch(0.4 0.06 255);
+}
+
+@theme inline {
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --font-sans: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: "Source Serif 4", Georgia, serif;
+}
+
+body { font-family: var(--font-sans); }
+h1, h2, h3 { font-family: var(--font-serif); }
+
+/* Documentos oficiais */
+.doc { background: white; color: black; font-family: "Times New Roman", serif; }
+.doc table { border-collapse: collapse; width: 100%; }
+.doc th, .doc td { border: 1px solid black; padding: 2px 4px; text-align: center; font-size: 11px; }
+.doc td.esq { text-align: left; }
+.doc-a5 { width: 148mm; min-height: 210mm; padding: 8mm; page: boletim; }
+.doc-a4 { width: 297mm; padding: 8mm; page: pauta; }
+.neg { color: #c00; }
+
+@page boletim { size: A5 portrait; margin: 0; }
+@page pauta { size: A4 landscape; margin: 0; }
+
+@media print {
+  body * { visibility: hidden; }
+  .print-area, .print-area * { visibility: visible; }
+  .print-area { position: absolute; left: 0; top: 0; }
+  .doc-a5, .doc-a4 { break-after: page; box-shadow: none !important; }
+}
