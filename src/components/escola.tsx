@@ -38,7 +38,7 @@ export function DocCabecalho({ inst, titulo, sub }: { inst: Inst; titulo: string
   );
 }
 
-export function Assinatura({ cargo, nome }: { cargo: string; nome?: string | null }) {
+export function Assinatura({ cargo, nome }: { cargo: string; nome?: string | null | undefined }) {
   return (
     <div className="text-center" style={{ fontSize: 11, minWidth: 160 }}>
       <div>{cargo}</div>

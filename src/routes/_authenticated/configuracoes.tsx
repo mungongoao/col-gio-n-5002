@@ -27,19 +27,20 @@ function Config() {
   const { data: me } = useMe();
   const { data: inst } = useInstituicao();
   const qc = useQueryClient();
-  const [f, setF] = useState<Record<string, string>>({});
+  type K = "id" | "republica" | "ministerio" | "direccao_municipal" | "nome_escola" | "ano_lectivo" | "logo_url" | "pauta_pedagogico" | "pauta_direccao" | "boletim_coord_manha" | "boletim_coord_tarde";
+  const [f, setF] = useState<Partial<Record<K, string>>>({});
   useEffect(() => {
-    if (inst) setF(Object.fromEntries(Object.entries(inst).map(([k, v]) => [k, (v ?? "") as string])));
+    if (inst) setF(Object.fromEntries(Object.entries(inst).map(([k, v]) => [k, String(v ?? "")])) as Partial<Record<K, string>>);
   }, [inst]);
 
   if (!me?.isAdmin) return <p>Apenas o ADM tem acesso a esta página.</p>;
 
-  const set = (k: string) => (e: React.ChangeEvent<HTMLInputElement>) => setF({ ...f, [k]: e.target.value });
+  const set = (k: K) => (e: React.ChangeEvent<HTMLInputElement>) => setF({ ...f, [k]: e.target.value });
 
   function carregarLogo(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
-    if (file.size > 400_000) return toast.error("O logótipo deve ter menos de 400 KB.");
+    if (file.size > 400_000) return void toast.error("O logótipo deve ter menos de 400 KB.");
     const r = new FileReader();
     r.onload = () => setF((p) => ({ ...p, logo_url: r.result as string }));
     r.readAsDataURL(file);
@@ -48,7 +49,7 @@ function Config() {
   async function guardar() {
     const { id: _id, ...rest } = f;
     const { error } = await supabase.from("institution_settings").update({ ...rest, logo_url: f.logo_url || null }).eq("id", 1);
-    if (error) return toast.error(error.message);
+    if (error) return void toast.error(error.message);
     toast.success("Informações guardadas.");
     qc.invalidateQueries({ queryKey: ["instituicao"] });
   }

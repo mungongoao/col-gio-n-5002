@@ -32,9 +32,9 @@ function Disciplinas() {
   async function adicionar(e: React.FormEvent) {
     e.preventDefault();
     const n = nome.trim();
-    if (!n || n.length > 80) return toast.error("Nome inválido.");
+    if (!n || n.length > 80) return void toast.error("Nome inválido.");
     const { error } = await supabase.from("subjects").insert({ classe, nome: n, extra, ordem: lista?.length ?? 0 });
-    if (error) return toast.error(error.code === "23505" ? "Disciplina já existe nesta classe." : error.message);
+    if (error) return void toast.error(error.code === "23505" ? "Disciplina já existe nesta classe." : error.message);
     setNome(""); setExtra(false);
     qc.invalidateQueries({ queryKey: ["disciplinas"] });
   }
@@ -42,7 +42,7 @@ function Disciplinas() {
   async function remover(id: string) {
     if (!confirm("Remover esta disciplina? As notas lançadas também serão apagadas.")) return;
     const { error } = await supabase.from("subjects").delete().eq("id", id);
-    if (error) return toast.error(error.message);
+    if (error) return void toast.error(error.message);
     qc.invalidateQueries({ queryKey: ["disciplinas"] });
   }
 

@@ -67,7 +67,7 @@ function Notas() {
       const l = linhas[a.id];
       const vals = [num(l.mac), num(l.npt), num(l.exame_escrito), num(l.exame_oral)];
       if (vals.some((v) => v != null && (isNaN(v) || v < 0 || v > max)))
-        return toast.error(`Nota inválida para ${a.nome}. Escala: 0 a ${max}.`);
+        return void toast.error(`Nota inválida para ${a.nome}. Escala: 0 a ${max}.`);
       rows.push({
         student_id: a.id, subject_id: disciplina.id, trimestre: Number(tri),
         mac: qual ? null : vals[0], npt: qual ? null : vals[1],
@@ -77,7 +77,7 @@ function Notas() {
       });
     }
     const { error } = await supabase.from("grades").upsert(rows, { onConflict: "student_id,subject_id,trimestre" });
-    if (error) return toast.error("Não foi possível guardar: " + error.message);
+    if (error) return void toast.error("Não foi possível guardar: " + error.message);
     toast.success("Notas guardadas. Mini-pauta e pautas actualizadas.");
     qc.invalidateQueries({ queryKey: ["notas", classe] });
   }

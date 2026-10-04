@@ -41,14 +41,14 @@ function AuthPage() {
     setLoading(true);
     const { error } = await supabase.auth.signInWithPassword({ email: email.trim(), password: senha });
     setLoading(false);
-    if (error) return toast.error("Email ou palavra-passe incorrectos.");
+    if (error) return void toast.error("Email ou palavra-passe incorrectos.");
     navigate({ to: "/painel" });
   }
 
   async function registar(e: React.FormEvent) {
     e.preventDefault();
     const p = registoSchema.safeParse({ nome, email, senha });
-    if (!p.success) return toast.error(p.error.issues[0].message);
+    if (!p.success) return void toast.error(p.error.issues[0]?.message);
     setLoading(true);
     const { error } = await supabase.auth.signUp({
       email: p.data.email,
@@ -56,7 +56,7 @@ function AuthPage() {
       options: { emailRedirectTo: window.location.origin + "/painel", data: { nome: p.data.nome, cargo } },
     });
     setLoading(false);
-    if (error) return toast.error(error.message);
+    if (error) return void toast.error(error.message);
     toast.success("Registo feito. Confirme o seu email e aguarde a credenciação.");
   }
 

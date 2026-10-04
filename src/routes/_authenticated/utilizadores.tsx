@@ -45,12 +45,12 @@ function Utilizadores() {
   async function credenciar(id: string, def: string) {
     const role = cargo[id] ?? (def as Papel);
     const { error } = await supabase.rpc("credenciar_usuario", { _uid: id, _role: role });
-    if (error) return toast.error(error.message);
+    if (error) return void toast.error(error.message);
     toast.success("Utilizador credenciado."); refresh();
   }
   async function revogar(id: string) {
     const { error } = await supabase.rpc("revogar_usuario", { _uid: id });
-    if (error) return toast.error(error.message);
+    if (error) return void toast.error(error.message);
     toast.success("Acesso revogado."); refresh();
   }
   async function apagar(id: string) {

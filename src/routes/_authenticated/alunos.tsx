@@ -52,9 +52,9 @@ function Alunos() {
   async function cadastrar(e: React.FormEvent) {
     e.preventDefault();
     const p = schema.safeParse(f);
-    if (!p.success) return toast.error(p.error.issues[0].message);
+    if (!p.success) return void toast.error(p.error.issues[0]?.message);
     const { error } = await supabase.from("students").insert(p.data);
-    if (error) return toast.error(error.message);
+    if (error) return void toast.error(error.message);
     toast.success(`Aluno inscrito na lista nominal da ${nomeClasse(p.data.classe)}.`);
     setF({ ...vazio, classe: f.classe });
     qc.invalidateQueries({ queryKey: ["alunos"] });
@@ -63,7 +63,7 @@ function Alunos() {
   async function eliminar(id: number) {
     if (!confirm("Eliminar este aluno e todas as suas notas?")) return;
     const { error } = await supabase.from("students").delete().eq("id", id);
-    if (error) return toast.error(error.message);
+    if (error) return void toast.error(error.message);
     qc.invalidateQueries({ queryKey: ["alunos"] });
   }
 
