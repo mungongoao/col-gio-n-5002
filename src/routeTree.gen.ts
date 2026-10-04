@@ -16,6 +16,7 @@ import { Route as AuthenticatedAlunosRouteImport } from './routes/_authenticated
 import { Route as AuthenticatedConfiguracoesRouteImport } from './routes/_authenticated/configuracoes'
 import { Route as AuthenticatedDisciplinasRouteImport } from './routes/_authenticated/disciplinas'
 import { Route as AuthenticatedListaNominalRouteImport } from './routes/_authenticated/lista-nominal'
+import { Route as AuthenticatedNotasRouteImport } from './routes/_authenticated/notas'
 import { Route as AuthenticatedPainelRouteImport } from './routes/_authenticated/painel'
 
 const IndexRoute = IndexRouteImport.update({
@@ -55,6 +56,11 @@ const AuthenticatedListaNominalRoute =
     path: '/lista-nominal',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedNotasRoute = AuthenticatedNotasRouteImport.update({
+  id: '/notas',
+  path: '/notas',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedPainelRoute = AuthenticatedPainelRouteImport.update({
   id: '/painel',
   path: '/painel',
@@ -68,6 +74,7 @@ export interface FileRoutesByFullPath {
   '/configuracoes': typeof AuthenticatedConfiguracoesRoute
   '/disciplinas': typeof AuthenticatedDisciplinasRoute
   '/lista-nominal': typeof AuthenticatedListaNominalRoute
+  '/notas': typeof AuthenticatedNotasRoute
   '/painel': typeof AuthenticatedPainelRoute
 }
 export interface FileRoutesByTo {
@@ -77,6 +84,7 @@ export interface FileRoutesByTo {
   '/configuracoes': typeof AuthenticatedConfiguracoesRoute
   '/disciplinas': typeof AuthenticatedDisciplinasRoute
   '/lista-nominal': typeof AuthenticatedListaNominalRoute
+  '/notas': typeof AuthenticatedNotasRoute
   '/painel': typeof AuthenticatedPainelRoute
 }
 export interface FileRoutesById {
@@ -88,6 +96,7 @@ export interface FileRoutesById {
   '/_authenticated/configuracoes': typeof AuthenticatedConfiguracoesRoute
   '/_authenticated/disciplinas': typeof AuthenticatedDisciplinasRoute
   '/_authenticated/lista-nominal': typeof AuthenticatedListaNominalRoute
+  '/_authenticated/notas': typeof AuthenticatedNotasRoute
   '/_authenticated/painel': typeof AuthenticatedPainelRoute
 }
 export interface FileRouteTypes {
@@ -99,6 +108,7 @@ export interface FileRouteTypes {
     | '/configuracoes'
     | '/disciplinas'
     | '/lista-nominal'
+    | '/notas'
     | '/painel'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -108,6 +118,7 @@ export interface FileRouteTypes {
     | '/configuracoes'
     | '/disciplinas'
     | '/lista-nominal'
+    | '/notas'
     | '/painel'
   id:
     | '__root__'
@@ -118,6 +129,7 @@ export interface FileRouteTypes {
     | '/_authenticated/configuracoes'
     | '/_authenticated/disciplinas'
     | '/_authenticated/lista-nominal'
+    | '/_authenticated/notas'
     | '/_authenticated/painel'
   fileRoutesById: FileRoutesById
 }
@@ -178,6 +190,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedListaNominalRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/notas': {
+      id: '/_authenticated/notas'
+      path: '/notas'
+      fullPath: '/notas'
+      preLoaderRoute: typeof AuthenticatedNotasRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/painel': {
       id: '/_authenticated/painel'
       path: '/painel'
@@ -193,6 +212,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedConfiguracoesRoute: typeof AuthenticatedConfiguracoesRoute
   AuthenticatedDisciplinasRoute: typeof AuthenticatedDisciplinasRoute
   AuthenticatedListaNominalRoute: typeof AuthenticatedListaNominalRoute
+  AuthenticatedNotasRoute: typeof AuthenticatedNotasRoute
   AuthenticatedPainelRoute: typeof AuthenticatedPainelRoute
 }
 
@@ -201,6 +221,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedConfiguracoesRoute: AuthenticatedConfiguracoesRoute,
   AuthenticatedDisciplinasRoute: AuthenticatedDisciplinasRoute,
   AuthenticatedListaNominalRoute: AuthenticatedListaNominalRoute,
+  AuthenticatedNotasRoute: AuthenticatedNotasRoute,
   AuthenticatedPainelRoute: AuthenticatedPainelRoute,
 }
 
