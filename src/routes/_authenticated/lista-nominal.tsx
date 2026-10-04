@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { Printer } from "lucide-react";
-import { useAlunos, useInstituicao } from "@/lib/dados";
+import { useAlunos, useInstituicao, useMe } from "@/lib/dados";
 import { nomeClasse } from "@/lib/avaliacao";
 import { Button } from "@/components/ui/button";
 import { Assinatura, ClasseSelect, DocCabecalho, PageTitle } from "@/components/escola";
@@ -12,10 +12,12 @@ export const Route = createFileRoute("/_authenticated/lista-nominal")({
 });
 
 function Lista() {
+  const { data: me } = useMe();
   const [classe, setClasse] = useState("1");
   const { data: alunos } = useAlunos(classe);
   const { data: inst } = useInstituicao();
   const m = alunos?.filter((a) => a.genero === "M").length ?? 0;
+  if (me?.isEncarregado) return <p>Sem permissão.</p>;
   return (
     <div>
       <PageTitle title="Lista Nominal">

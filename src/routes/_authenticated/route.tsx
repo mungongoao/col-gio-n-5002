@@ -63,10 +63,10 @@ function Layout() {
 
   return (
     <div className="flex min-h-screen">
-      <aside className="flex w-64 shrink-0 flex-col bg-sidebar text-sidebar-foreground print:hidden">
+      <aside className="flex w-16 shrink-0 flex-col bg-sidebar text-sidebar-foreground sm:w-64 print:hidden">
         <div className="flex items-center gap-3 border-b border-sidebar-border p-4">
           {inst?.logo_url && <img src={inst.logo_url} alt="" className="h-10 w-10 rounded bg-background object-contain p-0.5" />}
-          <div className="text-sm font-semibold leading-tight">{inst?.nome_escola}</div>
+          <div className="hidden text-sm font-semibold leading-tight sm:block">{inst?.nome_escola}</div>
         </div>
         <nav className="flex-1 space-y-1 p-3">
           {links.filter((l) => l.show).map((l) => (
@@ -76,19 +76,18 @@ function Layout() {
               className="flex items-center gap-3 rounded-md px-3 py-2 text-sm hover:bg-sidebar-accent"
               activeProps={{ className: "bg-sidebar-accent font-semibold" }}
             >
-              <l.icon className="h-4 w-4" /> {l.label}
+              <l.icon className="h-4 w-4 shrink-0" /> <span className="hidden sm:inline">{l.label}</span>
             </Link>
           ))}
         </nav>
-        <div className="border-t border-sidebar-border p-4 text-xs">
-          <div className="font-medium">{me.profile?.nome}</div>
-          <div className="opacity-70">{me.papeis.map((p) => NOMES_PAPEL[p]).join(", ")}</div>
-          <Button size="sm" variant="secondary" className="mt-3 w-full" onClick={sair}>
-            <LogOut className="mr-2 h-4 w-4" /> Sair
+        <div className="border-t border-sidebar-border p-3 text-xs sm:p-4">
+          <div className="hidden sm:block"><div className="font-medium">{me.profile?.nome}</div><div className="opacity-70">{me.papeis.map((p) => NOMES_PAPEL[p]).join(", ")}</div></div>
+          <Button size="sm" variant="secondary" className="mt-3 w-full px-0 sm:px-3" onClick={sair} title="Sair">
+            <LogOut className="h-4 w-4 sm:mr-2" /> <span className="hidden sm:inline">Sair</span>
           </Button>
         </div>
       </aside>
-      <main className="min-w-0 flex-1 p-6">
+      <main className="min-w-0 flex-1 p-4 sm:p-6">
         <Outlet />
       </main>
     </div>

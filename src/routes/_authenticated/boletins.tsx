@@ -24,6 +24,7 @@ function Boletins() {
   const { data: alunos = [] } = useAlunos(classe);
   const { data: notas = [] } = useNotasClasse(classe);
   const lista = aluno === "todos" ? alunos : alunos.filter((a) => String(a.id) === aluno);
+  if (me?.isEncarregado) return <p>Sem permissão.</p>;
 
   return (
     <div>

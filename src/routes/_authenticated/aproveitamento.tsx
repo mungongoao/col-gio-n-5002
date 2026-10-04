@@ -49,7 +49,11 @@ function Aproveitamento() {
       <div className="grid gap-4 md:grid-cols-2">
         {educandos.map((aluno) => {
           const registos = notas.filter((n) => n.student_id === aluno.id);
-          const avaliadas = registos.filter((n) => isQualitativa(aluno.classe) ? !!n.qualitativo : mediaTrimestral(n) != null);
+          const porDisciplina = [...new Set(registos.map((n) => n.subject_id))].map((subjectId) => {
+            const recentes = registos.filter((n) => n.subject_id === subjectId).sort((a, b) => b.trimestre - a.trimestre);
+            return recentes.find((n) => isQualitativa(aluno.classe) ? !!n.qualitativo : mediaTrimestral(n) != null);
+          });
+          const avaliadas = porDisciplina.filter((n): n is NotaRow => !!n);
           const positivas = avaliadas.filter((n) => isQualitativa(aluno.classe) ? !!n.qualitativo : (mediaTrimestral(n) ?? 0) >= notaMinima(aluno.classe)).length;
           const percentagem = avaliadas.length ? Math.round((positivas / avaliadas.length) * 100) : 0;
           const faltas = registos.reduce((total, n) => total + (n.faltas ?? 0), 0);

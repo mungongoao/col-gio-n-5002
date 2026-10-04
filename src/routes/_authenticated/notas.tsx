@@ -85,6 +85,8 @@ function Notas() {
 
   const upd = (id: number, k: keyof Linha, v: string) => setLinhas({ ...linhas, [id]: { ...(linhas[id] ?? vazia), [k]: v } });
 
+  if (me?.isEncarregado) return <p>Sem permissão.</p>;
+
   return (
     <div>
       <PageTitle title="Lançamento de Notas">

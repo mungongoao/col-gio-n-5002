@@ -46,6 +46,8 @@ function Pautas() {
   const titulo = tipo === "mini" ? "Mini-Pauta" : tipo === "tri" ? `Pauta do ${tri}º Trimestre` : "Pauta Final";
   const sub = `${nomeClasse(classe)}${tipo === "mini" && disciplina ? ` · ${disciplina.nome}` : ""} · Ano lectivo ${inst?.ano_lectivo ?? ""}`;
 
+  if (me?.isEncarregado) return <p>Sem permissão.</p>;
+
   return (
     <div>
       <PageTitle title="Pautas">
