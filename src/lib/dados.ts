@@ -1,0 +1,107 @@
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import type { Nota } from "./avaliacao";
+
+export type Papel = "admin" | "pedagogico" | "coordenador" | "professor";
+
+export const NOMES_PAPEL: Record<Papel, string> = {
+  admin: "Administrador (ADM)",
+  pedagogico: "Pedagógico",
+  coordenador: "Coordenador",
+  professor: "Professor",
+};
+
+export function useMe() {
+  return useQuery({
+    queryKey: ["me"],
+    queryFn: async () => {
+      const { data: u } = await supabase.auth.getUser();
+      if (!u.user) return null;
+      const [{ data: profile }, { data: roles }] = await Promise.all([
+        supabase.from("profiles").select("*").eq("id", u.user.id).maybeSingle(),
+        supabase.from("user_roles").select("role").eq("user_id", u.user.id),
+      ]);
+      const papeis = (roles ?? []).map((r) => r.role as Papel);
+      const aprovado = profile?.status === "APROVADO";
+      const tem = (p: Papel) => aprovado && papeis.includes(p);
+      return {
+        id: u.user.id,
+        profile,
+        papeis,
+        aprovado,
+        isAdmin: tem("admin"),
+        isPedagogico: tem("pedagogico"),
+        isStaff: tem("admin") || tem("pedagogico"),
+        podeImprimirBoletim: tem("admin") || tem("coordenador"),
+        isProfessor: tem("professor"),
+      };
+    },
+  });
+}
+
+export function useInstituicao() {
+  return useQuery({
+    queryKey: ["instituicao"],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("institution_settings").select("*").eq("id", 1).maybeSingle();
+      if (error) throw error;
+      return data;
+    },
+  });
+}
+
+export type Disciplina = { id: string; classe: string; nome: string; extra: boolean; ordem: number };
+
+export function useDisciplinas(classe?: string) {
+  return useQuery({
+    queryKey: ["disciplinas", classe ?? "all"],
+    queryFn: async () => {
+      let q = supabase.from("subjects").select("*").order("extra").order("ordem").order("nome");
+      if (classe) q = q.eq("classe", classe);
+      const { data, error } = await q;
+      if (error) throw error;
+      return data as Disciplina[];
+    },
+  });
+}
+
+export type Aluno = {
+  id: number;
+  nome: string;
+  bi: string;
+  telefone: string;
+  idade: number | null;
+  genero: string;
+  classe: string;
+};
+
+export function useAlunos(classe?: string) {
+  return useQuery({
+    queryKey: ["alunos", classe ?? "all"],
+    queryFn: async () => {
+      let q = supabase.from("students").select("*").order("nome");
+      if (classe) q = q.eq("classe", classe);
+      const { data, error } = await q;
+      if (error) throw error;
+      const lista = (data ?? []) as Aluno[];
+      return lista.sort((a, b) => a.nome.localeCompare(b.nome, "pt"));
+    },
+  });
+}
+
+export type NotaRow = Nota & { id: string; student_id: number; subject_id: string };
+
+export function useNotasClasse(classe: string) {
+  return useQuery({
+    queryKey: ["notas", classe],
+    enabled: !!classe,
+    queryFn: async () => {
+      const { data: alunos } = await supabase.from("students").select("id").eq("classe", classe);
+      const ids = (alunos ?? []).map((a) => a.id);
+      if (ids.length === 0) return [] as NotaRow[];
+      const { data, error } = await supabase.from("grades").select("*").in("student_id", ids);
+      if (error) throw error;
+      return (data ?? []) as NotaRow[];
+    },
+  });
+}
