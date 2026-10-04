@@ -1,0 +1,45 @@
+import { createFileRoute } from "@tanstack/react-router";
+import { useState } from "react";
+import { Printer } from "lucide-react";
+import { useAlunos, useInstituicao } from "@/lib/dados";
+import { nomeClasse } from "@/lib/avaliacao";
+import { Button } from "@/components/ui/button";
+import { Assinatura, ClasseSelect, DocCabecalho, PageTitle } from "@/components/escola";
+
+export const Route = createFileRoute("/_authenticated/lista-nominal")({
+  head: () => ({ meta: [{ title: "Lista Nominal — J. ZYMAR" }, { name: "description", content: "Lista nominal por classe." }] }),
+  component: Lista,
+});
+
+function Lista() {
+  const [classe, setClasse] = useState("1");
+  const { data: alunos } = useAlunos(classe);
+  const { data: inst } = useInstituicao();
+  const m = alunos?.filter((a) => a.genero === "M").length ?? 0;
+  return (
+    <div>
+      <PageTitle title="Lista Nominal">
+        <ClasseSelect value={classe} onChange={setClasse} />
+        <Button variant="outline" onClick={() => window.print()}><Printer className="mr-2 h-4 w-4" />Imprimir</Button>
+      </PageTitle>
+      <div className="print-area overflow-auto">
+        <div className="doc doc-a4 mx-auto shadow" style={{ width: "210mm", page: "auto" }}>
+          <DocCabecalho inst={inst} titulo="Lista Nominal" sub={`${nomeClasse(classe)} · Ano lectivo ${inst?.ano_lectivo ?? ""}`} />
+          <table>
+            <thead><tr><th style={{ width: 40 }}>Nº</th><th>Nome do Aluno</th><th style={{ width: 70 }}>Género</th></tr></thead>
+            <tbody>
+              {alunos?.map((a, i) => (
+                <tr key={a.id}><td>{i + 1}</td><td className="esq">{a.nome}</td><td>{a.genero}</td></tr>
+              ))}
+            </tbody>
+          </table>
+          <p style={{ fontSize: 11, marginTop: 6 }}>Total: {alunos?.length ?? 0} · M: {m} · F: {(alunos?.length ?? 0) - m}</p>
+          <div className="mt-8 flex justify-around">
+            <Assinatura cargo="O Pedagógico" nome={inst?.pauta_pedagogico} />
+            <Assinatura cargo="A Direcção" nome={inst?.pauta_direccao} />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
