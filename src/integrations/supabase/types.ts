@@ -71,6 +71,42 @@ export type Database = {
           },
         ]
       }
+      guardian_students: {
+        Row: {
+          created_at: string
+          guardian_id: string
+          id: string
+          student_id: number
+        }
+        Insert: {
+          created_at?: string
+          guardian_id: string
+          id?: string
+          student_id: number
+        }
+        Update: {
+          created_at?: string
+          guardian_id?: string
+          id?: string
+          student_id?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "guardian_students_guardian_id_fkey"
+            columns: ["guardian_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "guardian_students_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "students"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       institution_settings: {
         Row: {
           ano_lectivo: string
@@ -249,7 +285,15 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      can_edit_grade: {
+        Args: { _subject: string; _user_id: string }
+        Returns: boolean
+      }
       can_grade: { Args: { _subject: string; _uid: string }; Returns: boolean }
+      can_view_subject: {
+        Args: { _subject: string; _user_id: string }
+        Returns: boolean
+      }
       credenciar_usuario: {
         Args: { _role: Database["public"]["Enums"]["app_role"]; _uid: string }
         Returns: undefined
@@ -262,11 +306,21 @@ export type Database = {
         Returns: boolean
       }
       is_approved: { Args: { _user_id: string }; Returns: boolean }
+      is_coordinator: { Args: { _user_id: string }; Returns: boolean }
+      is_guardian_of: {
+        Args: { _student_id: number; _user_id: string }
+        Returns: boolean
+      }
       is_staff: { Args: { _user_id: string }; Returns: boolean }
       revogar_usuario: { Args: { _uid: string }; Returns: undefined }
     }
     Enums: {
-      app_role: "admin" | "pedagogico" | "coordenador" | "professor"
+      app_role:
+        | "admin"
+        | "pedagogico"
+        | "coordenador"
+        | "professor"
+        | "encarregado"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -394,7 +448,13 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      app_role: ["admin", "pedagogico", "coordenador", "professor"],
+      app_role: [
+        "admin",
+        "pedagogico",
+        "coordenador",
+        "professor",
+        "encarregado",
+      ],
     },
   },
 } as const

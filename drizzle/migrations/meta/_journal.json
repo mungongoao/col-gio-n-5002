@@ -15,6 +15,13 @@
       "when": 1791116817533,
       "tag": "0001_migration",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1791118304567,
+      "tag": "0002_add_guardians_and_grade_permissions",
+      "breakpoints": true
     }
   ]
 }
