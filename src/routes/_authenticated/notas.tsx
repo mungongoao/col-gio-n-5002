@@ -64,15 +64,15 @@ function Notas() {
     if (!disciplina) return;
     const rows = [];
     for (const a of alunos ?? []) {
-      const l = linhas[a.id];
-      const vals = [num(l.mac), num(l.npt), num(l.exame_escrito), num(l.exame_oral)];
+      const l = linhas[a.id] ?? vazia;
+      const vals: (number | null)[] = [num(l.mac), num(l.npt), num(l.exame_escrito), num(l.exame_oral)];
       if (vals.some((v) => v != null && (isNaN(v) || v < 0 || v > max)))
         return void toast.error(`Nota inválida para ${a.nome}. Escala: 0 a ${max}.`);
       rows.push({
         student_id: a.id, subject_id: disciplina.id, trimestre: Number(tri),
-        mac: qual ? null : vals[0], npt: qual ? null : vals[1],
+        mac: qual ? null : vals[0] ?? null, npt: qual ? null : vals[1] ?? null,
         qualitativo: qual ? l.qualitativo || null : null,
-        exame_escrito: comExame ? vals[2] : null, exame_oral: oral ? vals[3] : null,
+        exame_escrito: comExame ? vals[2] ?? null : null, exame_oral: oral ? vals[3] ?? null : null,
         faltas: Math.max(0, parseInt(l.faltas) || 0), updated_at: new Date().toISOString(),
       });
     }
@@ -82,7 +82,7 @@ function Notas() {
     qc.invalidateQueries({ queryKey: ["notas", classe] });
   }
 
-  const upd = (id: number, k: keyof Linha, v: string) => setLinhas({ ...linhas, [id]: { ...linhas[id], [k]: v } });
+  const upd = (id: number, k: keyof Linha, v: string) => setLinhas({ ...linhas, [id]: { ...(linhas[id] ?? vazia), [k]: v } });
 
   return (
     <div>
