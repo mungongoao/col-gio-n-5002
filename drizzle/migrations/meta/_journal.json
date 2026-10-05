@@ -29,6 +29,13 @@
       "when": 1791118319549,
       "tag": "0003_restrict_absences_to_admin_and_coordinators",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1791179994383,
+      "tag": "0004_first_two_administrativo_admins",
+      "breakpoints": true
     }
   ]
 }
