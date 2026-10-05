@@ -89,6 +89,7 @@ function AuthPage() {
                   <Select value={cargo} onValueChange={setCargo}>
                     <SelectTrigger><SelectValue /></SelectTrigger>
                     <SelectContent>
+                      <SelectItem value="administrativo">Administrativo</SelectItem>
                       <SelectItem value="professor">Professor</SelectItem>
                       <SelectItem value="coordenador">Coordenador</SelectItem>
                       <SelectItem value="pedagogico">Pedagógico</SelectItem>
