@@ -111,3 +111,11 @@ export function resultadoTrimestreDetalhado(
 }
 
 export const fmt = (n: number | null | undefined) => (n == null ? "—" : String(n).replace(".", ","));
+
+/** Média geral curricular: só existe quando todas as disciplinas têm nota. */
+export function mediaGeral(valores: { extra: boolean; v: number | null }[]) {
+  const curr = valores.filter((x) => !x.extra);
+  if (!curr.length || curr.some((x) => x.v == null)) return null;
+  return r1(curr.reduce((s, x) => s + (x.v ?? 0), 0) / curr.length);
+}
+export const classeNota = (classe: string, v: number | null | undefined) => v == null ? "" : v < notaMinima(classe) ? "neg" : "pos";
