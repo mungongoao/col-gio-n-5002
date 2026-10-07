@@ -154,6 +154,7 @@ export type Database = {
           cargo_pretendido: string
           created_at: string
           email: string
+          genero: string | null
           id: string
           nome: string
           status: string
@@ -162,6 +163,7 @@ export type Database = {
           cargo_pretendido?: string
           created_at?: string
           email?: string
+          genero?: string | null
           id: string
           nome?: string
           status?: string
@@ -170,6 +172,7 @@ export type Database = {
           cargo_pretendido?: string
           created_at?: string
           email?: string
+          genero?: string | null
           id?: string
           nome?: string
           status?: string
@@ -181,31 +184,37 @@ export type Database = {
           bi: string
           classe: string
           created_at: string
+          estado: string
           genero: string
           id: number
           idade: number | null
           nome: string
           telefone: string
+          turma: string
         }
         Insert: {
           bi?: string
           classe: string
           created_at?: string
+          estado?: string
           genero: string
           id?: never
           idade?: number | null
           nome: string
           telefone?: string
+          turma?: string
         }
         Update: {
           bi?: string
           classe?: string
           created_at?: string
+          estado?: string
           genero?: string
           id?: never
           idade?: number | null
           nome?: string
           telefone?: string
+          turma?: string
         }
         Relationships: []
       }
@@ -313,6 +322,15 @@ export type Database = {
       }
       is_staff: { Args: { _user_id: string }; Returns: boolean }
       revogar_usuario: { Args: { _uid: string }; Returns: undefined }
+      set_own_gender: { Args: { _genero: string }; Returns: undefined }
+      staff_teacher_statistics: {
+        Args: never
+        Returns: {
+          genero: string
+          subject_id: string
+          user_id: string
+        }[]
+      }
     }
     Enums: {
       app_role:

@@ -36,6 +36,13 @@
       "when": 1791179994383,
       "tag": "0004_first_two_administrativo_admins",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1791341770867,
+      "tag": "0005_student_turma_estado_statistics",
+      "breakpoints": true
     }
   ]
 }
