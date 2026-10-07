@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { Printer, Trash2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAlunos, useInstituicao, useMe, type Aluno } from "@/lib/dados";
+import { GuardarDocumento } from "@/components/guardar-documento";
 import { nomeClasse } from "@/lib/avaliacao";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -27,10 +28,12 @@ const schema = z.object({
   idade: z.coerce.number().int().min(2, "Idade inválida").max(30, "Idade inválida"),
   genero: z.enum(["M", "F"]),
   classe: z.string().min(1, "Escolha a classe"),
+  turma: z.string().trim().min(1, "Indique a turma").max(30),
+  estado: z.enum(["Activo", "Desistente"]),
 });
 
 const POR_PAGINA = 15;
-const vazio = { nome: "", bi: "", telefone: "", idade: "", genero: "M", classe: "1" };
+const vazio = { nome: "", bi: "", telefone: "", idade: "", genero: "M", classe: "1", turma: "A", estado: "Activo" };
 
 function Alunos() {
   const { data: me } = useMe();
@@ -93,7 +96,9 @@ function Alunos() {
             </Select>
           </div>
           <div><Label>Classe</Label><ClasseSelect value={f.classe} onChange={(v) => setF({ ...f, classe: v })} className="w-full" /></div>
-          <div className="flex items-end md:col-span-5"><Button>Cadastrar aluno</Button></div>
+          <div><Label>Turma</Label><Input value={f.turma} onChange={set("turma")} /></div>
+          <div><Label>Estado</Label><Select value={f.estado} onValueChange={(v) => setF({ ...f, estado: v })}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="Activo">Activo</SelectItem><SelectItem value="Desistente">Desistente</SelectItem></SelectContent></Select></div>
+          <div className="flex items-end md:col-span-3"><Button>Cadastrar aluno</Button></div>
         </form>
       </CardContent></Card>
 
@@ -101,20 +106,21 @@ function Alunos() {
       <Table>
         <TableHeader><TableRow>
           <TableHead>ID</TableHead><TableHead>Nome do Aluno</TableHead><TableHead>BI/Cédula</TableHead><TableHead>Telefone</TableHead>
-          <TableHead>Idade</TableHead><TableHead>Género</TableHead><TableHead>Classe</TableHead><TableHead />
+          <TableHead>Idade</TableHead><TableHead>Género</TableHead><TableHead>Classe</TableHead><TableHead>Turma</TableHead><TableHead>Estado</TableHead><TableHead />
         </TableRow></TableHeader>
         <TableBody>
           {pagina.map((a) => (
             <TableRow key={a.id}>
               <TableCell>{a.id}</TableCell><TableCell>{a.nome}</TableCell><TableCell>{a.bi}</TableCell><TableCell>{a.telefone}</TableCell>
-              <TableCell>{a.idade}</TableCell><TableCell>{a.genero}</TableCell><TableCell>{nomeClasse(a.classe)}</TableCell>
+              <TableCell>{a.idade}</TableCell><TableCell>{a.genero}</TableCell><TableCell>{nomeClasse(a.classe)}</TableCell><TableCell>{a.turma}</TableCell><TableCell><Select value={a.estado} onValueChange={async (estado) => { const { error } = await supabase.from("students").update({ estado }).eq("id", a.id); if (error) toast.error(error.message); else qc.invalidateQueries({ queryKey: ["alunos"] }); }}><SelectTrigger className="w-32"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="Activo">Activo</SelectItem><SelectItem value="Desistente">Desistente</SelectItem></SelectContent></Select></TableCell>
               <TableCell className="flex justify-end gap-1">
                 <Button size="icon" variant="ghost" title="Imprimir ficha" onClick={() => imprimirFicha(a)}><Printer className="h-4 w-4" /></Button>
-                <Button size="icon" variant="ghost" title="Eliminar aluno" onClick={() => eliminar(a.id)}><Trash2 className="h-4 w-4" /></Button>
+                <GuardarDocumento selector=".ficha-doc" nome={`Ficha ${a.nome}`} preparar={() => setFicha(a)} />
+                 <Button size="icon" variant="ghost" title="Eliminar aluno" onClick={() => eliminar(a.id)}><Trash2 className="h-4 w-4" /></Button>
               </TableCell>
             </TableRow>
           ))}
-          {pagina.length === 0 && <TableRow><TableCell colSpan={8} className="text-center text-muted-foreground">Sem alunos.</TableCell></TableRow>}
+          {pagina.length === 0 && <TableRow><TableCell colSpan={10} className="text-center text-muted-foreground">Sem alunos.</TableCell></TableRow>}
         </TableBody>
       </Table>
       <div className="mt-4 flex items-center gap-3 text-sm">
@@ -123,7 +129,7 @@ function Alunos() {
         <Button size="sm" variant="outline" disabled={pag + 1 >= total} onClick={() => setPag(pag + 1)}>Seguinte</Button>
       </div>
       {ficha && <div className="print-area hidden print:block">
-        <div className="doc doc-a4 mx-auto">
+        <div className="doc doc-a4 ficha-doc mx-auto">
           <DocCabecalho inst={inst} titulo="Ficha do Aluno" sub={`Ano lectivo ${inst?.ano_lectivo ?? ""}`} />
           <table className="mt-8"><tbody>
             <tr><th className="esq">ID</th><td className="esq">{ficha.id}</td></tr>
@@ -133,6 +139,7 @@ function Alunos() {
             <tr><th className="esq">Idade</th><td className="esq">{ficha.idade ?? "—"}</td></tr>
             <tr><th className="esq">Género</th><td className="esq">{ficha.genero === "M" ? "Masculino" : "Feminino"}</td></tr>
             <tr><th className="esq">Classe</th><td className="esq">{nomeClasse(ficha.classe)}</td></tr>
+             <tr><th>Turma</th><td>{ficha.turma}</td></tr><tr><th>Estado</th><td>{ficha.estado}</td></tr>
           </tbody></table>
         </div>
       </div>}

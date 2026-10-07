@@ -12,6 +12,8 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { CLASSES } from "@/lib/avaliacao";
 import { ClasseSelect, PageTitle } from "@/components/escola";
 
 export const Route = createFileRoute("/_authenticated/disciplinas")({
@@ -22,6 +24,7 @@ export const Route = createFileRoute("/_authenticated/disciplinas")({
 function Disciplinas() {
   const { data: me } = useMe();
   const [classe, setClasse] = useState("1");
+  const [ciclo, setCiclo] = useState("Ensino Primário");
   const [nome, setNome] = useState("");
   const [extra, setExtra] = useState(false);
   const { data: lista } = useDisciplinas(classe);
@@ -48,7 +51,7 @@ function Disciplinas() {
 
   return (
     <div className="max-w-4xl">
-      <PageTitle title="Disciplinas por Ciclo e Classe"><ClasseSelect value={classe} onChange={setClasse} /></PageTitle>
+      <PageTitle title="Disciplinas por Ciclo e Classe"><Select value={ciclo} onValueChange={(v) => { setCiclo(v); setClasse(v === "Ensino Primário" ? "1" : v === "Educação Pré-Escolar" ? "INIC" : "7"); }}><SelectTrigger className="w-64"><SelectValue /></SelectTrigger><SelectContent>{["Educação Pré-Escolar", "Ensino Primário", "I Ciclo do Ensino Secundário"].map((v) => <SelectItem key={v} value={v}>{v}</SelectItem>)}</SelectContent></Select><Select value={classe} onValueChange={setClasse}><SelectTrigger className="w-40"><SelectValue /></SelectTrigger><SelectContent>{CLASSES.filter((c) => cicloDe(c) === ciclo).map((c) => <SelectItem key={c} value={c}>{nomeClasse(c)}</SelectItem>)}</SelectContent></Select></PageTitle>
       <p className="mb-4 text-sm text-muted-foreground">
         {cicloDe(classe)} · {nomeClasse(classe)} · Avaliação {isQualitativa(classe) ? "qualitativa (Regular, Bom, Excelente)" : `de 0 a ${escalaMax(classe)} valores`}
       </p>
