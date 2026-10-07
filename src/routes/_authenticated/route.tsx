@@ -1,13 +1,12 @@
 import { createFileRoute, Link, Outlet, redirect, useNavigate } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useMe, useInstituicao, NOMES_PAPEL } from "@/lib/dados";
 import { Button } from "@/components/ui/button";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { MessageCircle } from "lucide-react";
 import {
-  LayoutDashboard, Settings, BookOpen, UserPlus, ListOrdered, PenLine, Table2, FileText, Users, LogOut, TrendingUp,
+  LayoutDashboard, Settings, BookOpen, UserPlus, ListOrdered, PenLine, Table2, FileText, Users, LogOut, TrendingUp, BarChart3,
 } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated")({
@@ -71,7 +70,7 @@ function Layout() {
     { to: "/notas", label: "Lançar Notas", icon: PenLine, show: me.isStaff || me.isProfessor || me.isCoordenador },
     { to: "/pautas", label: "Pautas", icon: Table2, show: !me.isEncarregado },
     { to: "/boletins", label: "Boletins", icon: FileText, show: !me.isEncarregado },
-    { to: "/estatisticas", label: "Estatísticas", icon: TrendingUp, show: me.isStaff || me.isProfessor },
+    { to: "/estatisticas", label: "Estatísticas", icon: BarChart3, show: me.isStaff || me.isProfessor },
     { to: "/utilizadores", label: "Utilizadores", icon: Users, show: me.isStaff },
   ] as const;
 
