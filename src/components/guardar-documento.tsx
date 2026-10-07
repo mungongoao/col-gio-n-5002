@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Download } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import type { PaperSize } from "exceljs";
 
 export function GuardarDocumento({ selector = ".doc", nome = "Documento J. ZYMAR", preparar, disabled = false }: { selector?: string; nome?: string; preparar?: () => void; disabled?: boolean }) {
   const [busy, setBusy] = useState(false);
