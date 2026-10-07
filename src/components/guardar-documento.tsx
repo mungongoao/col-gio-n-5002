@@ -51,7 +51,7 @@ export function GuardarDocumento({ selector = ".doc", nome = "Documento J. ZYMAR
         visit(doc);
         sheet.columns.forEach((column) => { column.width = 20; });
         sheet.getColumn(2).width = 32;
-        sheet.pageSetup = { orientation: doc.classList.contains("doc-a3") ? "landscape" : "portrait", paperSize: doc.classList.contains("doc-a3") ? 8 : doc.classList.contains("doc-a5") ? 11 : 9, fitToPage: true, fitToWidth: 1, fitToHeight: 0 };
+        sheet.pageSetup = { orientation: doc.classList.contains("doc-a3") ? "landscape" : "portrait", paperSize: (doc.classList.contains("doc-a3") ? 8 : doc.classList.contains("doc-a5") ? 11 : 9) as PaperSize, fitToPage: true, fitToWidth: 1, fitToHeight: 0 };
       });
       const buffer = await workbook.xlsx.writeBuffer();
       const url = URL.createObjectURL(new Blob([new Uint8Array(buffer)], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" }));
