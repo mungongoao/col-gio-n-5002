@@ -3,8 +3,10 @@ import { useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useMe, useInstituicao, NOMES_PAPEL } from "@/lib/dados";
 import { Button } from "@/components/ui/button";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import { MessageCircle } from "lucide-react";
 import {
-  LayoutDashboard, Settings, BookOpen, UserPlus, ListOrdered, PenLine, Table2, FileText, Users, LogOut, TrendingUp,
+  LayoutDashboard, Settings, BookOpen, UserPlus, ListOrdered, PenLine, Table2, FileText, Users, LogOut, TrendingUp, BarChart3,
 } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated")({
@@ -42,7 +44,17 @@ function Layout() {
               ? "O seu acesso foi revogado. Contacte a Direcção."
               : "A sua conta aguarda credenciação pelo ADM ou pelo Pedagógico."}
           </p>
-          <Button className="mt-6" onClick={sair}>Sair</Button>
+          {me?.profile?.status !== "REVOGADO" && (
+            <a
+              className="mt-6 inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground"
+              target="_blank"
+              rel="noreferrer"
+              href={`https://wa.me/244940911634?text=${encodeURIComponent(`Olá ADM. Acabei de me registar no sistema J. ZYMAR.\nNome: ${me?.profile?.nome ?? ""}\nFunção: ${me?.profile?.cargo_pretendido ?? ""}\nPor favor, credencie a minha conta.`)}`}
+            >
+              <MessageCircle className="h-4 w-4" /> Avisar o ADM no WhatsApp
+            </a>
+          )}
+          <div><Button className="mt-6" variant="outline" onClick={sair}>Sair</Button></div>
         </div>
       </div>
     );
@@ -58,6 +70,7 @@ function Layout() {
     { to: "/notas", label: "Lançar Notas", icon: PenLine, show: me.isStaff || me.isProfessor || me.isCoordenador },
     { to: "/pautas", label: "Pautas", icon: Table2, show: !me.isEncarregado },
     { to: "/boletins", label: "Boletins", icon: FileText, show: !me.isEncarregado },
+    { to: "/estatisticas", label: "Estatísticas", icon: BarChart3, show: me.isStaff || me.isProfessor },
     { to: "/utilizadores", label: "Utilizadores", icon: Users, show: me.isStaff },
   ] as const;
 
@@ -82,9 +95,23 @@ function Layout() {
         </nav>
         <div className="border-t border-sidebar-border p-3 text-xs sm:p-4">
           <div className="hidden sm:block"><div className="font-medium">{me.profile?.nome}</div><div className="opacity-70">{me.papeis.map((p) => NOMES_PAPEL[p]).join(", ")}</div></div>
-          <Button size="sm" variant="secondary" className="mt-3 w-full px-0 sm:px-3" onClick={sair} title="Sair">
-            <LogOut className="h-4 w-4 sm:mr-2" /> <span className="hidden sm:inline">Sair</span>
-          </Button>
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button size="sm" variant="secondary" className="mt-3 w-full px-0 sm:px-3" title="Sair">
+                <LogOut className="h-4 w-4 sm:mr-2" /> <span className="hidden sm:inline">Sair</span>
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Sair do sistema?</AlertDialogTitle>
+                <AlertDialogDescription>Confirma que pretende terminar a sessão?</AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Não</AlertDialogCancel>
+                <AlertDialogAction onClick={sair}>Sim</AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </div>
       </aside>
       <main className="min-w-0 flex-1 p-4 sm:p-6">

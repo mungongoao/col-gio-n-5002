@@ -18,6 +18,7 @@ import { Route as AuthenticatedAproveitamentoRouteImport } from './routes/_authe
 import { Route as AuthenticatedBoletinsRouteImport } from './routes/_authenticated/boletins'
 import { Route as AuthenticatedConfiguracoesRouteImport } from './routes/_authenticated/configuracoes'
 import { Route as AuthenticatedDisciplinasRouteImport } from './routes/_authenticated/disciplinas'
+import { Route as AuthenticatedEstatisticasRouteImport } from './routes/_authenticated/estatisticas'
 import { Route as AuthenticatedListaNominalRouteImport } from './routes/_authenticated/lista-nominal'
 import { Route as AuthenticatedNotasRouteImport } from './routes/_authenticated/notas'
 import { Route as AuthenticatedPainelRouteImport } from './routes/_authenticated/painel'
@@ -71,6 +72,12 @@ const AuthenticatedDisciplinasRoute =
     path: '/disciplinas',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedEstatisticasRoute =
+  AuthenticatedEstatisticasRouteImport.update({
+    id: '/estatisticas',
+    path: '/estatisticas',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedListaNominalRoute =
   AuthenticatedListaNominalRouteImport.update({
     id: '/lista-nominal',
@@ -108,6 +115,7 @@ export interface FileRoutesByFullPath {
   '/boletins': typeof AuthenticatedBoletinsRoute
   '/configuracoes': typeof AuthenticatedConfiguracoesRoute
   '/disciplinas': typeof AuthenticatedDisciplinasRoute
+  '/estatisticas': typeof AuthenticatedEstatisticasRoute
   '/lista-nominal': typeof AuthenticatedListaNominalRoute
   '/notas': typeof AuthenticatedNotasRoute
   '/painel': typeof AuthenticatedPainelRoute
@@ -123,6 +131,7 @@ export interface FileRoutesByTo {
   '/boletins': typeof AuthenticatedBoletinsRoute
   '/configuracoes': typeof AuthenticatedConfiguracoesRoute
   '/disciplinas': typeof AuthenticatedDisciplinasRoute
+  '/estatisticas': typeof AuthenticatedEstatisticasRoute
   '/lista-nominal': typeof AuthenticatedListaNominalRoute
   '/notas': typeof AuthenticatedNotasRoute
   '/painel': typeof AuthenticatedPainelRoute
@@ -140,6 +149,7 @@ export interface FileRoutesById {
   '/_authenticated/boletins': typeof AuthenticatedBoletinsRoute
   '/_authenticated/configuracoes': typeof AuthenticatedConfiguracoesRoute
   '/_authenticated/disciplinas': typeof AuthenticatedDisciplinasRoute
+  '/_authenticated/estatisticas': typeof AuthenticatedEstatisticasRoute
   '/_authenticated/lista-nominal': typeof AuthenticatedListaNominalRoute
   '/_authenticated/notas': typeof AuthenticatedNotasRoute
   '/_authenticated/painel': typeof AuthenticatedPainelRoute
@@ -157,6 +167,7 @@ export interface FileRouteTypes {
     | '/boletins'
     | '/configuracoes'
     | '/disciplinas'
+    | '/estatisticas'
     | '/lista-nominal'
     | '/notas'
     | '/painel'
@@ -172,6 +183,7 @@ export interface FileRouteTypes {
     | '/boletins'
     | '/configuracoes'
     | '/disciplinas'
+    | '/estatisticas'
     | '/lista-nominal'
     | '/notas'
     | '/painel'
@@ -188,6 +200,7 @@ export interface FileRouteTypes {
     | '/_authenticated/boletins'
     | '/_authenticated/configuracoes'
     | '/_authenticated/disciplinas'
+    | '/_authenticated/estatisticas'
     | '/_authenticated/lista-nominal'
     | '/_authenticated/notas'
     | '/_authenticated/painel'
@@ -267,6 +280,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDisciplinasRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/estatisticas': {
+      id: '/_authenticated/estatisticas'
+      path: '/estatisticas'
+      fullPath: '/estatisticas'
+      preLoaderRoute: typeof AuthenticatedEstatisticasRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/lista-nominal': {
       id: '/_authenticated/lista-nominal'
       path: '/lista-nominal'
@@ -311,6 +331,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedBoletinsRoute: typeof AuthenticatedBoletinsRoute
   AuthenticatedConfiguracoesRoute: typeof AuthenticatedConfiguracoesRoute
   AuthenticatedDisciplinasRoute: typeof AuthenticatedDisciplinasRoute
+  AuthenticatedEstatisticasRoute: typeof AuthenticatedEstatisticasRoute
   AuthenticatedListaNominalRoute: typeof AuthenticatedListaNominalRoute
   AuthenticatedNotasRoute: typeof AuthenticatedNotasRoute
   AuthenticatedPainelRoute: typeof AuthenticatedPainelRoute
@@ -324,6 +345,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedBoletinsRoute: AuthenticatedBoletinsRoute,
   AuthenticatedConfiguracoesRoute: AuthenticatedConfiguracoesRoute,
   AuthenticatedDisciplinasRoute: AuthenticatedDisciplinasRoute,
+  AuthenticatedEstatisticasRoute: AuthenticatedEstatisticasRoute,
   AuthenticatedListaNominalRoute: AuthenticatedListaNominalRoute,
   AuthenticatedNotasRoute: AuthenticatedNotasRoute,
   AuthenticatedPainelRoute: AuthenticatedPainelRoute,
