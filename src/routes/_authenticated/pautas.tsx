@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Assinatura, ClasseSelect, DocCabecalho, PageTitle } from "@/components/escola";
+import { GuardarDocumento } from "@/components/guardar-documento";
 
 export const Route = createFileRoute("/_authenticated/pautas")({
   head: () => ({ meta: [{ title: "Pautas — J. ZYMAR" }, { name: "description", content: "Mini-pautas, pautas trimestrais e final." }] }),
@@ -68,6 +69,7 @@ function Pautas() {
           </Select>
         )}
         <Button variant="outline" onClick={() => window.print()}><Printer className="mr-2 h-4 w-4" />Imprimir / PDF</Button>
+        <GuardarDocumento nome={`${titulo} ${nomeClasse(classe)}`} disabled={tipo === "mini" && !disciplina} />
       </PageTitle>
 
       {!podeVerClasse ? <p className="text-muted-foreground">Esta classe não pertence ao ciclo das suas disciplinas.</p> : tipo === "mini" && !disciplina ? <p className="text-muted-foreground">Escolha a disciplina.</p> : (
