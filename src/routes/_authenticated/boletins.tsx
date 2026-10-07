@@ -1,6 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
-import { Printer } from "lucide-react";
+import { Printer, Search } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { GuardarDocumento } from "@/components/guardar-documento";
 import { useAlunos, useDisciplinas, useInstituicao, useMe, useNotasClasse, type Aluno } from "@/lib/dados";
 import {
   fmt, isClasseExame, isQualitativa, mediaTrimestral, nomeClasse, notaMinima, resultadoFinal, resultadoTrimestreDetalhado, resumoDisciplina,
@@ -19,11 +21,13 @@ function Boletins() {
   const [classe, setClasse] = useState("1");
   const [tipo, setTipo] = useState("1");
   const [aluno, setAluno] = useState("todos");
+  const [pesquisa, setPesquisa] = useState("");
   const { data: inst } = useInstituicao();
   const { data: disciplinas = [] } = useDisciplinas(classe);
   const { data: alunos = [] } = useAlunos(classe);
   const { data: notas = [] } = useNotasClasse(classe);
-  const lista = aluno === "todos" ? alunos : alunos.filter((a) => String(a.id) === aluno);
+  const filtrados = pesquisa.trim() ? alunos.filter((a) => a.nome.toLowerCase().includes(pesquisa.trim().toLowerCase())) : alunos;
+  const lista = aluno === "todos" ? filtrados : filtrados.filter((a) => String(a.id) === aluno);
   if (me?.isEncarregado) return <p>Sem permissão.</p>;
 
   return (
@@ -39,6 +43,10 @@ function Boletins() {
             <SelectItem value="final">Boletim Final</SelectItem>
           </SelectContent>
         </Select>
+        <div className="relative">
+          <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+          <Input className="w-56 pl-8" placeholder="Pesquisar aluno…" value={pesquisa} onChange={(e) => setPesquisa(e.target.value)} />
+        </div>
         <Select value={aluno} onValueChange={setAluno}>
           <SelectTrigger className="w-56"><SelectValue /></SelectTrigger>
           <SelectContent>
@@ -47,7 +55,10 @@ function Boletins() {
           </SelectContent>
         </Select>
         {me?.podeImprimirBoletim && (
-          <Button onClick={() => window.print()}><Printer className="mr-2 h-4 w-4" />Imprimir / PDF (A5)</Button>
+          <>
+            <Button onClick={() => window.print()}><Printer className="mr-2 h-4 w-4" />Imprimir / PDF (A5)</Button>
+            <GuardarDocumento nome={`Boletins ${nomeClasse(classe)}`} />
+          </>
         )}
       </PageTitle>
       {!me?.podeImprimirBoletim && <p className="mb-4 text-sm text-muted-foreground print:hidden">Apenas os Coordenadores e o ADM podem imprimir boletins.</p>}
