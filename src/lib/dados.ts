@@ -77,6 +77,8 @@ export type Aluno = {
   idade: number | null;
   genero: string;
   classe: string;
+  turma: string;
+  estado: "Activo" | "Desistente";
 };
 
 export function useAlunos(classe?: string) {
@@ -100,7 +102,8 @@ export function useNotasClasse(classe: string) {
     queryKey: ["notas", classe],
     enabled: !!classe,
     queryFn: async () => {
-      const { data: alunos } = await supabase.from("students").select("id").eq("classe", classe);
+      const { data: alunos, error: alunosError } = await supabase.from("students").select("id").eq("classe", classe);
+      if (alunosError) throw alunosError;
       const ids = (alunos ?? []).map((a) => a.id);
       if (ids.length === 0) return [] as NotaRow[];
       const { data, error } = await supabase.from("grades").select("*").in("student_id", ids);
