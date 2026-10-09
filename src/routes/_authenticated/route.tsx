@@ -74,12 +74,33 @@ function Layout() {
     { to: "/utilizadores", label: "Utilizadores", icon: Users, show: me.isStaff },
   ] as const;
 
+  const sairBotao = (cls: string, texto: boolean) => (
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button size="sm" variant="secondary" className={cls} title="Sair">
+                <LogOut className="h-4 w-4" />{texto && <span className="ml-2">Sair</span>}
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Sair do sistema?</AlertDialogTitle>
+                <AlertDialogDescription>Confirma que pretende terminar a sessão?</AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Não</AlertDialogCancel>
+                <AlertDialogAction onClick={sair}>Sim</AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+  );
+
   return (
     <div className="flex min-h-screen flex-col md:flex-row">
       <aside className="sticky top-0 z-30 flex w-full shrink-0 flex-col bg-sidebar text-sidebar-foreground md:static md:h-auto md:min-h-screen md:w-64 print:hidden">
         <div className="flex items-center gap-3 border-b border-sidebar-border p-3 md:p-4">
           {inst?.logo_url && <img src={inst.logo_url} alt="" className="h-10 w-10 rounded bg-background object-contain p-0.5" />}
           <div className="min-w-0 flex-1 truncate text-sm font-semibold leading-tight md:whitespace-normal">{inst?.nome_escola}</div>
+          <div className="md:hidden">{sairBotao("", true)}</div>
         </div>
         <nav className="flex flex-1 snap-x gap-1 overflow-x-auto scroll-smooth p-2 md:block md:space-y-1 md:overflow-visible md:p-3">
           {links.filter((l) => l.show).map((l) => (
@@ -95,23 +116,7 @@ function Layout() {
         </nav>
         <div className="hidden border-t border-sidebar-border p-4 text-xs md:block">
           <div><div className="font-medium">{me.profile?.nome}</div><div className="opacity-70">{me.papeis.map((p) => NOMES_PAPEL[p]).join(", ")}</div></div>
-          <AlertDialog>
-            <AlertDialogTrigger asChild>
-              <Button size="sm" variant="secondary" className="mt-3 w-full" title="Sair">
-                <LogOut className="mr-2 h-4 w-4" /> Sair
-              </Button>
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>Sair do sistema?</AlertDialogTitle>
-                <AlertDialogDescription>Confirma que pretende terminar a sessão?</AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel>Não</AlertDialogCancel>
-                <AlertDialogAction onClick={sair}>Sim</AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
+          {sairBotao("mt-3 w-full", true)}
         </div>
       </aside>
       <main className="min-w-0 flex-1 overflow-x-auto p-3 sm:p-6">
