@@ -1,81 +1,129 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { Trash2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useDisciplinas, useMe } from "@/lib/dados";
-import { cicloDe, escalaMax, isQualitativa, nomeClasse } from "@/lib/avaliacao";
+import { nomeClasse } from "@/lib/avaliacao";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { CLASSES } from "@/lib/avaliacao";
-import { ClasseSelect, PageTitle } from "@/components/escola";
+import { PageTitle } from "@/components/escola";
 
 export const Route = createFileRoute("/_authenticated/disciplinas")({
-  head: () => ({ meta: [{ title: "Disciplinas — J. ZYMAR" }, { name: "description", content: "Disciplinas por ciclo e classe." }] }),
+  head: () => ({ meta: [{ title: "Disciplinas — J. ZYMAR" }, { name: "description", content: "Cadastro de disciplinas por nível de ensino e classe." }] }),
   component: Disciplinas,
 });
 
+const NIVEIS: Record<string, { grupos: string[][] }> = {
+  "Iniciação": { grupos: [["INIC"]] },
+  "Ensino Primário": { grupos: [["1", "2", "3", "4"], ["5", "6"]] },
+  "Primeiro Ciclo": { grupos: [["7", "8", "9"]] },
+};
+const TODAS_EXTRA = ["1", "2", "3", "4", "5", "6", "7", "8", "9"];
+
 function Disciplinas() {
   const { data: me } = useMe();
-  const [classe, setClasse] = useState("1");
-  const [ciclo, setCiclo] = useState("Ensino Primário");
+  const [nivel, setNivel] = useState("Ensino Primário");
   const [nome, setNome] = useState("");
   const [extra, setExtra] = useState(false);
-  const { data: lista } = useDisciplinas(classe);
+  const [marcadas, setMarcadas] = useState<string[]>([]);
+  const { data: lista = [] } = useDisciplinas();
   const qc = useQueryClient();
 
+  const porClasse = useMemo(() => {
+    const m = new Map<string, typeof lista>();
+    for (const d of lista) m.set(d.classe, [...(m.get(d.classe) ?? []), d]);
+    return m;
+  }, [lista]);
+
   if (!me?.isStaff) return <p>Sem permissão.</p>;
+
+  const alternarGrupo = (g: string[]) => {
+    const todas = g.every((c) => marcadas.includes(c));
+    setMarcadas(todas ? marcadas.filter((c) => !g.includes(c)) : Array.from(new Set([...marcadas, ...g])));
+  };
 
   async function adicionar(e: React.FormEvent) {
     e.preventDefault();
     const n = nome.trim();
     if (!n || n.length > 80) return void toast.error("Nome inválido.");
-    const { error } = await supabase.from("subjects").insert({ classe, nome: n, extra, ordem: lista?.length ?? 0 });
-    if (error) return void toast.error(error.code === "23505" ? "Disciplina já existe nesta classe." : error.message);
-    setNome(""); setExtra(false);
+    const classes = extra ? TODAS_EXTRA : marcadas;
+    if (!classes.length) return void toast.error("Marque pelo menos uma classe.");
+    let novas = 0, existentes = 0;
+    for (const c of classes) {
+      if ((porClasse.get(c) ?? []).some((d) => d.nome.toLowerCase() === n.toLowerCase())) { existentes++; continue; }
+      const { error } = await supabase.from("subjects").insert({ classe: c, nome: n, extra, ordem: porClasse.get(c)?.length ?? 0 });
+      if (error) { if (error.code === "23505") existentes++; else return void toast.error(error.message); } else novas++;
+    }
+    toast.success(`Disciplina adicionada a ${novas} classe(s)${existentes ? ` · ${existentes} já existiam` : ""}.`);
+    setNome(""); setExtra(false); setMarcadas([]);
     qc.invalidateQueries({ queryKey: ["disciplinas"] });
   }
 
-  async function remover(id: string) {
-    if (!confirm("Remover esta disciplina? As notas lançadas também serão apagadas.")) return;
+  async function remover(id: string, classe: string) {
+    if (!confirm(`Remover esta disciplina da ${nomeClasse(classe)}? As notas lançadas nesta classe também serão apagadas.`)) return;
     const { error } = await supabase.from("subjects").delete().eq("id", id);
     if (error) return void toast.error(error.message);
     qc.invalidateQueries({ queryKey: ["disciplinas"] });
   }
 
   return (
-    <div className="max-w-4xl">
-      <PageTitle title="Disciplinas por Ciclo e Classe"><Select value={ciclo} onValueChange={(v) => { setCiclo(v); setClasse(v === "Ensino Primário" ? "1" : v === "Educação Pré-Escolar" ? "INIC" : "7"); }}><SelectTrigger className="w-64"><SelectValue /></SelectTrigger><SelectContent>{["Educação Pré-Escolar", "Ensino Primário", "I Ciclo do Ensino Secundário"].map((v) => <SelectItem key={v} value={v}>{v}</SelectItem>)}</SelectContent></Select><Select value={classe} onValueChange={setClasse}><SelectTrigger className="w-40"><SelectValue /></SelectTrigger><SelectContent>{CLASSES.filter((c) => cicloDe(c) === ciclo).map((c) => <SelectItem key={c} value={c}>{nomeClasse(c)}</SelectItem>)}</SelectContent></Select></PageTitle>
-      <p className="mb-4 text-sm text-muted-foreground">
-        {cicloDe(classe)} · {nomeClasse(classe)} · Avaliação {isQualitativa(classe) ? "qualitativa (Regular, Bom, Excelente)" : `de 0 a ${escalaMax(classe)} valores`}
-      </p>
-      <Card className="mb-6"><CardContent className="p-4">
-        <form onSubmit={adicionar} className="flex flex-wrap items-center gap-3">
-          <Input placeholder="Nome da disciplina" value={nome} onChange={(e) => setNome(e.target.value)} className="max-w-sm" />
-          <label className="flex items-center gap-2 text-sm"><Checkbox checked={extra} onCheckedChange={(v) => setExtra(!!v)} /> Extra-curricular</label>
+    <div className="max-w-5xl">
+      <PageTitle title="Disciplinas por Nível e Classe" />
+      <Card className="mb-6"><CardContent className="space-y-4 p-4">
+        <form onSubmit={adicionar} className="space-y-4">
+          <div className="flex flex-wrap items-center gap-3">
+            <Input placeholder="Nome da disciplina" value={nome} onChange={(e) => setNome(e.target.value)} className="w-full sm:max-w-sm" />
+            <label className="flex items-center gap-2 text-sm"><Switch checked={extra} onCheckedChange={setExtra} /> Disciplina Extracurricular</label>
+          </div>
+          {extra ? (
+            <p className="text-sm text-muted-foreground">Será adicionada a todas as classes do Ensino Primário (1ª–6ª) e do Primeiro Ciclo (7ª–9ª).</p>
+          ) : (
+            <div className="space-y-3">
+              <Select value={nivel} onValueChange={(v) => { setNivel(v); setMarcadas([]); }}>
+                <SelectTrigger className="w-full sm:w-64"><SelectValue /></SelectTrigger>
+                <SelectContent>{Object.keys(NIVEIS).map((v) => <SelectItem key={v} value={v}>{v}</SelectItem>)}</SelectContent>
+              </Select>
+              {(NIVEIS[nivel]?.grupos ?? []).map((g) => (
+                <div key={g.join()} className="flex flex-wrap items-center gap-3 rounded-md border p-3">
+                  {g.length > 1 && <Button type="button" size="sm" variant="outline" onClick={() => alternarGrupo(g)}>Todo o grupo</Button>}
+                  {g.map((c) => (
+                    <label key={c} className="flex items-center gap-2 text-sm">
+                      <Checkbox checked={marcadas.includes(c)} onCheckedChange={(v) => setMarcadas(v ? [...marcadas, c] : marcadas.filter((x) => x !== c))} />
+                      {nomeClasse(c)}
+                    </label>
+                  ))}
+                </div>
+              ))}
+            </div>
+          )}
           <Button>Adicionar</Button>
         </form>
       </CardContent></Card>
-      <Table>
-        <TableHeader><TableRow><TableHead>#</TableHead><TableHead>Disciplina</TableHead><TableHead>Tipo</TableHead><TableHead /></TableRow></TableHeader>
-        <TableBody>
-          {lista?.map((d, i) => (
-            <TableRow key={d.id}>
-              <TableCell>{i + 1}</TableCell>
-              <TableCell>{d.nome}</TableCell>
-              <TableCell>{d.extra ? <Badge variant="secondary">Extra-curricular</Badge> : <Badge>Curricular</Badge>}</TableCell>
-              <TableCell className="text-right"><Button size="icon" variant="ghost" onClick={() => remover(d.id)}><Trash2 className="h-4 w-4" /></Button></TableCell>
-            </TableRow>
-          ))}
-          {lista?.length === 0 && <TableRow><TableCell colSpan={4} className="text-center text-muted-foreground">Nenhuma disciplina registada.</TableCell></TableRow>}
-        </TableBody>
-      </Table>
+
+      <div className="grid gap-4 sm:grid-cols-2">
+        {["INIC", ...TODAS_EXTRA].map((c) => (
+          <Card key={c}><CardContent className="p-4">
+            <h3 className="mb-2 font-semibold">{nomeClasse(c)}</h3>
+            {(porClasse.get(c) ?? []).length === 0 ? <p className="text-sm text-muted-foreground">Nenhuma disciplina.</p> : (
+              <ul className="divide-y">
+                {porClasse.get(c)!.map((d) => (
+                  <li key={d.id} className="flex items-center justify-between gap-2 py-1.5 text-sm">
+                    <span>{d.nome} {d.extra && <Badge variant="secondary" className="ml-1">Extra</Badge>}</span>
+                    <Button size="icon" variant="ghost" title="Remover desta classe" onClick={() => remover(d.id, c)}><Trash2 className="h-4 w-4" /></Button>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </CardContent></Card>
+        ))}
+      </div>
     </div>
   );
 }

@@ -100,7 +100,7 @@ function Notas() {
           <SelectTrigger className="w-40"><SelectValue /></SelectTrigger>
           <SelectContent>{["1", "2", "3"].map((t) => <SelectItem key={t} value={t}>{t}º Trimestre</SelectItem>)}</SelectContent>
         </Select>
-        <Button onClick={guardar} disabled={!disciplina}>Guardar notas</Button>
+        <Button onClick={guardar} disabled={!disciplina}>Salvar notas na pauta trimestral</Button>
       </PageTitle>
       {!disciplina ? (
         <p className="text-muted-foreground">
@@ -141,7 +141,7 @@ function Notas() {
                         <>
                           <td className="p-2"><Input disabled={!podeLancarNotas} className="w-20" value={l.mac} onChange={(e) => upd(a.id, "mac", e.target.value)} /></td>
                           <td className="p-2"><Input disabled={!podeLancarNotas} className="w-20" value={l.npt} onChange={(e) => upd(a.id, "npt", e.target.value)} /></td>
-                          <td className={`p-2 font-semibold ${mt != null && mt < notaMinima(classe) ? "text-destructive" : "text-primary"}`}>{fmt(mt)}</td>
+                          <td className={`p-2 font-semibold ${mt == null ? "" : mt < notaMinima(classe) ? "neg" : "pos"}`}>{fmt(mt)}</td>
                         </>
                       )}
                       {comExame && <td className="p-2"><Input disabled={!podeLancarNotas} className="w-20" value={l.exame_escrito} onChange={(e) => upd(a.id, "exame_escrito", e.target.value)} /></td>}

@@ -38,6 +38,7 @@ function AuthPage() {
   const [nome, setNome] = useState("");
   const [cargo, setCargo] = useState("professor");
   const [genero, setGenero] = useState("M");
+  const [aba, setAba] = useState("entrar");
   const [mostrar, setMostrar] = useState(false);
   const [recuperar, setRecuperar] = useState(false);
   const [enviado, setEnviado] = useState(false);
@@ -102,7 +103,7 @@ function AuthPage() {
             {inst?.logo_url ? <img src={inst.logo_url} alt="Logótipo da instituição" className="h-full w-full object-contain" /> : <GraduationCap className="h-12 w-12 text-primary" />}
           </div>
           <p className="mb-2 text-sm font-semibold text-primary">{inst?.nome_escola ?? "Complexo Escolar Privado J. ZYMAR"}</p>
-          <CardTitle className="text-center text-2xl">{recuperar ? "Recuperar Palavra-passe" : "Iniciar Sessão"}</CardTitle>
+          <CardTitle className="text-center text-2xl">{recuperar ? "Recuperar Palavra-passe" : aba === "registar" ? "Cadastrar" : "Iniciar Sessão"}</CardTitle>
         </CardHeader>
         <CardContent>
           {recuperar ? <form onSubmit={recuperarConta} className="space-y-4">
@@ -112,7 +113,7 @@ function AuthPage() {
             <Button className="w-full" disabled={loading}>{validado ? "Definir palavra-passe" : enviado ? "Validar código" : "Enviar email de recuperação"}</Button>
             {enviado && !validado && <Button type="button" variant="ghost" disabled={loading} onClick={() => { setEnviado(false); setCodigo(""); }}>Enviar novamente</Button>}
             <Button type="button" variant="outline" className="w-full" onClick={() => { setRecuperar(false); setEnviado(false); setValidado(false); }}>Voltar</Button>
-          </form> : <Tabs defaultValue="entrar">
+          </form> : <Tabs value={aba} onValueChange={setAba}>
             <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger value="entrar">Entrar</TabsTrigger>
               <TabsTrigger value="registar">Registar</TabsTrigger>

@@ -5,7 +5,7 @@ import { Printer } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAlunos, useDisciplinas, useInstituicao, useMe, useNotasClasse } from "@/lib/dados";
 import {
-  cicloDe, fmt, isClasseExame, isQualitativa, mediaTrimestral, nomeClasse, notaMinima, resultadoFinal, resultadoTrimestreDetalhado, resumoDisciplina, temExameOral,
+  cicloDe, fmt, mediaGeral, isClasseExame, isQualitativa, mediaTrimestral, nomeClasse, notaMinima, resultadoFinal, resultadoTrimestreDetalhado, resumoDisciplina, temExameOral,
 } from "@/lib/avaliacao";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -41,7 +41,7 @@ function Pautas() {
   const qual = isQualitativa(classe);
   const exame = isClasseExame(classe);
   const min = notaMinima(classe);
-  const cls = (v: number | null) => (v != null && v < min ? "neg" : "");
+  const cls = (v: number | null) => (v == null ? "" : v < min ? "neg" : "pos");
   const disciplina = disciplinas.find((d) => d.id === disc);
 
   const titulo = tipo === "mini" ? "Mini-Pauta" : tipo === "tri" ? `Pauta do ${tri}º Trimestre` : "Pauta Final";
@@ -125,6 +125,7 @@ function Pautas() {
                     <tr>
                       <th rowSpan={2}>Nº</th><th rowSpan={2}>Nome do Aluno</th><th rowSpan={2}>G</th>
                       {disciplinas.map((d) => <th key={d.id} colSpan={qual ? 1 : 3}>{d.nome}{d.extra ? "*" : ""}</th>)}
+                      {!qual && <th rowSpan={2}>MFD</th>}
                       <th rowSpan={2}>Resultado</th>
                     </tr>
                     <tr>{disciplinas.map((d) => qual ? <th key={d.id}>Aval.</th> : [<th key={d.id + "a"}>MAC</th>, <th key={d.id + "b"}>NPT</th>, <th key={d.id + "c"}>MT</th>])}</tr>
@@ -142,6 +143,7 @@ function Pautas() {
                             <td key={d.id + "a"}>{fmt(n?.mac)}</td>, <td key={d.id + "b"}>{fmt(n?.npt)}</td>,
                             <td key={d.id + "c"} className={cls(v as number | null)}><b>{fmt(v as number | null)}</b></td>,
                           ])}
+                          {!qual && (() => { const g = mediaGeral(medias.map((m) => ({ extra: m.d.extra, v: m.v as number | null }))); return <td className={cls(g)}><b>{fmt(g)}</b></td>; })()}
                           <td><b>{resultadoTrimestreDetalhado(classe, medias.map((m) => ({ extra: m.d.extra, disciplina: m.d.nome, v: m.v })), medias.reduce((s, m) => s + (m.n?.faltas ?? 0), 0)) ?? "—"}</b></td>
                         </tr>
                       );
@@ -155,12 +157,13 @@ function Pautas() {
                   <thead>
                     <tr>
                       <th rowSpan={2}>Nº</th><th rowSpan={2}>Nome do Aluno</th><th rowSpan={2}>G</th>
-                      {disciplinas.map((d) => <th key={d.id} colSpan={qual ? 1 : exame ? 6 : 4}>{d.nome}{d.extra ? "*" : ""}</th>)}
+                      {disciplinas.map((d) => <th key={d.id} colSpan={qual ? 1 : exame ? 5 : 3}>{d.nome}{d.extra ? "*" : ""}</th>)}
+                      {!qual && <th rowSpan={2}>MFD</th>}
                       <th rowSpan={2}>Resultado Final</th>
                     </tr>
                     <tr>
                       {disciplinas.map((d) => qual ? <th key={d.id}>Aval.</th> : [
-                        <th key={d.id + 1}>MT1</th>, <th key={d.id + 2}>MT2</th>, <th key={d.id + 3}>MT3</th>, <th key={d.id + 4}>MFD</th>,
+                        <th key={d.id + 1}>MT1</th>, <th key={d.id + 2}>MT2</th>, <th key={d.id + 3}>MT3</th>,
                         ...(exame ? [<th key={d.id + 5}>EX</th>, <th key={d.id + 6}>CF</th>] : []),
                       ])}
                     </tr>
@@ -173,10 +176,10 @@ function Pautas() {
                         <tr key={a.id}>
                           <td>{i + 1}</td><td className="esq">{a.nome}</td><td>{a.genero}</td>
                           {res.map(({ d, r }) => qual ? <td key={d.id}>{r.qual ?? "—"}</td> : [
-                            <td key={d.id + 1}>{fmt(r.mt1)}</td>, <td key={d.id + 2}>{fmt(r.mt2)}</td>, <td key={d.id + 3}>{fmt(r.mt3)}</td>,
-                            <td key={d.id + 4} className={cls(r.mfd)}><b>{fmt(r.mfd)}</b></td>,
+                            <td key={d.id + 1} className={cls(r.mt1)}>{fmt(r.mt1)}</td>, <td key={d.id + 2} className={cls(r.mt2)}>{fmt(r.mt2)}</td>, <td key={d.id + 3} className={cls(r.mt3)}>{fmt(r.mt3)}</td>,
                             ...(exame ? [<td key={d.id + 5}>{fmt(r.exame)}</td>, <td key={d.id + 6} className={cls(r.cf)}><b>{fmt(r.cf)}</b></td>] : []),
                           ])}
+                          {!qual && (() => { const g = mediaGeral(res.map((x) => ({ extra: x.extra, v: x.r.cf }))); return <td className={cls(g)}><b>{fmt(g)}</b></td>; })()}
                           <td><b>{fim?.texto ?? "—"}</b></td>
                         </tr>
                       );
