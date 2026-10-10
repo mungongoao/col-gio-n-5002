@@ -2,8 +2,10 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { Printer, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import { Checkbox } from "@/components/ui/checkbox";
+import { toast } from "sonner";
 import { GuardarDocumento } from "@/components/guardar-documento";
-import { useAlunos, useDisciplinas, useInstituicao, useMe, useNotasClasse, type Aluno } from "@/lib/dados";
+import { useAlunos, useDisciplinas, useInstituicao, useMe, useNotasClasse, useFaltasClasse, type Aluno, type FaltaRow } from "@/lib/dados";
 import {
   fmt, isClasseExame, isQualitativa, mediaTrimestral, nomeClasse, notaMinima, resultadoFinal, resultadoTrimestreDetalhado, resumoDisciplina,
 } from "@/lib/avaliacao";
@@ -20,20 +22,22 @@ function Boletins() {
   const { data: me } = useMe();
   const [classe, setClasse] = useState("1");
   const [tipo, setTipo] = useState("1");
-  const [aluno, setAluno] = useState("todos");
+  const [sel, setSel] = useState<number[]>([]);
   const [pesquisa, setPesquisa] = useState("");
   const { data: inst } = useInstituicao();
   const { data: disciplinas = [] } = useDisciplinas(classe);
   const { data: alunos = [] } = useAlunos(classe);
   const { data: notas = [] } = useNotasClasse(classe);
+  const { data: faltasT = [] } = useFaltasClasse(classe);
+  const toggle = (id: number) => setSel((p) => p.includes(id) ? p.filter((x) => x !== id) : p.length >= 2 ? (toast.error("Pode seleccionar no máximo 2 alunos."), p) : [...p, id]);
   const filtrados = pesquisa.trim() ? alunos.filter((a) => a.nome.toLowerCase().includes(pesquisa.trim().toLowerCase())) : alunos;
-  const lista = aluno === "todos" ? filtrados : filtrados.filter((a) => String(a.id) === aluno);
+  const lista = alunos.filter((a) => sel.includes(a.id));
   if (me?.isEncarregado) return <p>Sem permissão.</p>;
 
   return (
     <div>
       <PageTitle title="Boletins de Notas">
-        <ClasseSelect value={classe} onChange={(v) => { setClasse(v); setAluno("todos"); }} />
+        <ClasseSelect value={classe} onChange={(v) => { setClasse(v); setSel([]); }} />
         <Select value={tipo} onValueChange={setTipo}>
           <SelectTrigger className="w-44"><SelectValue /></SelectTrigger>
           <SelectContent>
@@ -47,25 +51,27 @@ function Boletins() {
           <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
           <Input className="w-56 pl-8" placeholder="Pesquisar aluno…" value={pesquisa} onChange={(e) => setPesquisa(e.target.value)} />
         </div>
-        <Select value={aluno} onValueChange={setAluno}>
-          <SelectTrigger className="w-56"><SelectValue /></SelectTrigger>
-          <SelectContent>
-            <SelectItem value="todos">Todos os alunos</SelectItem>
-            {alunos.map((a) => <SelectItem key={a.id} value={String(a.id)}>{a.nome}</SelectItem>)}
-          </SelectContent>
-        </Select>
         {me?.podeImprimirBoletim && (
           <>
-            <Button onClick={() => window.print()}><Printer className="mr-2 h-4 w-4" />Imprimir / PDF (A5)</Button>
+            <Button onClick={() => window.print()}><Printer className="mr-2 h-4 w-4" />Imprimir / PDF</Button>
             <GuardarDocumento nome={`Boletins ${nomeClasse(classe)}`} />
           </>
         )}
       </PageTitle>
       {!me?.podeImprimirBoletim && <p className="mb-4 text-sm text-muted-foreground print:hidden">Apenas os Coordenadores e o ADM podem imprimir boletins.</p>}
+      <div className="mb-4 max-h-56 overflow-auto rounded-md border p-2 print:hidden">
+        <p className="mb-2 text-xs text-muted-foreground">Seleccione até 2 alunos ({sel.length}/2). Dois boletins ficam na mesma folha A4 horizontal.</p>
+        <div className="grid gap-1 sm:grid-cols-2 lg:grid-cols-3">
+          {filtrados.map((a) => (
+            <label key={a.id} className="flex items-center gap-2 text-sm"><Checkbox checked={sel.includes(a.id)} onCheckedChange={() => toggle(a.id)} />{a.nome}</label>
+          ))}
+        </div>
+      </div>
+      {lista.length === 0 && <p className="text-sm text-muted-foreground">Nenhum aluno seleccionado.</p>}
       <div className={me?.podeImprimirBoletim ? "print-area" : "print:hidden"}>
-        <div className="flex flex-wrap gap-6">
+        <div className={lista.length === 2 ? "duo flex flex-wrap gap-6 print:gap-0" : "flex flex-wrap gap-6"}>
           {lista.map((a, i) => (
-            <Boletim key={a.id} n={alunos.indexOf(a) + 1 || i + 1} aluno={a} classe={classe} tipo={tipo} inst={inst} disciplinas={disciplinas} notas={notas} />
+            <Boletim key={a.id} n={alunos.indexOf(a) + 1 || i + 1} aluno={a} classe={classe} tipo={tipo} inst={inst} disciplinas={disciplinas} notas={notas} faltasT={faltasT} />
           ))}
         </div>
       </div>
@@ -73,7 +79,8 @@ function Boletins() {
   );
 }
 
-function Boletim({ aluno, n, classe, tipo, inst, disciplinas, notas }: {
+function Boletim({ aluno, n, classe, tipo, inst, disciplinas, notas, faltasT }: {
+  faltasT: FaltaRow[];
   aluno: Aluno; n: number; classe: string; tipo: string;
   inst: ReturnType<typeof useInstituicao>["data"];
   disciplinas: ReturnType<typeof useDisciplinas>["data"] & object;
@@ -93,7 +100,8 @@ function Boletim({ aluno, n, classe, tipo, inst, disciplinas, notas }: {
     return { d, r: null, n: ns.find((x) => x.trimestre === Number(tipo)) };
   });
   if (tipo === "final") resultado = resultadoFinal(classe, linhas.map((l) => ({ extra: l.d.extra, r: l.r! })))?.texto ?? null;
-  const faltas = notas.filter((x) => x.student_id === aluno.id && (tipo === "final" || x.trimestre === Number(tipo))).reduce((s, x) => s + (x.faltas ?? 0), 0);
+  const faltas = notas.filter((x) => x.student_id === aluno.id && (tipo === "final" || x.trimestre === Number(tipo))).reduce((s, x) => s + (x.faltas ?? 0), 0)
+    + faltasT.filter((x) => x.student_id === aluno.id && (tipo === "final" || x.trimestre === Number(tipo))).reduce((s, x) => s + x.faltas, 0);
   if (tipo !== "final") resultado = resultadoTrimestreDetalhado(classe, linhas.map((l) => ({ extra: l.d.extra, disciplina: l.d.nome, v: qual ? l.n?.qualitativo ?? null : mediaTrimestral(l.n) })), faltas);
 
   return (
@@ -101,14 +109,14 @@ function Boletim({ aluno, n, classe, tipo, inst, disciplinas, notas }: {
       <DocCabecalho inst={inst} titulo={titulo} sub={`Ano lectivo ${inst?.ano_lectivo ?? ""}`} />
       <div style={{ fontSize: 11, marginBottom: 6 }}>
         <div><b>Nome:</b> <span style={{ color: "#b91c1c", fontWeight: 600 }}>{aluno.nome}</span></div>
-        <div><b>Classe:</b> {nomeClasse(classe)} &nbsp; <b>Nº:</b> {n} &nbsp; <b>Género:</b> {aluno.genero} &nbsp; <b>Idade:</b> {aluno.idade ?? ""}</div>
+        <div><b>Classe:</b> {classe === "INIC" ? "Iniciação" : `${classe}ª`} &nbsp; <b>Nº:</b> {n} &nbsp; <b>Género:</b> {aluno.genero} &nbsp; <b>Idade:</b> {aluno.idade ?? ""}</div>
       </div>
       <table>
         <thead>
           {tipo === "final" ? (
             <tr><th>Disciplina</th>{qual ? <th>Avaliação</th> : <><th>MT1</th><th>MT2</th><th>MT3</th><th>MFD</th>{exame && <><th>Exame</th><th>CF</th></>}</>}</tr>
           ) : (
-            <tr><th>Disciplina</th>{qual ? <th>Avaliação</th> : <><th>MAC</th><th>NPT</th><th>MT{tipo}</th></>}<th>Faltas</th></tr>
+            <tr><th>Disciplina</th>{qual ? <th>Avaliação</th> : <><th>MAC</th><th>NPT</th><th>MT{tipo}</th></>}</tr>
           )}
         </thead>
         <tbody>
@@ -125,7 +133,6 @@ function Boletim({ aluno, n, classe, tipo, inst, disciplinas, notas }: {
                   {qual ? <td>{nn?.qualitativo ?? "—"}</td> : <>
                     <td className={cls(nn?.mac ?? null)}>{fmt(nn?.mac)}</td><td className={cls(nn?.npt ?? null)}>{fmt(nn?.npt)}</td><td className={cls(mediaTrimestral(nn))}><b>{fmt(mediaTrimestral(nn))}</b></td>
                   </>}
-                  <td>{nn?.faltas ?? 0}</td>
                 </>
               )}
             </tr>
@@ -134,7 +141,7 @@ function Boletim({ aluno, n, classe, tipo, inst, disciplinas, notas }: {
       </table>
       <div style={{ fontSize: 11, marginTop: 6 }}>
         <div><b>Total de faltas:</b> {faltas}</div>
-        <div><b>Resultado:</b> {resultado ?? "—"}</div>
+        <div><b>Resultado:</b> <b className={resultado ? (resultado.startsWith("Não") ? "neg" : "pos") : ""}>{resultado ?? "—"}</b></div>
         {disciplinas.some((d) => d.extra) && <div style={{ fontSize: 9 }}>* Extra-curricular (não conta para o resultado).</div>}
       </div>
       <div className="mt-6 flex justify-center">
