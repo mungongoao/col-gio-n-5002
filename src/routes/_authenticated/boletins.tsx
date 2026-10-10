@@ -82,7 +82,7 @@ function Boletim({ aluno, n, classe, tipo, inst, disciplinas, notas }: {
   const qual = isQualitativa(classe);
   const exame = isClasseExame(classe);
   const min = notaMinima(classe);
-  const cls = (v: number | null) => (v != null && v < min ? "neg" : "");
+  const cls = (v: number | null) => (v == null ? "" : v < min ? "neg" : "pos");
   const nd = (sid: string) => notas.filter((x) => x.student_id === aluno.id && x.subject_id === sid);
   const titulo = tipo === "final" ? "Boletim Final" : `Boletim de Notas — ${["I", "II", "III"][Number(tipo) - 1]}º Trimestre`;
 
@@ -100,7 +100,7 @@ function Boletim({ aluno, n, classe, tipo, inst, disciplinas, notas }: {
     <div className="doc doc-a5 shadow">
       <DocCabecalho inst={inst} titulo={titulo} sub={`Ano lectivo ${inst?.ano_lectivo ?? ""}`} />
       <div style={{ fontSize: 11, marginBottom: 6 }}>
-        <div><b>Nome:</b> {aluno.nome}</div>
+        <div><b>Nome:</b> <span style={{ color: "#b91c1c", fontWeight: 600 }}>{aluno.nome}</span></div>
         <div><b>Classe:</b> {nomeClasse(classe)} &nbsp; <b>Nº:</b> {n} &nbsp; <b>Género:</b> {aluno.genero} &nbsp; <b>Idade:</b> {aluno.idade ?? ""}</div>
       </div>
       <table>
@@ -117,13 +117,13 @@ function Boletim({ aluno, n, classe, tipo, inst, disciplinas, notas }: {
               <td className="esq">{d.nome}{d.extra ? "*" : ""}</td>
               {tipo === "final" ? (
                 qual ? <td>{r!.qual ?? "—"}</td> : <>
-                  <td>{fmt(r!.mt1)}</td><td>{fmt(r!.mt2)}</td><td>{fmt(r!.mt3)}</td><td className={cls(r!.mfd)}><b>{fmt(r!.mfd)}</b></td>
-                  {exame && <><td>{fmt(r!.exame)}</td><td className={cls(r!.cf)}><b>{fmt(r!.cf)}</b></td></>}
+                  <td className={cls(r!.mt1)}>{fmt(r!.mt1)}</td><td className={cls(r!.mt2)}>{fmt(r!.mt2)}</td><td className={cls(r!.mt3)}>{fmt(r!.mt3)}</td><td className={cls(r!.mfd)}><b>{fmt(r!.mfd)}</b></td>
+                  {exame && <><td className={cls(r!.exame)}>{fmt(r!.exame)}</td><td className={cls(r!.cf)}><b>{fmt(r!.cf)}</b></td></>}
                 </>
               ) : (
                 <>
                   {qual ? <td>{nn?.qualitativo ?? "—"}</td> : <>
-                    <td>{fmt(nn?.mac)}</td><td>{fmt(nn?.npt)}</td><td className={cls(mediaTrimestral(nn))}><b>{fmt(mediaTrimestral(nn))}</b></td>
+                    <td className={cls(nn?.mac ?? null)}>{fmt(nn?.mac)}</td><td className={cls(nn?.npt ?? null)}>{fmt(nn?.npt)}</td><td className={cls(mediaTrimestral(nn))}><b>{fmt(mediaTrimestral(nn))}</b></td>
                   </>}
                   <td>{nn?.faltas ?? 0}</td>
                 </>
@@ -137,9 +137,10 @@ function Boletim({ aluno, n, classe, tipo, inst, disciplinas, notas }: {
         <div><b>Resultado:</b> {resultado ?? "—"}</div>
         {disciplinas.some((d) => d.extra) && <div style={{ fontSize: 9 }}>* Extra-curricular (não conta para o resultado).</div>}
       </div>
-      <div className="mt-6 flex justify-between">
-        <Assinatura cargo="O Coordenador da Manhã" nome={inst?.boletim_coord_manha} />
-        <Assinatura cargo="O Coordenador da Tarde" nome={inst?.boletim_coord_tarde} />
+      <div className="mt-6 flex justify-center">
+        {classe === "INIC" || Number(classe) <= 5
+          ? <Assinatura cargo="O Coordenador da Manhã" nome={inst?.boletim_coord_manha} />
+          : <Assinatura cargo="O Coordenador da Tarde" nome={inst?.boletim_coord_tarde} />}
       </div>
     </div>
   );
