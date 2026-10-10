@@ -105,7 +105,7 @@ function Pautas() {
                             const n = nt(a.id, disciplina.id, t);
                             if (qual) return <td key={t}>{n?.qualitativo ?? "—"}</td>;
                             const mt = mediaTrimestral(n);
-                            return [<td key={`a${t}`}>{fmt(n?.mac)}</td>, <td key={`b${t}`}>{fmt(n?.npt)}</td>, <td key={`c${t}`} className={cls(mt)}><b>{fmt(mt)}</b></td>];
+                            return [<td key={`a${t}`} className={cls(n?.mac ?? null)}>{fmt(n?.mac)}</td>, <td key={`b${t}`} className={cls(n?.npt ?? null)}>{fmt(n?.npt)}</td>, <td key={`c${t}`} className={cls(mt)}><b>{fmt(mt)}</b></td>];
                           })}
                           {!qual && exame && <td>{fmt(t3?.exame_escrito)}</td>}
                           {!qual && exame && temExameOral(disciplina.nome) && <td>{fmt(t3?.exame_oral)}</td>}
@@ -140,7 +140,7 @@ function Pautas() {
                         <tr key={a.id}>
                           <td>{i + 1}</td><td className="esq">{a.nome}</td><td>{a.genero}</td>
                           {medias.map(({ d, n, v }) => qual ? <td key={d.id}>{v ?? "—"}</td> : [
-                            <td key={d.id + "a"}>{fmt(n?.mac)}</td>, <td key={d.id + "b"}>{fmt(n?.npt)}</td>,
+                            <td key={d.id + "a"} className={cls(n?.mac ?? null)}>{fmt(n?.mac)}</td>, <td key={d.id + "b"} className={cls(n?.npt ?? null)}>{fmt(n?.npt)}</td>,
                             <td key={d.id + "c"} className={cls(v as number | null)}><b>{fmt(v as number | null)}</b></td>,
                           ])}
                           {!qual && (() => { const g = mediaGeral(medias.map((m) => ({ extra: m.d.extra, v: m.v as number | null }))); return <td className={cls(g)}><b>{fmt(g)}</b></td>; })()}
