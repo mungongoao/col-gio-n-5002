@@ -194,7 +194,12 @@ h1, h2, h3 { font-family: var(--font-serif); }
 @page a3 { size: A3 landscape; margin: 0; }
 @page duo { size: A4 landscape; margin: 0; }
 .duo { display: flex; gap: 0; page: duo; }
-@media print { .duo { break-after: page; } .duo .doc-a5 { break-after: auto; min-height: 0; height: 210mm; } }
+@media print {
+  .duo { width: 297mm; height: 210mm; overflow: hidden; flex-wrap: nowrap !important; break-after: page; break-inside: avoid; }
+  .duo .doc-a5 { width: 148.5mm; height: 210mm; min-height: 0; padding: 6mm; overflow: hidden; break-after: auto; break-inside: avoid; page: duo; }
+  .duo .doc-a5 th, .duo .doc-a5 td { font-size: 9.5px; padding: 1px 3px; }
+  .duo .doc-a5 + .doc-a5 { border-left: 1px dashed #999; }
+}
 
 @media print {
   body * { visibility: hidden; }
