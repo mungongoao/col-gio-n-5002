@@ -23,7 +23,7 @@ export const isClasseExame = (c: string) => c === "6" || c === "9";
 export const temExameOral = (disciplina: string) => /portugu|ingl/i.test(disciplina);
 
 export const rotuloResultado = (c: string, ok: boolean) =>
-  isClasseExame(c) ? (ok ? "Apto" : "Não Apto") : ok ? "Transita" : "Não Transita";
+  isClasseExame(c) || c === "INIC" ? (ok ? "Apto" : "Não Apto") : ok ? "Transita" : "Não Transita";
 
 export type Nota = {
   trimestre: number;

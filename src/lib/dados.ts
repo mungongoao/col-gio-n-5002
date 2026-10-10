@@ -112,3 +112,21 @@ export function useNotasClasse(classe: string) {
     },
   });
 }
+
+export type FaltaRow = { id: string; student_id: number; trimestre: number; faltas: number };
+
+export function useFaltasClasse(classe: string) {
+  return useQuery({
+    queryKey: ["faltas", classe],
+    enabled: !!classe,
+    queryFn: async () => {
+      const { data: alunos, error: e1 } = await supabase.from("students").select("id").eq("classe", classe);
+      if (e1) throw e1;
+      const ids = (alunos ?? []).map((a) => a.id);
+      if (!ids.length) return [] as FaltaRow[];
+      const { data, error } = await supabase.from("faltas_alunos").select("*").in("student_id", ids);
+      if (error) throw error;
+      return (data ?? []) as FaltaRow[];
+    },
+  });
+}

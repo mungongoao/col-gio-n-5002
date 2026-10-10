@@ -192,6 +192,9 @@ h1, h2, h3 { font-family: var(--font-serif); }
 @page boletim { size: A5 portrait; margin: 0; }
 @page a4 { size: A4 portrait; margin: 0; }
 @page a3 { size: A3 landscape; margin: 0; }
+@page duo { size: A4 landscape; margin: 0; }
+.duo { display: flex; gap: 0; page: duo; }
+@media print { .duo { break-after: page; } .duo .doc-a5 { break-after: auto; min-height: 0; height: 210mm; } }
 
 @media print {
   body * { visibility: hidden; }
