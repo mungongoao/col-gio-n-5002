@@ -120,7 +120,7 @@ function Layout() {
         </div>
       </aside>
       <main className="min-w-0 flex-1 overflow-x-auto">
-        <header className="sticky top-0 z-20 flex flex-wrap items-center justify-between gap-2 border-b bg-primary px-3 py-3 text-primary-foreground shadow sm:px-6 print:hidden md:top-0">
+        <header className="z-20 flex flex-wrap md:sticky items-center justify-between gap-2 border-b bg-primary px-3 py-3 text-primary-foreground shadow sm:px-6 print:hidden md:top-0">
           <div className="min-w-0 text-base font-bold leading-tight sm:text-lg md:text-xl">{inst?.nome_escola}</div>
           <span className="shrink-0 rounded-full bg-background px-3 py-1 text-xs font-semibold text-primary sm:text-sm">Ano lectivo {inst?.ano_lectivo}</span>
         </header>
