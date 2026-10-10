@@ -14,6 +14,38 @@ export type Database = {
   }
   public: {
     Tables: {
+      faltas_alunos: {
+        Row: {
+          faltas: number
+          id: string
+          student_id: number
+          trimestre: number
+          updated_at: string
+        }
+        Insert: {
+          faltas?: number
+          id?: string
+          student_id: number
+          trimestre: number
+          updated_at?: string
+        }
+        Update: {
+          faltas?: number
+          id?: string
+          student_id?: number
+          trimestre?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "faltas_alunos_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "students"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       grades: {
         Row: {
           exame_escrito: number | null
