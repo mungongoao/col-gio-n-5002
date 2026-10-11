@@ -31,7 +31,7 @@ function escolher(lista: Faixa[]): Faixa {
   try { recentes = JSON.parse(sessionStorage.getItem(CHAVE) ?? "[]"); } catch { /* ignora */ }
   const novas = lista.filter((f) => !recentes.includes(f.id));
   const pool = novas.length ? novas : lista.filter((f) => f.id !== recentes[recentes.length - 1]);
-  const f = pool[Math.floor(Math.random() * pool.length)] ?? lista[0];
+  const f = pool[Math.floor(Math.random() * pool.length)] ?? lista[0]!;
   const act = [...recentes.filter((r) => r !== f.id), f.id].slice(-(lista.length - 1));
   sessionStorage.setItem(CHAVE, JSON.stringify(act));
   return f;
@@ -52,10 +52,10 @@ function tocar(ctx: AudioContext, destino: AudioNode, faixa: Faixa) {
   };
   const agendar = () => {
     while (proximo < ctx.currentTime + compasso) {
-      const ac = faixa.acordes[i % faixa.acordes.length];
+      const ac = faixa.acordes[i % faixa.acordes.length]!;
       ac.forEach((m) => nota(n(m), proximo, compasso, 0.05, faixa.onda === "square" ? "triangle" : faixa.onda));
       for (let b = 0; b < 4; b++) {
-        const m = faixa.melodia[(i * 2 + b) % faixa.melodia.length];
+        const m = faixa.melodia[(i * 2 + b) % faixa.melodia.length]!;
         if (b % 2 === 0 || i % 2) nota(n(m), proximo + b * beat, beat * 0.9, 0.04, "sine");
       }
       proximo += compasso; i++;
@@ -128,6 +128,3 @@ export function MusicaFundo() {
   );
 }
 
-export function pararMusica() {
-  // A música pára ao sair da página inicial (o componente é desmontado).
-}
