@@ -50,6 +50,13 @@
       "when": 1791622464102,
       "tag": "0006_faltas_alunos",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1793564336307,
+      "tag": "0007_student_fields_retired_teacher_turmas",
+      "breakpoints": true
     }
   ]
 }
