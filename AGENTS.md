@@ -16,3 +16,6 @@
 - User deletion goes through a server function with the admin client after an ADM role check.
 - Guardian access is modelled through guardian_students and protected by row-level policies; never expose unrelated students or grades.
 - Grade-field protection is enforced by a database trigger: only ADM and Coordenador may change absences, while grade permissions remain separate.
+- Teacher assignments store a turma array per subject; an empty array preserves legacy all-turma access, and grade write policies validate the student turma to prevent cross-turma edits.
+- First-entry navigation runs once in the root client effect, preserving recovery callbacks and authenticated internal refreshes; it is navigation policy, not an authentication guard.
+- Student registration validation and turma options live in src/lib/gestao.ts; retired personal columns remain empty for live-client compatibility and are not queried by the application.

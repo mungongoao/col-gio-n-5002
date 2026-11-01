@@ -11,6 +11,7 @@ import {
 import { useEffect, type ReactNode } from "react";
 import { Toaster } from "@/components/ui/sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { entradaExterna } from "@/lib/gestao";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
@@ -99,6 +100,22 @@ function RootShell({ children }: { children: ReactNode }) {
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   const router = useRouter();
+  useEffect(() => {
+    let active = true;
+    const initialPath = window.location.pathname;
+    const navigation = performance.getEntriesByType("navigation")[0] as PerformanceNavigationTiming | undefined;
+    const recovery = /(?:type=recovery|token_hash=|access_token=|code=)/.test(window.location.search + window.location.hash);
+    async function checkEntry() {
+      const { data } = await supabase.auth.getSession();
+      let visited = false;
+      try { visited = sessionStorage.getItem("jzymar-entrada") === "1"; sessionStorage.setItem("jzymar-entrada", "1"); } catch { /* Navigation still works when browser storage is disabled. */ }
+      if (active && !recovery && entradaExterna(initialPath, !!data.session, navigation?.type === "reload", visited)) {
+        await router.navigate({ to: "/", replace: true });
+      }
+    }
+    void checkEntry();
+    return () => { active = false; };
+  }, [router]);
   useEffect(() => {
     const { data } = supabase.auth.onAuthStateChange((event) => {
       if (event !== "SIGNED_IN" && event !== "SIGNED_OUT" && event !== "USER_UPDATED") return;
