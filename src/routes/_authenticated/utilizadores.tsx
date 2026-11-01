@@ -5,7 +5,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { eliminarUsuario } from "@/lib/usuarios.functions";
-import { NOMES_PAPEL, useDisciplinas, useMe, type Papel } from "@/lib/dados";
+import { NOMES_PAPEL, useAlunos, useDisciplinas, useMe, type Papel } from "@/lib/dados";
 import { nomeClasse } from "@/lib/avaliacao";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -136,31 +136,41 @@ function Educandos({ user, onClose }: { user: { id: string; nome: string }; onCl
 
 function Atribuicoes({ user, onClose }: { user: { id: string; nome: string }; onClose: () => void }) {
   const { data: disc = [] } = useDisciplinas();
+  const { data: alunos = [] } = useAlunos();
+  const [ciclo, setCiclo] = useState("");
+  const [classe, setClasse] = useState("");
+  const [busy, setBusy] = useState(false);
+  const classes = ciclo === "primario" ? ["INIC", "1", "2", "3", "4", "5", "6"] : ["7", "8", "9"];
+  const listadas = disc.filter(d => classe === "todas" ? classes.includes(d.classe) : d.classe === classe);
   const qc = useQueryClient();
   const { data: atrib = [] } = useQuery({
     queryKey: ["atribuicoes", user.id],
     queryFn: async () => (await supabase.from("teacher_assignments").select("*").eq("user_id", user.id)).data ?? [],
   });
-  async function toggle(sid: string, on: boolean) {
-    const { error } = on
-      ? await supabase.from("teacher_assignments").insert({ user_id: user.id, subject_id: sid })
-      : await supabase.from("teacher_assignments").delete().eq("user_id", user.id).eq("subject_id", sid);
-    if (error) toast.error(error.message);
-    qc.invalidateQueries({ queryKey: ["atribuicoes", user.id] });
+  async function toggle(sid: string, turma: string, on: boolean) {
+    setBusy(true);
+    const actual = atrib.find(a => a.subject_id === sid);
+    const d = disc.find(d => d.id === sid);
+    const formadas = Array.from(new Set(alunos.filter(a => a.classe === d?.classe).map(a => a.turma)));
+    const antigas = actual ? (actual.turmas.length ? actual.turmas : formadas) : [];
+    const turmas = on ? Array.from(new Set([...antigas, turma])) : antigas.filter(t => t !== turma);
+    const result = actual
+      ? turmas.length ? await supabase.from("teacher_assignments").update({turmas}).eq("id",actual.id) : await supabase.from("teacher_assignments").delete().eq("id",actual.id)
+      : await supabase.from("teacher_assignments").insert({ user_id:user.id,subject_id:sid,turmas });
+    setBusy(false); if (result.error) toast.error(result.error.message);
+    else await qc.invalidateQueries();
   }
   return (
     <Dialog open onOpenChange={(o) => !o && onClose()}>
       <DialogContent className="max-h-[80vh] overflow-auto">
         <DialogHeader><DialogTitle>Disciplinas de {user.nome}</DialogTitle></DialogHeader>
-        <div className="space-y-2">
-          {disc.length === 0 && <p className="text-sm text-muted-foreground">Registe primeiro as disciplinas.</p>}
-          {disc.map((d) => (
-            <label key={d.id} className="flex items-center gap-2 text-sm">
-              <Checkbox checked={atrib.some((a) => a.subject_id === d.id)} onCheckedChange={(v) => toggle(d.id, !!v)} />
-              {nomeClasse(d.classe)} — {d.nome}
-            </label>
-          ))}
-        </div>
+        <Select value={ciclo} onValueChange={v => {setCiclo(v);setClasse("");}}><SelectTrigger aria-label="Ciclo"><SelectValue placeholder="Ciclo" /></SelectTrigger><SelectContent><SelectItem value="primario">Ensino Primário</SelectItem><SelectItem value="primeiro">Primeiro Ciclo</SelectItem></SelectContent></Select>
+        {ciclo && <Select value={classe} onValueChange={setClasse}><SelectTrigger aria-label="Classe"><SelectValue placeholder="Classe" /></SelectTrigger><SelectContent>{ciclo === "primeiro" && <SelectItem value="todas">7ª, 8ª e 9ª Classes</SelectItem>}{classes.map(c => <SelectItem key={c} value={c}>{nomeClasse(c)}</SelectItem>)}</SelectContent></Select>}
+        <div className="space-y-3">{classes.filter(c => listadas.some(d => d.classe === c)).map(c => <section key={c}><h3 className="mb-2 font-semibold">{nomeClasse(c)}</h3>{listadas.filter(d => d.classe === c).flatMap(d => {
+          const actual = atrib.find(a => a.subject_id === d.id);
+          const turmas = Array.from(new Set([...alunos.filter(a => a.classe === c).map(a => a.turma), ...(actual?.turmas ?? [])])).sort();
+          return turmas.map(t => <label key={`${d.id}-${t}`} className="mb-2 flex items-center gap-2 text-sm"><Checkbox disabled={busy} checked={!!actual && (!actual.turmas.length || actual.turmas.includes(t))} onCheckedChange={v => toggle(d.id,t,v === true)} />{d.nome} {t}</label>);
+        })}</section>)}{classe && !listadas.length && <p className="text-sm text-muted-foreground">Sem disciplinas nesta classe.</p>}</div>
       </DialogContent>
     </Dialog>
   );

@@ -281,16 +281,19 @@ export type Database = {
         Row: {
           id: string
           subject_id: string
+          turmas: string[]
           user_id: string
         }
         Insert: {
           id?: string
           subject_id: string
+          turmas?: string[]
           user_id: string
         }
         Update: {
           id?: string
           subject_id?: string
+          turmas?: string[]
           user_id?: string
         }
         Relationships: [
@@ -331,6 +334,10 @@ export type Database = {
         Returns: boolean
       }
       can_grade: { Args: { _subject: string; _uid: string }; Returns: boolean }
+      can_grade_student: {
+        Args: { _student: number; _subject: string; _uid: string }
+        Returns: boolean
+      }
       can_view_subject: {
         Args: { _subject: string; _user_id: string }
         Returns: boolean

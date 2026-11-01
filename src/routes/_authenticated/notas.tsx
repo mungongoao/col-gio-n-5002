@@ -10,6 +10,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { turmaPermitida } from "@/lib/gestao";
+import { TurmaSelect } from "@/components/turma-select";
 import { ClasseSelect, PageTitle } from "@/components/escola";
 
 export const Route = createFileRoute("/_authenticated/notas")({
@@ -23,6 +25,7 @@ const vazia: Linha = { mac: "", npt: "", qualitativo: "", exame_escrito: "", exa
 function Notas() {
   const { data: me } = useMe();
   const [classe, setClasse] = useState("1");
+  const [turma, setTurma] = useState("todas");
   const [disc, setDisc] = useState("");
   const [tri, setTri] = useState("1");
   const { data: disciplinas } = useDisciplinas(classe);
@@ -31,7 +34,7 @@ function Notas() {
   const { data: atrib } = useQuery({
     queryKey: ["atribuicoes", me?.id],
     enabled: !!me && !me.isStaff && !me.isCoordenador,
-    queryFn: async () => (await supabase.from("teacher_assignments").select("subject_id").eq("user_id", me!.id)).data ?? [],
+    queryFn: async () => (await supabase.from("teacher_assignments").select("subject_id,turmas").eq("user_id", me?.id ?? "")).data ?? [],
   });
   const qc = useQueryClient();
   const [linhas, setLinhas] = useState<Record<number, Linha>>({});
@@ -40,6 +43,7 @@ function Notas() {
     () => (disciplinas ?? []).filter((d) => me?.isStaff || me?.isCoordenador || atrib?.some((a) => a.subject_id === d.id)),
     [disciplinas, atrib, me],
   );
+  const visiveis = useMemo(() => (alunos ?? []).filter(a => (turma === "todas" || a.turma === turma) && (me?.isStaff || me?.isCoordenador || turmaPermitida(atrib ?? [], disc, a.turma))), [alunos,turma,me,atrib,disc]);
   const disciplina = permitidas.find((d) => d.id === disc);
   const max = escalaMax(classe);
   const qual = isQualitativa(classe);
@@ -50,21 +54,21 @@ function Notas() {
   useEffect(() => { setDisc(""); }, [classe]);
   useEffect(() => {
     const m: Record<number, Linha> = {};
-    for (const a of alunos ?? []) {
+    for (const a of visiveis) {
       const n = notas?.find((x) => x.student_id === a.id && x.subject_id === disc && x.trimestre === Number(tri));
       m[a.id] = n
         ? { mac: n.mac?.toString() ?? "", npt: n.npt?.toString() ?? "", qualitativo: n.qualitativo ?? "", exame_escrito: n.exame_escrito?.toString() ?? "", exame_oral: n.exame_oral?.toString() ?? "", faltas: String(n.faltas ?? 0) }
         : { ...vazia };
     }
     setLinhas(m);
-  }, [alunos, notas, disc, tri]);
+  }, [visiveis, notas, disc, tri]);
 
   const num = (v: string) => (v.trim() === "" ? null : Number(v.replace(",", ".")));
 
   async function guardar() {
     if (!disciplina) return;
     const rows = [];
-    for (const a of alunos ?? []) {
+    for (const a of visiveis) {
       const l = linhas[a.id] ?? vazia;
       const vals: (number | null)[] = [num(l.mac), num(l.npt), num(l.exame_escrito), num(l.exame_oral)];
       if (vals.some((v) => v != null && (isNaN(v) || v < 0 || v > max)))
@@ -78,6 +82,7 @@ function Notas() {
         updated_at: new Date().toISOString(),
       });
     }
+    if (!rows.length) return;
     const { error } = await supabase.from("grades").upsert(rows, { onConflict: "student_id,subject_id,trimestre" });
     if (error) return void toast.error("Não foi possível guardar: " + error.message);
     toast.success("Notas guardadas. Mini-pauta e pautas actualizadas.");
@@ -91,7 +96,7 @@ function Notas() {
   return (
     <div>
       <PageTitle title="Lançamento de Notas">
-        <ClasseSelect value={classe} onChange={setClasse} />
+        <ClasseSelect value={classe} onChange={v => {setClasse(v);setTurma("todas");}} /><TurmaSelect alunos={visiveis.length ? visiveis : alunos ?? []} value={turma} onChange={setTurma} />
         <Select value={disc} onValueChange={setDisc}>
           <SelectTrigger className="w-56"><SelectValue placeholder="Disciplina" /></SelectTrigger>
           <SelectContent>{permitidas.map((d) => <SelectItem key={d.id} value={d.id}>{d.nome}{d.extra ? " (extra)" : ""}</SelectItem>)}</SelectContent>
@@ -124,7 +129,7 @@ function Notas() {
                 </tr>
               </thead>
               <tbody>
-                {alunos?.map((a, i) => {
+                {visiveis.map((a, i) => {
                   const l = linhas[a.id] ?? vazia;
                   const mt = mediaTrimestral({ mac: num(l.mac), npt: num(l.npt) });
                   return (

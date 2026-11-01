@@ -1,5 +1,13 @@
 # Roadmap
 
+- [ ] Simplificar dados dos alunos e adicionar edição e confirmação de eliminação
+- [ ] Editar disciplinas sem alterar registos de outras classes
+- [ ] Ajustar entrada externa, refresh de acesso e saída
+- [ ] Adicionar visto da Direcção nos boletins
+- [ ] Adicionar percentagens nas estatísticas
+- [ ] Atribuir disciplinas por ciclo/classe/turma sem limites, com permissões correspondentes
+- [ ] Validar alterações e preservação dos alunos
+
 - [x] Melhorar entrada/cadastro, mostrar palavra-passe e recuperação por código
 - [x] Adicionar confirmação de saída e contacto WhatsApp na conta pendente
 - [x] Adicionar turma/estado aos alunos e IDs desde 2600
