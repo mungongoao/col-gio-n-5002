@@ -29,7 +29,7 @@ function Layout() {
     await qc.cancelQueries();
     qc.clear();
     await supabase.auth.signOut();
-    navigate({ to: "/auth", replace: true });
+    navigate({ to: "/", replace: true });
   }
 
   if (isLoading) return <div className="p-10 text-muted-foreground">A carregar…</div>;

@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Trash2 } from "lucide-react";
+import { Pencil, Trash2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useDisciplinas, useMe } from "@/lib/dados";
 import { nomeClasse } from "@/lib/avaliacao";
@@ -30,6 +30,7 @@ const TODAS_EXTRA = ["1", "2", "3", "4", "5", "6", "7", "8", "9"];
 function Disciplinas() {
   const { data: me } = useMe();
   const [nivel, setNivel] = useState("Ensino Primário");
+  const [editarId, setEditarId] = useState<string | null>(null);
   const [nome, setNome] = useState("");
   const [extra, setExtra] = useState(false);
   const [marcadas, setMarcadas] = useState<string[]>([]);
@@ -53,6 +54,12 @@ function Disciplinas() {
     e.preventDefault();
     const n = nome.trim();
     if (!n || n.length > 80) return void toast.error("Nome inválido.");
+    if (editarId) {
+      const { error } = await supabase.from("subjects").update({ nome: n, extra }).eq("id", editarId);
+      if (error) return void toast.error(error.message);
+      setEditarId(null); setNome(""); setExtra(false); setMarcadas([]);
+      await qc.invalidateQueries(); toast.success("Disciplina actualizada."); return;
+    }
     const classes = extra ? TODAS_EXTRA : marcadas;
     if (!classes.length) return void toast.error("Marque pelo menos uma classe.");
     let novas = 0, existentes = 0;
@@ -82,7 +89,7 @@ function Disciplinas() {
             <Input placeholder="Nome da disciplina" value={nome} onChange={(e) => setNome(e.target.value)} className="w-full sm:max-w-sm" />
             <label className="flex items-center gap-2 text-sm"><Switch checked={extra} onCheckedChange={setExtra} /> Disciplina Extracurricular</label>
           </div>
-          {extra ? (
+          {editarId ? <p className="text-sm font-semibold">{nomeClasse(lista.find(d => d.id === editarId)?.classe ?? "INIC")}</p> : extra ? (
             <p className="text-sm text-muted-foreground">Será adicionada a todas as classes do Ensino Primário (1ª–6ª) e do Primeiro Ciclo (7ª–9ª).</p>
           ) : (
             <div className="space-y-3">
@@ -103,7 +110,7 @@ function Disciplinas() {
               ))}
             </div>
           )}
-          <Button>Adicionar</Button>
+          <div className="flex gap-2"><Button>{editarId ? "Atualizar Dados" : "Adicionar"}</Button>{editarId && <Button type="button" variant="outline" onClick={() => { setEditarId(null); setNome(""); setExtra(false); }}>Cancelar</Button>}</div>
         </form>
       </CardContent></Card>
 
@@ -113,10 +120,10 @@ function Disciplinas() {
             <h3 className="mb-2 font-semibold">{nomeClasse(c)}</h3>
             {(porClasse.get(c) ?? []).length === 0 ? <p className="text-sm text-muted-foreground">Nenhuma disciplina.</p> : (
               <ul className="divide-y">
-                {porClasse.get(c)!.map((d) => (
+                {(porClasse.get(c) ?? []).map((d) => (
                   <li key={d.id} className="flex items-center justify-between gap-2 py-1.5 text-sm">
                     <span>{d.nome} {d.extra && <Badge variant="secondary" className="ml-1">Extra</Badge>}</span>
-                    <Button size="icon" variant="ghost" title="Remover desta classe" onClick={() => remover(d.id, c)}><Trash2 className="h-4 w-4" /></Button>
+                    <div className="flex shrink-0 gap-1"><Button size="sm" variant="outline" onClick={() => { setEditarId(d.id); setNome(d.nome); setExtra(d.extra); window.scrollTo({top:0,behavior:"smooth"}); }}><Pencil className="h-4 w-4" />Editar</Button><Button size="icon" variant="ghost" title="Remover desta classe" onClick={() => remover(d.id, c)}><Trash2 className="h-4 w-4" /></Button></div>
                   </li>
                 ))}
               </ul>

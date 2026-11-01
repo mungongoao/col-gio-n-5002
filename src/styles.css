@@ -207,3 +207,7 @@ h1, h2, h3 { font-family: var(--font-serif); }
   .print-area { position: absolute; left: 0; top: 0; }
   .doc-a5, .doc-a4, .doc-a3 { break-after: page; box-shadow: none !important; }
 }
+
+.boletim-header { display: grid; grid-template-columns: minmax(0, 1fr) 43%; gap: 8px; align-items: start; margin-bottom: 12px; }
+.boletim-visto > div { min-width: 0 !important; }
+.boletim-instituicao { overflow-wrap: anywhere; }

@@ -72,9 +72,6 @@ export function useDisciplinas(classe?: string) {
 export type Aluno = {
   id: number;
   nome: string;
-  bi: string;
-  telefone: string;
-  idade: number | null;
   genero: string;
   classe: string;
   turma: string;
@@ -85,7 +82,7 @@ export function useAlunos(classe?: string) {
   return useQuery({
     queryKey: ["alunos", classe ?? "all"],
     queryFn: async () => {
-      let q = supabase.from("students").select("*").order("nome");
+      let q = supabase.from("students").select("id,nome,genero,classe,turma,estado").order("nome");
       if (classe) q = q.eq("classe", classe);
       const { data, error } = await q;
       if (error) throw error;
