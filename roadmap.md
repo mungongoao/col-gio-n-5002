@@ -19,3 +19,6 @@
 - [x] Criar estatísticas globais e mapa estatístico do professor
 - [x] Ocultar visualmente o selo publicado
 - [x] Validar compilação, testes e fluxos principais
+
+## Verificações pendentes (pedido 02/11)
+- [ ] Concluir verificações visuais das edições anteriores (boletins, pautas, menu mobile, disciplinas, estatísticas)
