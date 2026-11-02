@@ -131,7 +131,7 @@ function Estatisticas() {
                   const ls = linhas.filter((l) => l.ciclo === ciclo);
                   if (!ls.some((l) => l.matriculados.mf > 0)) return null;
                   return (
-                    <>
+                    <Fragment key={ciclo}>
                       {ls.map((l, i) => (
                         <tr key={l.classe}>
                           {i === 0 && <td rowSpan={ls.length} className="esq"><b>{ciclo}</b></td>}
@@ -144,7 +144,7 @@ function Estatisticas() {
                         {cel(soma(ls, "professores"))}<td>{ls.reduce((s, l) => s + l.turmas, 0)}</td>
                         {cel(soma(ls, "matriculados"))}{cel(soma(ls, "desistentes"), soma(ls, "matriculados").mf + soma(ls, "desistentes").mf)}{cel(soma(ls, "avaliados"), soma(ls, "matriculados").mf + soma(ls, "desistentes").mf)}{cel(soma(ls, "comApr"), soma(ls, "avaliados").mf)}{cel(soma(ls, "semApr"), soma(ls, "avaliados").mf)}
                       </tr>
-                    </>
+                    </Fragment>
                   );
                 })}
                 <tr className="font-bold">
