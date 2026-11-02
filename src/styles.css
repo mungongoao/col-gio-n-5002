@@ -202,9 +202,7 @@ h1, h2, h3 { font-family: var(--font-serif); }
 }
 
 @media print {
-  body * { visibility: hidden; }
-  .print-area, .print-area * { visibility: visible; }
-  .print-area { position: absolute; left: 0; top: 0; }
+  body *:not(.print-area):not(.print-area *):not(:has(.print-area)) { display: none !important; }
   .doc-a5, .doc-a4, .doc-a3 { break-after: page; box-shadow: none !important; }
 }
 
