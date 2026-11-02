@@ -144,7 +144,7 @@ function Estatisticas() {
                         {cel(soma(ls, "professores"))}<td>{ls.reduce((s, l) => s + l.turmas, 0)}</td>
                         {cel(soma(ls, "matriculados"))}{cel(soma(ls, "desistentes"), soma(ls, "matriculados").mf + soma(ls, "desistentes").mf)}{cel(soma(ls, "avaliados"), soma(ls, "matriculados").mf + soma(ls, "desistentes").mf)}{cel(soma(ls, "comApr"), soma(ls, "avaliados").mf)}{cel(soma(ls, "semApr"), soma(ls, "avaliados").mf)}
                       </tr>
-                    </>
+                    </Fragment>
                   );
                 })}
                 <tr className="font-bold">
