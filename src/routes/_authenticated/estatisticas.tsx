@@ -131,7 +131,7 @@ function Estatisticas() {
                   const ls = linhas.filter((l) => l.ciclo === ciclo);
                   if (!ls.some((l) => l.matriculados.mf > 0)) return null;
                   return (
-                    <>
+                    <Fragment key={ciclo}>
                       {ls.map((l, i) => (
                         <tr key={l.classe}>
                           {i === 0 && <td rowSpan={ls.length} className="esq"><b>{ciclo}</b></td>}
