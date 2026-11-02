@@ -204,6 +204,7 @@ h1, h2, h3 { font-family: var(--font-serif); }
 @media print {
   body *:not(.print-area):not(.print-area *):not(:has(.print-area)) { display: none !important; }
   .doc-a5, .doc-a4, .doc-a3 { break-after: page; box-shadow: none !important; }
+  .doc-a5:last-child, .doc-a4:last-child, .doc-a3:last-child, .duo:last-child { break-after: auto; }
 }
 
 .boletim-header { display: grid; grid-template-columns: minmax(0, 1fr) 43%; gap: 8px; align-items: start; margin-bottom: 12px; }
