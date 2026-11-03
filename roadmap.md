@@ -22,3 +22,10 @@
 
 ## Verificações pendentes (pedido 02/11)
 - [ ] Concluir verificações visuais das edições anteriores (boletins, pautas, menu mobile, disciplinas, estatísticas)
+
+## Pedido 03/11
+- [x] Boletim: cabeçalho centrado, Visto do Diretor no canto superior direito, Média Final acima do Resultado
+- [x] Alinhar botões de acções na gestão de utilizadores
+- [x] Atribuir Turma A a todos os alunos existentes (outras turmas continuam disponíveis)
+- [ ] PWA: manifesto, ícones, service worker offline e instalação
+- [ ] Validar compilação, testes e pré-visualização
