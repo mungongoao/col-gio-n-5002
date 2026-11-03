@@ -85,20 +85,22 @@ function Utilizadores() {
                     </Select>
                   )}
                 </TableCell>
-                <TableCell className="space-x-2 text-right">
-                  {u.id !== me.id && !protegido && (
-                    <>
-                      <Button size="sm" onClick={() => credenciar(u.id, atual)}>{u.status === "APROVADO" ? "Actualizar" : "Credenciar"}</Button>
-                      {u.status === "APROVADO" && <Button size="sm" variant="outline" onClick={() => revogar(u.id)}>Revogar</Button>}
-                      {u.papeis.includes("professor") && u.status === "APROVADO" && (
-                        <Button size="sm" variant="secondary" onClick={() => setAtribuir({ id: u.id, nome: u.nome, tipo: "disciplinas" })}>Disciplinas</Button>
-                      )}
-                      {u.papeis.includes("encarregado") && u.status === "APROVADO" && (
-                        <Button size="sm" variant="secondary" onClick={() => setAtribuir({ id: u.id, nome: u.nome, tipo: "educandos" })}>Educandos</Button>
-                      )}
-                      {me.isAdmin && <Button size="sm" variant="destructive" onClick={() => apagar(u.id)}>Eliminar</Button>}
-                    </>
-                  )}
+                <TableCell className="text-right">
+                  <div className="flex flex-wrap items-center justify-end gap-2">
+                    {u.id !== me.id && !protegido && (
+                      <>
+                        <Button size="sm" onClick={() => credenciar(u.id, atual)}>{u.status === "APROVADO" ? "Actualizar" : "Credenciar"}</Button>
+                        {u.status === "APROVADO" && <Button size="sm" variant="outline" onClick={() => revogar(u.id)}>Revogar</Button>}
+                        {u.papeis.includes("professor") && u.status === "APROVADO" && (
+                          <Button size="sm" variant="secondary" onClick={() => setAtribuir({ id: u.id, nome: u.nome, tipo: "disciplinas" })}>Disciplinas</Button>
+                        )}
+                        {u.papeis.includes("encarregado") && u.status === "APROVADO" && (
+                          <Button size="sm" variant="secondary" onClick={() => setAtribuir({ id: u.id, nome: u.nome, tipo: "educandos" })}>Educandos</Button>
+                        )}
+                        {me.isAdmin && <Button size="sm" variant="destructive" onClick={() => apagar(u.id)}>Eliminar</Button>}
+                      </>
+                    )}
+                  </div>
                 </TableCell>
               </TableRow>
             );
