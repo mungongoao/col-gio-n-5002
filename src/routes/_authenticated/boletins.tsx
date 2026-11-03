@@ -7,7 +7,7 @@ import { toast } from "sonner";
 import { GuardarDocumento } from "@/components/guardar-documento";
 import { useAlunos, useDisciplinas, useInstituicao, useMe, useNotasClasse, useFaltasClasse, type Aluno, type FaltaRow } from "@/lib/dados";
 import {
-  fmt, isClasseExame, isQualitativa, mediaTrimestral, nomeClasse, notaMinima, resultadoFinal, resultadoTrimestreDetalhado, resumoDisciplina,
+  fmt, isClasseExame, isQualitativa, mediaGeral, mediaTrimestral, nomeClasse, notaMinima, resultadoFinal, resultadoTrimestreDetalhado, resumoDisciplina,
 } from "@/lib/avaliacao";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -103,16 +103,19 @@ function Boletim({ aluno, n, classe, tipo, inst, disciplinas, notas, faltasT }: 
   const faltas = notas.filter((x) => x.student_id === aluno.id && (tipo === "final" || x.trimestre === Number(tipo))).reduce((s, x) => s + (x.faltas ?? 0), 0)
     + faltasT.filter((x) => x.student_id === aluno.id && (tipo === "final" || x.trimestre === Number(tipo))).reduce((s, x) => s + x.faltas, 0);
   if (tipo !== "final") resultado = resultadoTrimestreDetalhado(classe, linhas.map((l) => ({ extra: l.d.extra, disciplina: l.d.nome, v: qual ? l.n?.qualitativo ?? null : mediaTrimestral(l.n) })), faltas);
+  const mediaFinal = qual ? null : mediaGeral(linhas.map((l) => ({ extra: l.d.extra, v: tipo === "final" ? l.r!.cf : mediaTrimestral(l.n) })));
 
   return (
     <div className="doc doc-a5 shadow">
-      <div className="boletim-header"><div className="boletim-instituicao text-center" style={{ fontSize: 12 }}>
-        {inst?.logo_url && <img src={inst.logo_url} alt="" style={{ height: 40, margin: "0 auto 4px" }} />}
-        <div style={{ fontWeight: 700, fontSize: 13 }}>{inst?.nome_escola}</div>
-        <div>Ano lectivo {inst?.ano_lectivo ?? ""}</div>
-        <div style={{ fontWeight: 700, marginTop: 6, fontSize: 13, textTransform: "uppercase" }}>{titulo}</div>
+      <div className="boletim-header">
+        <div className="boletim-visto"><Assinatura cargo="Visto pelo Diretor" nome={inst?.pauta_direccao} /></div>
+        <div className="boletim-instituicao text-center" style={{ fontSize: 12 }}>
+          {inst?.logo_url && <img src={inst.logo_url} alt="" style={{ height: 40, margin: "0 auto 4px" }} />}
+          <div style={{ fontWeight: 700, fontSize: 13 }}>{inst?.nome_escola}</div>
+          <div>Ano lectivo {inst?.ano_lectivo ?? ""}</div>
+          <div style={{ fontWeight: 700, marginTop: 6, fontSize: 13, textTransform: "uppercase" }}>{titulo}</div>
+        </div>
       </div>
-      <div className="boletim-visto"><Assinatura cargo="Visto pelo Diretor" nome={inst?.pauta_direccao} /></div></div>
       <div style={{ fontSize: 11, marginBottom: 6 }}>
         <div><b>Nome:</b> <span className="text-grade-negative font-semibold">{aluno.nome}</span></div>
         <div><b>Classe:</b> {classe === "INIC" ? "Iniciação" : `${classe}ª`} &nbsp; <b>Nº:</b> {n} &nbsp; <b>Género:</b> {aluno.genero}</div>
@@ -147,6 +150,7 @@ function Boletim({ aluno, n, classe, tipo, inst, disciplinas, notas, faltasT }: 
       </table>
       <div style={{ fontSize: 11, marginTop: 6 }}>
         <div><b>Total de faltas:</b> {faltas}</div>
+        {mediaFinal != null && <div><b>Média Final:</b> <b className={cls(mediaFinal)}>{fmt(mediaFinal)}</b></div>}
         <div><b>Resultado:</b> <b className={resultado ? (resultado.startsWith("Não") ? "neg" : "pos") : ""}>{resultado ?? "—"}</b></div>
         {disciplinas.some((d) => d.extra) && <div style={{ fontSize: 9 }}>* Extra-curricular (não conta para o resultado).</div>}
       </div>

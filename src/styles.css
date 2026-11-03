@@ -208,6 +208,7 @@ h1, h2, h3 { font-family: var(--font-serif); }
   .doc-a5:last-child, .doc-a4:last-child, .doc-a3:last-child, .duo:last-child { break-after: auto; }
 }
 
-.boletim-header { display: grid; grid-template-columns: minmax(0, 1fr) 43%; gap: 8px; align-items: start; margin-bottom: 12px; }
+.boletim-header { position: relative; margin-bottom: 12px; }
+.boletim-visto { position: absolute; top: 0; right: 0; }
 .boletim-visto > div { min-width: 0 !important; }
 .boletim-instituicao { overflow-wrap: anywhere; }
