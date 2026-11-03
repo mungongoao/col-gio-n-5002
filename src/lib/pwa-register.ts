@@ -7,7 +7,7 @@ export async function registerPwa() {
   if (typeof window === "undefined" || !("serviceWorker" in navigator)) return;
 
   const host = window.location.hostname.toLowerCase();
-  const primeiroRotulo = host.split(".")[0];
+  const primeiroRotulo = host.split(".")[0] ?? "";
   const dominioPlataforma =
     host.endsWith(".lovable.app") || host.endsWith(".gpt-eng.com") || host.endsWith(".gptengineer.run");
   const ehPrevisualizacao =
