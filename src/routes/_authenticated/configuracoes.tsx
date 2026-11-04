@@ -27,7 +27,7 @@ function Config() {
   const { data: me } = useMe();
   const { data: inst } = useInstituicao();
   const qc = useQueryClient();
-  type K = "id" | "republica" | "ministerio" | "direccao_municipal" | "nome_escola" | "ano_lectivo" | "logo_url" | "pauta_pedagogico" | "pauta_direccao" | "boletim_coord_manha" | "boletim_coord_tarde";
+  type K = "id" | "republica" | "ministerio" | "direccao_municipal" | "nome_escola" | "ano_lectivo" | "logo_url" | "pauta_pedagogico" | "pauta_direccao" | "boletim_coord_manha" | "boletim_coord_tarde" | "cor_fundo" | "cor_texto" | "cor_paginas";
   const [f, setF] = useState<Partial<Record<K, string>>>({});
   useEffect(() => {
     if (inst) setF(Object.fromEntries(Object.entries(inst).map(([k, v]) => [k, String(v ?? "")])) as Partial<Record<K, string>>);
@@ -48,7 +48,7 @@ function Config() {
 
   async function guardar() {
     const { id: _id, ...rest } = f;
-    const { error } = await supabase.from("institution_settings").update({ ...rest, logo_url: f.logo_url || null }).eq("id", 1);
+    const { error } = await supabase.from("institution_settings").update({ ...rest, logo_url: f.logo_url || null, cor_fundo: f.cor_fundo || "#f8fafc", cor_texto: f.cor_texto || "#243247", cor_paginas: f.cor_paginas || "#ffffff" }).eq("id", 1);
     if (error) return void toast.error(error.message);
     toast.success("Informações guardadas.");
     qc.invalidateQueries({ queryKey: ["instituicao"] });
@@ -71,6 +71,14 @@ function Config() {
               {f.logo_url && <Button variant="outline" size="sm" onClick={() => setF({ ...f, logo_url: "" })}>Remover</Button>}
             </div>
           </div>
+        </CardContent>
+      </Card>
+      <Card>
+        <CardHeader><CardTitle>Personalização das Cores</CardTitle></CardHeader>
+        <CardContent className="grid gap-4 sm:grid-cols-3">
+          <div className="space-y-2"><Label>Cor de fundo do sistema</Label><Input type="color" value={f.cor_fundo || "#f8fafc"} onChange={set("cor_fundo")} className="h-11 p-1" /></div>
+          <div className="space-y-2"><Label>Cor das letras</Label><Input type="color" value={f.cor_texto || "#243247"} onChange={set("cor_texto")} className="h-11 p-1" /></div>
+          <div className="space-y-2"><Label>Cor das páginas e cartões</Label><Input type="color" value={f.cor_paginas || "#ffffff"} onChange={set("cor_paginas")} className="h-11 p-1" /></div>
         </CardContent>
       </Card>
       <Card>
