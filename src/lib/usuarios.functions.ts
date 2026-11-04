@@ -14,3 +14,18 @@ export const eliminarUsuario = createServerFn({ method: "POST" })
     if (error) throw new Error(error.message);
     return { ok: true };
   });
+
+export const eliminarUsuarioPermanentemente = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) => z.object({ id: z.string().uuid() }).parse(d))
+  .handler(async ({ data, context }) => {
+    const { data: isAdmin } = await context.supabase.rpc("has_role", { _user_id: context.userId, _role: "admin" });
+    if (!isAdmin) throw new Error("Apenas o ADM pode eliminar utilizadores definitivamente.");
+    if (data.id === context.userId) throw new Error("Não pode eliminar a sua própria conta.");
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: profile } = await supabaseAdmin.from("profiles").select("deleted_at").eq("id", data.id).maybeSingle();
+    if (!profile?.deleted_at) throw new Error("O utilizador não está no Lixo.");
+    const { error } = await supabaseAdmin.auth.admin.deleteUser(data.id);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
