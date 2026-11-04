@@ -46,6 +46,15 @@ function Pautas() {
 
   const titulo = tipo === "mini" ? "Mini-Pauta" : tipo === "tri" ? `Pauta do ${tri}º Trimestre` : "Pauta Final";
   const sub = `${nomeClasse(classe)}${tipo === "mini" && disciplina ? ` · ${disciplina.nome}` : ""} · Ano lectivo ${inst?.ano_lectivo ?? ""}`;
+  const nomeImpressao = tipo === "mini" && disciplina
+    ? `Pauta - ${disciplina.nome} - ${nomeClasse(classe)}`
+    : `Pauta - ${nomeClasse(classe)}`;
+  function imprimir() {
+    const anterior = document.title;
+    document.title = nomeImpressao;
+    window.addEventListener("afterprint", () => { document.title = anterior; }, { once: true });
+    window.print();
+  }
 
   if (me?.isEncarregado) return <p>Sem permissão.</p>;
 
@@ -68,8 +77,8 @@ function Pautas() {
             <SelectContent>{["1", "2", "3"].map((t) => <SelectItem key={t} value={t}>{t}º Trimestre</SelectItem>)}</SelectContent>
           </Select>
         )}
-        <Button variant="outline" onClick={() => window.print()}><Printer className="mr-2 h-4 w-4" />Imprimir / PDF</Button>
-        <GuardarDocumento nome={`${titulo} ${nomeClasse(classe)}`} disabled={tipo === "mini" && !disciplina} />
+        <Button variant="outline" onClick={imprimir}><Printer className="mr-2 h-4 w-4" />Imprimir / PDF</Button>
+        <GuardarDocumento nome={nomeImpressao} disabled={tipo === "mini" && !disciplina} />
       </PageTitle>
 
       {!podeVerClasse ? <p className="text-muted-foreground">Esta classe não pertence ao ciclo das suas disciplinas.</p> : tipo === "mini" && !disciplina ? <p className="text-muted-foreground">Escolha a disciplina.</p> : (
