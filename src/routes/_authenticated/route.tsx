@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { MessageCircle } from "lucide-react";
 import {
-  LayoutDashboard, Settings, BookOpen, UserPlus, ListOrdered, PenLine, Table2, FileText, Users, LogOut, TrendingUp, BarChart3,
+  LayoutDashboard, Settings, BookOpen, UserPlus, ListOrdered, PenLine, Table2, FileText, Users, LogOut, TrendingUp, BarChart3, Trash2,
 } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated")({
@@ -113,6 +113,7 @@ function Layout() {
               <l.icon className="h-4 w-4 shrink-0" /> <span>{l.label}</span>
             </Link>
           ))}
+          {me.isStaff && <a href="/lixo" className="flex shrink-0 snap-start items-center gap-2 whitespace-nowrap rounded-md px-3 py-2 text-sm hover:bg-sidebar-accent md:gap-3"><Trash2 className="h-4 w-4 shrink-0" /><span>Lixo</span></a>}
         </nav>
         <div className="hidden border-t border-sidebar-border p-4 text-xs md:block">
           <div><div className="font-medium">{me.profile?.nome}</div><div className="opacity-70">{me.papeis.map((p) => NOMES_PAPEL[p]).join(", ")}</div></div>
