@@ -57,6 +57,10 @@ export function useInstituicao() {
           root.style.setProperty("--card", data.cor_paginas);
           root.style.setProperty("--popover", data.cor_paginas);
         }
+        if (data.cor_texto) {
+          root.style.setProperty("--card-foreground", data.cor_texto);
+          root.style.setProperty("--popover-foreground", data.cor_texto);
+        }
       }
       return data;
     },
