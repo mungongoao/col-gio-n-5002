@@ -5,6 +5,46 @@ alter table public.profiles add column if not exists deleted_at timestamptz;
 create index if not exists students_deleted_at_idx on public.students (deleted_at) where deleted_at is not null;
 create index if not exists profiles_deleted_at_idx on public.profiles (deleted_at) where deleted_at is not null;
 
+-- Contas arquivadas perdem imediatamente as permissões, mesmo antes da purga.
+create or replace function public.has_role(_user_id uuid, _role public.app_role)
+returns boolean
+language sql stable security definer set search_path = public
+as $
+  select exists (
+    select 1 from public.user_roles r
+    join public.profiles p on p.id = r.user_id
+    where r.user_id = _user_id and r.role = _role
+      and p.status = 'APROVADO' and p.deleted_at is null
+  )
+$;
+
+create or replace function public.is_approved(_user_id uuid)
+returns boolean
+language sql stable security definer set search_path = public
+as $
+  select exists (
+    select 1 from public.profiles
+    where id = _user_id and status = 'APROVADO' and deleted_at is null
+  )
+$;
+
+-- Alunos arquivados deixam de aparecer para professores e encarregados;
+-- o pessoal autorizado continua a poder consultá-los na página Lixo.
+drop policy if exists "authorised read students" on public.students;
+create policy "authorised read active students" on public.students
+  for select to authenticated
+  using (
+    deleted_at is null and (
+      public.is_staff(auth.uid())
+      or public.is_coordinator(auth.uid())
+      or public.has_role(auth.uid(), 'professor')
+      or public.is_guardian_of(auth.uid(), id)
+    )
+  );
+create policy "staff read archived students" on public.students
+  for select to authenticated
+  using (deleted_at is not null and public.is_staff(auth.uid()));
+
 create or replace function public.restaurar_utilizador(_uid uuid)
 returns void
 language plpgsql
