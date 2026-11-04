@@ -29,9 +29,10 @@ function Boletins() {
   const { data: alunos = [] } = useAlunos(classe);
   const { data: notas = [] } = useNotasClasse(classe);
   const { data: faltasT = [] } = useFaltasClasse(classe);
-  const toggle = (id: number) => setSel((p) => p.includes(id) ? p.filter((x) => x !== id) : p.length >= 2 ? (toast.error("Pode seleccionar no máximo 2 alunos."), p) : [...p, id]);
+  const toggle = (id: number) => setSel((p) => p.includes(id) ? p.filter((x) => x !== id) : p.length >= 10 ? (toast.error("Pode seleccionar no máximo 10 alunos."), p) : [...p, id]);
   const filtrados = pesquisa.trim() ? alunos.filter((a) => a.nome.toLowerCase().includes(pesquisa.trim().toLowerCase())) : alunos;
   const lista = alunos.filter((a) => sel.includes(a.id));
+  const paginas = Array.from({ length: Math.ceil(lista.length / 2) }, (_, i) => lista.slice(i * 2, i * 2 + 2));
   if (me?.isEncarregado) return <p>Sem permissão.</p>;
 
   return (
@@ -60,7 +61,7 @@ function Boletins() {
       </PageTitle>
       {!me?.podeImprimirBoletim && <p className="mb-4 text-sm text-muted-foreground print:hidden">Apenas os Coordenadores e o ADM podem imprimir boletins.</p>}
       <div className="mb-4 max-h-56 overflow-auto rounded-md border p-2 print:hidden">
-        <p className="mb-2 text-xs text-muted-foreground">Seleccione até 2 alunos ({sel.length}/2). Dois boletins ficam na mesma folha A4 horizontal.</p>
+        <p className="mb-2 text-xs text-muted-foreground">Seleccione até 10 alunos ({sel.length}/10). A impressão organiza dois boletins por folha A4 horizontal (até 5 folhas).</p>
         <div className="grid gap-1 sm:grid-cols-2 lg:grid-cols-3">
           {filtrados.map((a) => (
             <label key={a.id} className="flex items-center gap-2 text-sm"><Checkbox checked={sel.includes(a.id)} onCheckedChange={() => toggle(a.id)} />{a.nome}</label>
@@ -69,11 +70,13 @@ function Boletins() {
       </div>
       {lista.length === 0 && <p className="text-sm text-muted-foreground">Nenhum aluno seleccionado.</p>}
       <div className={me?.podeImprimirBoletim ? "print-area" : "print:hidden"}>
-        <div className={lista.length === 2 ? "duo flex flex-wrap gap-6 print:gap-0" : "flex flex-wrap gap-6"}>
-          {lista.map((a, i) => (
-            <Boletim key={a.id} n={alunos.indexOf(a) + 1 || i + 1} aluno={a} classe={classe} tipo={tipo} inst={inst} disciplinas={disciplinas} notas={notas} faltasT={faltasT} />
-          ))}
-        </div>
+        {paginas.map((par, pagina) => (
+          <div className="duo" key={pagina}>
+            {par.map((a, i) => (
+              <Boletim key={a.id} n={alunos.indexOf(a) + 1 || pagina * 2 + i + 1} aluno={a} classe={classe} tipo={tipo} inst={inst} disciplinas={disciplinas} notas={notas} faltasT={faltasT} />
+            ))}
+          </div>
+        ))}
       </div>
     </div>
   );
