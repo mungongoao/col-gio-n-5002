@@ -43,17 +43,24 @@ function Lista() {
     qc.invalidateQueries({ queryKey: ["faltas"] });
   }
   const m = alunos?.filter((a) => a.genero === "M").length ?? 0;
+  const nomeImpressao = `Lista Nominal - ${nomeClasse(classe)} - Turma ${turma}`;
+  function imprimir() {
+    const anterior = document.title;
+    document.title = nomeImpressao;
+    window.addEventListener("afterprint", () => { document.title = anterior; }, { once: true });
+    window.print();
+  }
   if (me?.isEncarregado) return <p>Sem permissão.</p>;
   return (
     <div>
       <PageTitle title="Lista Nominal">
-        <ClasseSelect value={classe} onChange={(v) => { setClasse(v); setTurma("todas"); }} /><TurmaSelect alunos={todos} value={turma} onChange={setTurma} /><GuardarDocumento nome="Lista Nominal" />
+        <ClasseSelect value={classe} onChange={(v) => { setClasse(v); setTurma("todas"); }} /><TurmaSelect alunos={todos} value={turma} onChange={setTurma} /><GuardarDocumento nome={nomeImpressao} />
         <Select value={tri} onValueChange={setTri}>
           <SelectTrigger className="w-40"><SelectValue /></SelectTrigger>
           <SelectContent>{["1","2","3"].map((t) => <SelectItem key={t} value={t}>{t}º Trimestre (faltas)</SelectItem>)}</SelectContent>
         </Select>
         {podeF && <Button onClick={guardarFaltas}>Guardar faltas</Button>}
-        <Button variant="outline" onClick={() => window.print()}><Printer className="mr-2 h-4 w-4" />Imprimir</Button>
+        <Button variant="outline" onClick={imprimir}><Printer className="mr-2 h-4 w-4" />Imprimir</Button>
       </PageTitle>
       <div className="print-area overflow-auto">
         <div className="doc doc-a4 mx-auto shadow" >
