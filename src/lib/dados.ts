@@ -49,6 +49,15 @@ export function useInstituicao() {
     queryFn: async () => {
       const { data, error } = await supabase.from("institution_settings").select("*").eq("id", 1).maybeSingle();
       if (error) throw error;
+      if (typeof document !== "undefined" && data) {
+        const root = document.documentElement;
+        if (data.cor_fundo) root.style.setProperty("--background", data.cor_fundo);
+        if (data.cor_texto) root.style.setProperty("--foreground", data.cor_texto);
+        if (data.cor_paginas) {
+          root.style.setProperty("--card", data.cor_paginas);
+          root.style.setProperty("--popover", data.cor_paginas);
+        }
+      }
       return data;
     },
   });
