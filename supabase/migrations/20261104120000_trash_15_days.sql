@@ -63,7 +63,7 @@ grant execute on function public.restaurar_utilizador(uuid) to authenticated;
 -- Activar pg_cron quando a extensão estiver disponível no projecto Supabase.
 do $
 begin
-  create extension if not exists pg_cron;
+  execute 'create extension if not exists pg_cron';
 exception when undefined_file then
   raise warning 'pg_cron não está disponível; a limpeza automática precisa de ser agendada no Supabase.';
 end;
