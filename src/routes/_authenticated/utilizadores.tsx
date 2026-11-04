@@ -85,8 +85,8 @@ function Utilizadores() {
                     </Select>
                   )}
                 </TableCell>
-                <TableCell className="text-right">
-                  <div className="flex flex-wrap items-center justify-end gap-2">
+                <TableCell className="text-right whitespace-nowrap">
+                  <div className="flex flex-nowrap items-center justify-end gap-2">
                     {u.id !== me.id && !protegido && (
                       <>
                         <Button size="sm" onClick={() => credenciar(u.id, atual)}>{u.status === "APROVADO" ? "Actualizar" : "Credenciar"}</Button>
