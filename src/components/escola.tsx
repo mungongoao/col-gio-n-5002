@@ -33,7 +33,7 @@ export function DocCabecalho({ inst, titulo, sub }: { inst: Inst; titulo: string
       {inst?.direccao_municipal && <div>{inst.direccao_municipal}</div>}
       <div style={{ fontWeight: 700 }}>{inst?.nome_escola}</div>
       <div style={{ fontWeight: 700, marginTop: 6, fontSize: 14, textTransform: "uppercase" }}>{titulo}</div>
-      {sub && <div>{sub}</div>}
+      {sub && <div style={{ fontWeight: 700, textTransform: "uppercase" }}>{sub}</div>}
     </div>
   );
 }
