@@ -32,7 +32,7 @@ function Utilizadores() {
     enabled: !!me?.isStaff,
     queryFn: async () => {
       const [{ data: p }, { data: r }] = await Promise.all([
-        supabase.from("profiles").select("*").order("created_at"),
+        supabase.from("profiles").select("*").is("deleted_at", null).order("created_at"),
         supabase.from("user_roles").select("*"),
       ]);
       return (p ?? []).map((u) => ({ ...u, papeis: (r ?? []).filter((x) => x.user_id === u.id).map((x) => x.role as Papel) }));
@@ -63,7 +63,7 @@ function Utilizadores() {
 
   return (
     <div>
-      <PageTitle title="Gestão de Utilizadores" />
+      <PageTitle title="Gestão de Utilizadores"><Button variant="outline" onClick={() => window.location.assign("/lixo")}>Lixo</Button></PageTitle>
       <Table>
         <TableHeader><TableRow><TableHead>Nome</TableHead><TableHead>Email</TableHead><TableHead>Estado</TableHead><TableHead>Cargo</TableHead><TableHead className="text-right">Acções</TableHead></TableRow></TableHeader>
         <TableBody>
