@@ -31,10 +31,16 @@ function Utilizadores() {
     queryKey: ["utilizadores"],
     enabled: !!me?.isStaff,
     queryFn: async () => {
-      const [{ data: p }, { data: r }] = await Promise.all([
-        supabase.from("profiles").select("*").is("deleted_at", null).order("created_at"),
-        supabase.from("user_roles").select("*"),
-      ]);
+      let { data: p, error: perfilError } = await supabase.from("profiles").select("*").is("deleted_at", null).order("created_at");
+      // Compatibilidade com bases onde a migração do Lixo ainda não foi aplicada.
+      if (perfilError) {
+        const fallback = await supabase.from("profiles").select("*").order("created_at");
+        p = fallback.data;
+        perfilError = fallback.error;
+      }
+      if (perfilError) throw perfilError;
+      const { data: r, error: rolesError } = await supabase.from("user_roles").select("*");
+      if (rolesError) throw rolesError;
       return (p ?? []).map((u) => ({ ...u, papeis: (r ?? []).filter((x) => x.user_id === u.id).map((x) => x.role as Papel) }));
     },
   });
