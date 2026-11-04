@@ -95,9 +95,17 @@ export function useAlunos(classe?: string) {
   return useQuery({
     queryKey: ["alunos", classe ?? "all"],
     queryFn: async () => {
-      let q = supabase.from("students") .select("id,nome,genero,classe,turma,estado").is("deleted_at", null).order("nome");
+      let q = supabase.from("students").select("id,nome,genero,classe,turma,estado").is("deleted_at", null).order("nome");
       if (classe) q = q.eq("classe", classe);
-      const { data, error } = await q;
+      let { data, error } = await q;
+      // Compatibilidade com bases onde a migração do Lixo ainda não foi aplicada.
+      if (error) {
+        let fallback = supabase.from("students").select("id,nome,genero,classe,turma,estado").order("nome");
+        if (classe) fallback = fallback.eq("classe", classe);
+        const result = await fallback;
+        data = result.data;
+        error = result.error;
+      }
       if (error) throw error;
       const lista = (data ?? []) as Aluno[];
       return lista.sort((a, b) => a.nome.localeCompare(b.nome, "pt"));
