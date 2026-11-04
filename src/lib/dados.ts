@@ -23,7 +23,7 @@ export function useMe() {
         supabase.from("user_roles").select("role").eq("user_id", u.user.id),
       ]);
       const papeis = (roles ?? []).map((r) => r.role as Papel);
-      const aprovado = profile?.status === "APROVADO";
+      const aprovado = profile?.status === "APROVADO" && !profile?.deleted_at;
       const tem = (p: Papel) => aprovado && papeis.includes(p);
       return {
         id: u.user.id,
@@ -95,7 +95,7 @@ export function useAlunos(classe?: string) {
   return useQuery({
     queryKey: ["alunos", classe ?? "all"],
     queryFn: async () => {
-      let q = supabase.from("students").select("id,nome,genero,classe,turma,estado").order("nome");
+      let q = supabase.from("students") .select("id,nome,genero,classe,turma,estado").is("deleted_at", null).order("nome");
       if (classe) q = q.eq("classe", classe);
       const { data, error } = await q;
       if (error) throw error;
