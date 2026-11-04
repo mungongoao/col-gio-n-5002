@@ -372,6 +372,7 @@ export type Database = {
         Returns: boolean
       }
       is_staff: { Args: { _user_id: string }; Returns: boolean }
+      restaurar_utilizador: { Args: { _uid: string }; Returns: undefined }
       revogar_usuario: { Args: { _uid: string }; Returns: undefined }
       set_own_gender: { Args: { _genero: string }; Returns: undefined }
       staff_teacher_statistics: {
