@@ -60,6 +60,15 @@ end;
 $$;
 grant execute on function public.restaurar_utilizador(uuid) to authenticated;
 
+-- Activar pg_cron quando a extensão estiver disponível no projecto Supabase.
+do $
+begin
+  create extension if not exists pg_cron;
+exception when undefined_file then
+  raise warning 'pg_cron não está disponível; a limpeza automática precisa de ser agendada no Supabase.';
+end;
+$;
+
 -- Limpeza automática diária dos registos cujo prazo de 15 dias terminou.
 create or replace function public.purgar_lixo_expirado()
 returns void
