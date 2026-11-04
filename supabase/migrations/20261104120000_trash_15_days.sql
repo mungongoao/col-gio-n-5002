@@ -9,24 +9,24 @@ create index if not exists profiles_deleted_at_idx on public.profiles (deleted_a
 create or replace function public.has_role(_user_id uuid, _role public.app_role)
 returns boolean
 language sql stable security definer set search_path = public
-as $
+as $function$
   select exists (
     select 1 from public.user_roles r
     join public.profiles p on p.id = r.user_id
     where r.user_id = _user_id and r.role = _role
       and p.status = 'APROVADO' and p.deleted_at is null
   )
-$;
+$function$;
 
 create or replace function public.is_approved(_user_id uuid)
 returns boolean
 language sql stable security definer set search_path = public
-as $
+as $function$
   select exists (
     select 1 from public.profiles
     where id = _user_id and status = 'APROVADO' and deleted_at is null
   )
-$;
+$function$;
 
 -- Alunos arquivados deixam de aparecer para professores e encarregados;
 -- o pessoal autorizado continua a poder consultá-los na página Lixo.
@@ -61,13 +61,13 @@ $$;
 grant execute on function public.restaurar_utilizador(uuid) to authenticated;
 
 -- Activar pg_cron quando a extensão estiver disponível no projecto Supabase.
-do $
+do $block$
 begin
   execute 'create extension if not exists pg_cron';
 exception when undefined_file then
   raise warning 'pg_cron não está disponível; a limpeza automática precisa de ser agendada no Supabase.';
 end;
-$;
+$function$;
 
 -- Limpeza automática diária dos registos cujo prazo de 15 dias terminou.
 create or replace function public.purgar_lixo_expirado()
