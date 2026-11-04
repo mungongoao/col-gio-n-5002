@@ -67,7 +67,7 @@ begin
 exception when undefined_file then
   raise warning 'pg_cron não está disponível; a limpeza automática precisa de ser agendada no Supabase.';
 end;
-$function$;
+$block$;
 
 -- Limpeza automática diária dos registos cujo prazo de 15 dias terminou.
 create or replace function public.purgar_lixo_expirado()
