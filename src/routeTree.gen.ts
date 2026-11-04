@@ -24,6 +24,7 @@ import { Route as AuthenticatedNotasRouteImport } from './routes/_authenticated/
 import { Route as AuthenticatedPainelRouteImport } from './routes/_authenticated/painel'
 import { Route as AuthenticatedPautasRouteImport } from './routes/_authenticated/pautas'
 import { Route as AuthenticatedUtilizadoresRouteImport } from './routes/_authenticated/utilizadores'
+import { Route as AuthenticatedLixoRouteImport } from './routes/_authenticated/lixo'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -105,6 +106,11 @@ const AuthenticatedUtilizadoresRoute =
     path: '/utilizadores',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedLixoRoute = AuthenticatedLixoRouteImport.update({
+  id: '/lixo',
+  path: '/lixo',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -121,6 +127,7 @@ export interface FileRoutesByFullPath {
   '/painel': typeof AuthenticatedPainelRoute
   '/pautas': typeof AuthenticatedPautasRoute
   '/utilizadores': typeof AuthenticatedUtilizadoresRoute
+  '/lixo': typeof AuthenticatedLixoRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -155,6 +162,7 @@ export interface FileRoutesById {
   '/_authenticated/painel': typeof AuthenticatedPainelRoute
   '/_authenticated/pautas': typeof AuthenticatedPautasRoute
   '/_authenticated/utilizadores': typeof AuthenticatedUtilizadoresRoute
+  '/_authenticated/lixo': typeof AuthenticatedLixoRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -173,6 +181,7 @@ export interface FileRouteTypes {
     | '/painel'
     | '/pautas'
     | '/utilizadores'
+    | '/lixo'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -189,6 +198,7 @@ export interface FileRouteTypes {
     | '/painel'
     | '/pautas'
     | '/utilizadores'
+    | '/lixo'
   id:
     | '__root__'
     | '/'
@@ -206,6 +216,7 @@ export interface FileRouteTypes {
     | '/_authenticated/painel'
     | '/_authenticated/pautas'
     | '/_authenticated/utilizadores'
+    | '/_authenticated/lixo'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -322,6 +333,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedUtilizadoresRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/lixo': {
+      id: '/_authenticated/lixo'
+      path: '/lixo'
+      fullPath: '/lixo'
+      preLoaderRoute: typeof AuthenticatedLixoRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
@@ -337,6 +355,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedPainelRoute: typeof AuthenticatedPainelRoute
   AuthenticatedPautasRoute: typeof AuthenticatedPautasRoute
   AuthenticatedUtilizadoresRoute: typeof AuthenticatedUtilizadoresRoute
+  AuthenticatedLixoRoute: typeof AuthenticatedLixoRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
@@ -351,6 +370,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedPainelRoute: AuthenticatedPainelRoute,
   AuthenticatedPautasRoute: AuthenticatedPautasRoute,
   AuthenticatedUtilizadoresRoute: AuthenticatedUtilizadoresRoute,
+  AuthenticatedLixoRoute: AuthenticatedLixoRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
