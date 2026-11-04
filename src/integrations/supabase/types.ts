@@ -191,6 +191,7 @@ export type Database = {
         Row: {
           cargo_pretendido: string
           created_at: string
+          deleted_at: string | null
           email: string
           genero: string | null
           id: string
@@ -200,6 +201,7 @@ export type Database = {
         Insert: {
           cargo_pretendido?: string
           created_at?: string
+          deleted_at?: string | null
           email?: string
           genero?: string | null
           id: string
@@ -209,6 +211,7 @@ export type Database = {
         Update: {
           cargo_pretendido?: string
           created_at?: string
+          deleted_at?: string | null
           email?: string
           genero?: string | null
           id?: string
@@ -222,6 +225,7 @@ export type Database = {
           bi: string
           classe: string
           created_at: string
+          deleted_at: string | null
           estado: string
           genero: string
           id: number
@@ -234,6 +238,7 @@ export type Database = {
           bi?: string
           classe: string
           created_at?: string
+          deleted_at?: string | null
           estado?: string
           genero: string
           id?: never
@@ -246,6 +251,7 @@ export type Database = {
           bi?: string
           classe?: string
           created_at?: string
+          deleted_at?: string | null
           estado?: string
           genero?: string
           id?: never
