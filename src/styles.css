@@ -174,13 +174,13 @@ body { font-family: var(--font-sans); }
 h1, h2, h3 { font-family: var(--font-serif); }
 
 /* Documentos oficiais */
-.doc { background: white; color: black; font-family: "Times New Roman", serif; }
+.doc { background: white; color: black; font-family: "Times New Roman", serif; font-size: 12pt; box-sizing: border-box; }
 .doc table { border-collapse: collapse; width: 100%; }
-.doc th, .doc td { border: 1px solid black; padding: 2px 4px; text-align: center; font-size: 11px; }
+.doc th, .doc td { border: 1px solid black; padding: 2px 4px; text-align: center; font-size: 12pt; }
 .doc td.esq { text-align: left; }
-.doc-a5 { width: 148mm; min-height: 210mm; padding: 8mm; page: boletim; }
-.doc-a4 { width: 210mm; min-height: 297mm; padding: 8mm; page: a4; }
-.doc-a3 { width: 420mm; min-height: 297mm; padding: 8mm; page: a3; }
+.doc-a5 { width: 148mm; min-height: 210mm; padding: 8mm; page: boletim; box-sizing: border-box; }
+.doc-a4 { width: 210mm; min-height: 297mm; padding: 8mm; page: a4; box-sizing: border-box; }
+.doc-a3 { width: 420mm; min-height: 297mm; padding: 8mm; page: a3; box-sizing: border-box; }
 .neg { color: var(--grade-negative); }
 .pos { color: var(--grade-positive); }
 :root { --grade-positive: oklch(0.48 0.2 260); --grade-negative: oklch(0.5 0.22 27); }
@@ -195,10 +195,12 @@ h1, h2, h3 { font-family: var(--font-serif); }
 @page duo { size: A4 landscape; margin: 0; }
 .duo { display: flex; gap: 0; page: duo; }
 @media print {
-  .duo { width: 297mm; height: 210mm; overflow: hidden; flex-wrap: nowrap !important; break-after: page; break-inside: avoid; }
-  .duo .doc-a5 { width: 148.5mm; height: 210mm; min-height: 0; padding: 6mm; overflow: hidden; break-after: auto; break-inside: avoid; page: duo; }
-  .duo .doc-a5 th, .duo .doc-a5 td { font-size: 9.5px; padding: 1px 3px; }
+  .duo { display: flex; width: 297mm; height: 210mm; overflow: hidden; flex-wrap: nowrap !important; gap: 0 !important; break-after: page; break-inside: avoid; page: duo; }
+  .duo:last-child { break-after: auto; }
+  .duo .doc-a5 { flex: 0 0 148.5mm; width: 148.5mm; height: 210mm; min-height: 0; padding: 5mm; overflow: hidden; box-sizing: border-box; break-after: auto !important; break-inside: avoid; page: duo; }
+  .duo .doc-a5 th, .duo .doc-a5 td { font-size: 8.5pt; padding: 1px 2px; }
   .duo .doc-a5 + .doc-a5 { border-left: 1px dashed #999; }
+  .doc-a3 th, .doc-a3 td { font-size: 8pt; }
 }
 
 @media print {
@@ -212,3 +214,4 @@ h1, h2, h3 { font-family: var(--font-serif); }
 .boletim-visto { position: absolute; top: 0; right: 0; }
 .boletim-visto > div { min-width: 0 !important; }
 .boletim-instituicao { overflow-wrap: anywhere; }
+.doc h1, .doc h2, .doc h3 { text-transform: uppercase; font-weight: 700; }
