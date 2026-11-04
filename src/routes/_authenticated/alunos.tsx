@@ -41,7 +41,7 @@ function Alunos() {
   const { error } = editId === null ? await supabase.from("students").insert(p.data) : await supabase.from("students").update(p.data).eq("id",editId);
   setBusy(false); if(error) return void toast.error(error.message); toast.success(editId === null ? "Aluno cadastrado." : "Dados do aluno actualizados."); limpar(); await qc.invalidateQueries();
  }
- async function eliminar() { if(eliminarId === null) return; const { error } = await supabase.from("students").update({ deleted_at: new Date().toISOString() }).eq("id",eliminarId); if(error) return void toast.error(error.message); if(editId === eliminarId) limpar(); setEliminarId(null); await qc.invalidateQueries(); }
+ async function eliminar() { if(eliminarId === null) return; const { error } = await supabase.from("students").update({ deleted_at: new Date().toISOString() }).eq("id",eliminarId); if(error) return void toast.error(error.message); toast.success("Aluno enviado para o Lixo. Pode restaurá-lo durante 15 dias."); if(editId === eliminarId) limpar(); setEliminarId(null); await qc.invalidateQueries(); }
  function editar(a: Aluno) { setEditId(a.id); setF({ nome:a.nome,genero:a.genero,classe:a.classe,turma:a.turma,estado:a.estado }); window.scrollTo({ top:0,behavior:"smooth" }); }
  if(!me?.isStaff) return <p>Sem permissão.</p>;
  return <div><PageTitle title={editId === null ? "Cadastro de Alunos" : "Actualização de Dados"} />
