@@ -90,6 +90,13 @@ function Estatisticas() {
 
   if (me?.isEncarregado || me?.isCoordenador) return <p>Sem permissão.</p>;
   const tituloTri = tri === "final" ? "Final" : `${tri}º Trimestre`;
+  const nomeImpressao = `Estatísticas - ${tituloTri}`;
+  function imprimir() {
+    const anterior = document.title;
+    document.title = nomeImpressao;
+    window.addEventListener("afterprint", () => { document.title = anterior; }, { once: true });
+    window.print();
+  }
   const soma = (ls: typeof linhas, k: "matriculados" | "desistentes" | "avaliados" | "comApr" | "semApr" | "professores") =>
     ({ mf: ls.reduce((s, l) => s + l[k].mf, 0), f: ls.reduce((s, l) => s + l[k].f, 0) });
   const cel = (c: Contagem, base?: number) => <><td>{c.mf}</td><td>{c.f}</td>{base !== undefined && <td>{percentagem(c.mf, base)}%</td>}</>;
@@ -109,8 +116,8 @@ function Estatisticas() {
             <SelectItem value="final">Final</SelectItem>
           </SelectContent>
         </Select>
-        <Button variant="outline" onClick={() => window.print()}><Printer className="mr-2 h-4 w-4" />Imprimir / PDF</Button>
-        <GuardarDocumento nome={`Estatísticas ${tituloTri}`} />
+        <Button variant="outline" onClick={imprimir}><Printer className="mr-2 h-4 w-4" />Imprimir / PDF</Button>
+        <GuardarDocumento nome={nomeImpressao} />
       </PageTitle>
 
       {(vista === "classe" && me?.isStaff) || !me?.isProfessor ? (
