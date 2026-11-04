@@ -144,6 +144,7 @@ export interface FileRoutesByTo {
   '/painel': typeof AuthenticatedPainelRoute
   '/pautas': typeof AuthenticatedPautasRoute
   '/utilizadores': typeof AuthenticatedUtilizadoresRoute
+  '/lixo': typeof AuthenticatedLixoRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
