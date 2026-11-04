@@ -30,6 +30,12 @@ as $$
 begin
   delete from auth.users
   where id in (select id from public.profiles where deleted_at <= now() - interval '15 days');
+  delete from public.teacher_assignments
+  where user_id in (select id from public.profiles where deleted_at <= now() - interval '15 days');
+  delete from public.guardian_students
+  where guardian_id in (select id from public.profiles where deleted_at <= now() - interval '15 days');
+  delete from public.user_roles
+  where user_id in (select id from public.profiles where deleted_at <= now() - interval '15 days');
   delete from public.profiles where deleted_at <= now() - interval '15 days';
   delete from public.students where deleted_at <= now() - interval '15 days';
 end;
