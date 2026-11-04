@@ -33,7 +33,11 @@ function Boletins() {
   const filtrados = pesquisa.trim() ? alunos.filter((a) => a.nome.toLowerCase().includes(pesquisa.trim().toLowerCase())) : alunos;
   const lista = alunos.filter((a) => sel.includes(a.id));
   const paginas = Array.from({ length: Math.ceil(lista.length / 2) }, (_, i) => lista.slice(i * 2, i * 2 + 2));
-  const nomeImpressao = lista.length > 2 ? `Boletim - ${nomeClasse(classe)}` : `Boletim - ${nomeClasse(classe)}`; 
+  const nomeImpressao = lista.length > 2
+    ? `Boletim - ${nomeClasse(classe)}`
+    : lista.length
+      ? `Boletim - ${lista.map((a) => a.nome).join(" e ")} - ${nomeClasse(classe)}`
+      : `Boletim - ${nomeClasse(classe)}`;
   function imprimir() {
     const anterior = document.title;
     document.title = nomeImpressao;
@@ -62,7 +66,7 @@ function Boletins() {
         {me?.podeImprimirBoletim && (
           <>
             <Button onClick={imprimir}><Printer className="mr-2 h-4 w-4" />Imprimir / PDF</Button>
-            <GuardarDocumento nome={lista.length > 2 ? `Boletim - ${nomeClasse(classe)}` : `Boletim - ${nomeClasse(classe)}`} />
+            <GuardarDocumento nome={nomeImpressao} />
           </>
         )}
       </PageTitle>
