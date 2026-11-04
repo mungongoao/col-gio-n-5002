@@ -27,5 +27,9 @@ export const eliminarUsuarioPermanentemente = createServerFn({ method: "POST" })
     if (!profile?.deleted_at) throw new Error("O utilizador não está no Lixo.");
     const { error } = await supabaseAdmin.auth.admin.deleteUser(data.id);
     if (error) throw new Error(error.message);
+    await supabaseAdmin.from("teacher_assignments").delete().eq("user_id", data.id);
+    await supabaseAdmin.from("guardian_students").delete().eq("guardian_id", data.id);
+    await supabaseAdmin.from("user_roles").delete().eq("user_id", data.id);
+    await supabaseAdmin.from("profiles").delete().eq("id", data.id);
     return { ok: true };
   });
