@@ -116,8 +116,8 @@ function Boletim({ aluno, n, classe, tipo, inst, disciplinas, notas, faltasT }: 
   if (tipo === "final") resultado = resultadoFinal(classe, linhas.map((l) => ({ extra: l.d.extra, r: l.r! })))?.texto ?? null;
   const faltas = notas.filter((x) => x.student_id === aluno.id && (tipo === "final" || x.trimestre === Number(tipo))).reduce((s, x) => s + (x.faltas ?? 0), 0)
     + faltasT.filter((x) => x.student_id === aluno.id && (tipo === "final" || x.trimestre === Number(tipo))).reduce((s, x) => s + x.faltas, 0);
-  if (tipo !== "final") resultado = resultadoTrimestreDetalhado(classe, linhas.map((l) => ({ extra: l.d.extra, disciplina: l.d.nome, v: qual ? l.n?.qualitativo ?? null : mediaTrimestral(l.n) })), faltas);
-  const mediaFinal = qual ? null : mediaGeral(linhas.map((l) => ({ extra: l.d.extra, v: tipo === "final" ? l.r!.cf : mediaTrimestral(l.n) })));
+  if (tipo !== "final") resultado = resultadoTrimestreDetalhado(classe, linhas.map((l) => ({ extra: l.d.extra, disciplina: l.d.nome, v: qual ? l.n?.qualitativo ?? null : mediaTrimestral(l.n, classe) })), faltas);
+  const mediaFinal = qual ? null : mediaGeral(linhas.map((l) => ({ extra: l.d.extra, v: tipo === "final" ? l.r!.mf : mediaTrimestral(l.n, classe) })));
 
   return (
     <div className="doc doc-a5 shadow">
@@ -137,7 +137,7 @@ function Boletim({ aluno, n, classe, tipo, inst, disciplinas, notas, faltasT }: 
       <table>
         <thead>
           {tipo === "final" ? (
-            <tr><th>Disciplina</th>{qual ? <th>Avaliação</th> : <><th>MT1</th><th>MT2</th><th>MT3</th><th>MFD</th>{exame && <><th>Exame</th><th>CF</th></>}</>}</tr>
+            <tr><th>Disciplina</th>: qual ? <th>Avaliação</th> : exame ? <><th>MFD</th><th>NE</th><th>MF</th></> : <><th>MT1</th><th>MT2</th><th>MT3</th><th>MFD</th></>}</tr>
           ) : (
             <tr><th>Disciplina</th>{qual ? <th>Avaliação</th> : <><th>MAC</th><th>NPT</th><th>MT{tipo}</th></>}</tr>
           )}
@@ -148,8 +148,9 @@ function Boletim({ aluno, n, classe, tipo, inst, disciplinas, notas, faltasT }: 
               <td className="esq">{d.nome}{d.extra ? "*" : ""}</td>
               {tipo === "final" ? (
                 qual ? <td>{r!.qual ?? "—"}</td> : <>
-                  <td className={cls(r!.mt1)}>{fmt(r!.mt1)}</td><td className={cls(r!.mt2)}>{fmt(r!.mt2)}</td><td className={cls(r!.mt3)}>{fmt(r!.mt3)}</td><td className={cls(r!.mfd)}><b>{fmt(r!.mfd)}</b></td>
-                  {exame && <><td className={cls(r!.exame)}>{fmt(r!.exame)}</td><td className={cls(r!.cf)}><b>{fmt(r!.cf)}</b></td></>}
+                  {exame
+                    ? <><td className={cls(r!.mfd)}>{fmt(r!.mfd)}</td><td className={cls(r!.exame)}>{fmt(r!.exame)}</td><td className={cls(r!.mf)}><b>{fmt(r!.mf)}</b></td></>
+                    : <><td className={cls(r!.mt1)}>{fmt(r!.mt1)}</td><td className={cls(r!.mt2)}>{fmt(r!.mt2)}</td><td className={cls(r!.mt3)}>{fmt(r!.mt3)}</td><td className={cls(r!.mfd)}><b>{fmt(r!.mfd)}</b></td></>}
                 </>
               ) : (
                 <>
