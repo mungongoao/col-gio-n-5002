@@ -37,8 +37,11 @@ export type Nota = {
 
 const r1 = (n: number) => Math.round(n * 10) / 10;
 
-export function mediaTrimestral(n?: Pick<Nota, "mac" | "npt"> | null): number | null {
-  if (!n || n.mac == null || n.npt == null) return null;
+export function mediaTrimestral(n?: Pick<Nota, "mac" | "npt" | "trimestre"> | null, classe?: string): number | null {
+  if (!n || n.mac == null) return null;
+  // Nas classes de exame, a avaliação do 3.º trimestre é MACT3 e vale directamente.
+  if (isClasseExame(classe ?? "") && n.trimestre === 3) return r1(Number(n.mac));
+  if (n.npt == null) return null;
   return r1((Number(n.mac) + Number(n.npt)) / 2);
 }
 
@@ -57,7 +60,8 @@ export type ResumoDisciplina = {
   mt3: number | null;
   mfd: number | null;
   exame: number | null;
-  cf: number | null; // classificação final (igual à MFD nas classes sem exame)
+  mf: number | null;
+  cf: number | null; // compatibilidade: alias de MF nas classes de exame
   qual: string | null; // iniciação
   positiva: boolean | null;
 };
@@ -66,19 +70,19 @@ export function resumoDisciplina(classe: string, disciplina: string, notas: Nota
   const t = (i: number) => notas.find((n) => n.trimestre === i);
   if (isQualitativa(classe)) {
     const qual = t(3)?.qualitativo ?? null;
-    return { mt1: null, mt2: null, mt3: null, mfd: null, exame: null, cf: null, qual, positiva: qual ? true : null };
+    return { mt1: null, mt2: null, mt3: null, mfd: null, exame: null, mf: null, cf: null, qual, positiva: qual ? true : null };
   }
   const mt1 = mediaTrimestral(t(1));
   const mt2 = mediaTrimestral(t(2));
-  const mt3 = mediaTrimestral(t(3));
-  const mfd = mt1 != null && mt2 != null && mt3 != null ? Math.round((mt1 + mt2 + mt3) / 3) : null;
+  const mt3 = mediaTrimestral(t(3), classe);
+  const mfd = mt1 != null && mt2 != null && mt3 != null ? r1((mt1 + mt2 + mt3) / 3) : null;
   let exame: number | null = null;
-  let cf: number | null = mfd;
+  let mf: number | null = mfd;
   if (isClasseExame(classe)) {
     exame = notaExame(t(3), disciplina);
-    cf = mfd != null && exame != null ? Math.round(mfd * 0.6 + exame * 0.4) : null;
+    mf = mfd != null && exame != null ? r1(0.6 * mfd + 0.4 * exame) : null;
   }
-  return { mt1, mt2, mt3, mfd, exame, cf, qual: null, positiva: cf == null ? null : cf >= notaMinima(classe) };
+  return { mt1, mt2, mt3, mfd, exame, mf, cf: mf, qual: null, positiva: mf == null ? null : mf >= notaMinima(classe) };
 }
 
 /** Resultado final do aluno. Extra-curriculares não contam. */
