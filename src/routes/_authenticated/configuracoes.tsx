@@ -29,6 +29,9 @@ function Config() {
   const qc = useQueryClient();
   type K = "id" | "republica" | "ministerio" | "direccao_municipal" | "nome_escola" | "ano_lectivo" | "logo_url" | "pauta_pedagogico" | "pauta_direccao" | "boletim_coord_manha" | "boletim_coord_tarde" | "cor_fundo" | "cor_texto" | "cor_paginas";
   const [f, setF] = useState<Partial<Record<K, string>>>({});
+  const [corTemaPrincipal, setCorTemaPrincipal] = useState("#1e3a5f");
+  useEffect(() => { try { setCorTemaPrincipal(localStorage.getItem("jzymar-cor-tema-principal") || "#1e3a5f"); } catch { /* armazenamento opcional */ } }, []);
+  useEffect(() => { document.documentElement.style.setProperty("--tema-principal", corTemaPrincipal); }, [corTemaPrincipal]);
   useEffect(() => {
     if (inst) setF(Object.fromEntries(Object.entries(inst).map(([k, v]) => [k, String(v ?? "")])) as Partial<Record<K, string>>);
   }, [inst]);
@@ -79,6 +82,12 @@ function Config() {
           <div className="space-y-2"><Label>Cor de fundo do sistema</Label><Input type="color" value={f.cor_fundo || "#f8fafc"} onChange={set("cor_fundo")} className="h-11 p-1" /></div>
           <div className="space-y-2"><Label>Cor das letras</Label><Input type="color" value={f.cor_texto || "#243247"} onChange={set("cor_texto")} className="h-11 p-1" /></div>
           <div className="space-y-2"><Label>Cor das páginas e cartões</Label><Input type="color" value={f.cor_paginas || "#ffffff"} onChange={set("cor_paginas")} className="h-11 p-1" /></div>
+        </CardContent>
+      </Card>
+      <Card>
+        <CardHeader><CardTitle>Tema principal</CardTitle></CardHeader>
+        <CardContent className="grid gap-4 sm:grid-cols-3">
+          <div className="space-y-2 sm:col-span-3"><Label>Cor do tema principal / fundo externo</Label><Input type="color" value={corTemaPrincipal} onChange={(e) => { setCorTemaPrincipal(e.target.value); try { localStorage.setItem("jzymar-cor-tema-principal", e.target.value); } catch { /* armazenamento opcional */ } }} className="h-11 p-1" /><p className="text-xs text-muted-foreground">Aplica-se à barra fixa, cabeçalho institucional, página inicial e fundo externo de autenticação. A alteração é imediata e fica guardada neste navegador.</p></div>
         </CardContent>
       </Card>
       <Card>
