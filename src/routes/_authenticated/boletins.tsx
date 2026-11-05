@@ -139,7 +139,7 @@ function Boletim({ aluno, n, classe, tipo, inst, disciplinas, notas, faltasT }: 
           {tipo === "final" ? (
             <tr><th>Disciplina</th>{qual ? <th>Avaliação</th> : exame ? <><th>MFD</th><th>NE</th><th>MF</th></> : <><th>MT1</th><th>MT2</th><th>MT3</th><th>MFD</th></>}</tr>
           ) : (
-            <tr><th>Disciplina</th>{qual ? <th>Avaliação</th> : isClasseExame(classe) && tipo === "3" ? <th>MACT3</th> : <><th>MAC</th><th>NPT</th><th>MT{tipo}</th></>}</tr>
+            <tr><th>Disciplina</th>{qual ? <th>Avaliação</th> : isClasseExame(classe) && tipo === "3" ? <><th>MACT3</th><th>MT3</th></> : <><th>MAC</th><th>NPT</th><th>MT{tipo}</th></>}</tr>
           )}
         </thead>
         <tbody>
@@ -156,7 +156,7 @@ function Boletim({ aluno, n, classe, tipo, inst, disciplinas, notas, faltasT }: 
                 <>
                   {qual ? <td>{nn?.qualitativo ?? "—"}</td> : <>
                     {isClasseExame(classe) && tipo === "3"
-                      ? <td className={cls(mediaTrimestral(nn, classe))}><b>{fmt(mediaTrimestral(nn, classe))}</b></td>
+                      ? <><td className={cls(nn?.mac ?? null)}>{fmt(nn?.mac)}</td><td className={cls(mediaTrimestral(nn, classe))}><b>{fmt(mediaTrimestral(nn, classe))}</b></td></>
                       : <><td className={cls(nn?.mac ?? null)}>{fmt(nn?.mac)}</td><td className={cls(nn?.npt ?? null)}>{fmt(nn?.npt)}</td><td className={cls(mediaTrimestral(nn, classe))}><b>{fmt(mediaTrimestral(nn, classe))}</b></td></>}
                   </>}
                 </>
