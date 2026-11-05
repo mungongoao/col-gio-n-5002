@@ -117,11 +117,10 @@ function Pautas() {
                             if (exame && t === 3) return [<td key="mact3" className={cls(n?.mac ?? null)}>{fmt(n?.mac)}</td>, <td key="mt3" className={cls(mt)}><b>{fmt(mt)}</b></td>];
                             return [<td key={`a${t}`} className={cls(n?.mac ?? null)}>{fmt(n?.mac)}</td>, <td key={`b${t}`} className={cls(n?.npt ?? null)}>{fmt(n?.npt)}</td>, <td key={`c${t}`} className={cls(mt)}><b>{fmt(mt)}</b></td>];
                           })}
-                          {!qual && exame && <td>{fmt(t3?.exame_escrito)}</td>}
-                          {!qual && exame && temExameOral(disciplina.nome) && <td>{fmt(t3?.exame_oral)}</td>}
+                          {!qual && exame && <td className={cls(r.exame)}>{fmt(r.exame)}</td>}
                           {!qual && <td className={cls(r.mfd)}><b>{fmt(r.mfd)}</b></td>}
-                          {!qual && exame && <td className={cls(r.cf)}><b>{fmt(r.cf)}</b></td>}
-                          <td>{r.positiva == null ? "" : r.positiva ? "Positiva" : "Negativa"}</td>
+                          {!qual && exame && <td className={cls(r.mf)}><b>{fmt(r.mf)}</b></td>}
+                          <td>{exame ? (r.positiva == null ? "" : r.positiva ? "Apto" : "Não Apto") : (r.positiva == null ? "" : r.positiva ? "Positiva" : "Negativa")}</td>
                         </tr>
                       );
                     })}
