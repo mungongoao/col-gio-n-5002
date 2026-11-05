@@ -18,7 +18,7 @@ export const Route = createFileRoute("/")({
 function Inicio() {
   const { data: inst } = useInstituicao();
   return (
-    <div className="flex min-h-screen flex-col bg-primary text-primary-foreground">
+    <div className="flex min-h-screen flex-col bg-[var(--tema-principal)] text-white">
       <main className="flex flex-1 flex-col items-center justify-center px-6 text-center">
         <div className="mb-8 flex h-36 w-36 items-center justify-center overflow-hidden rounded-full bg-background p-3 shadow-xl">
           {inst?.logo_url ? (
