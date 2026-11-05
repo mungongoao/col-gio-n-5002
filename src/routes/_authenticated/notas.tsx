@@ -75,7 +75,7 @@ function Notas() {
         return void toast.error(`Nota inválida para ${a.nome}. Escala: 0 a ${max}.`);
       rows.push({
         student_id: a.id, subject_id: disciplina.id, trimestre: Number(tri),
-        mac: qual ? null : vals[0] ?? null, npt: qual ? null : vals[1] ?? null,
+        mac: qual ? null : vals[0] ?? null, npt: qual ? null : isClasseExame(classe) && tri === "3" ? (notas?.find((n) => n.student_id === a.id && n.subject_id === disciplina.id && n.trimestre === Number(tri))?.npt ?? null) : vals[1] ?? null,
         qualitativo: qual ? l.qualitativo || null : null,
         exame_escrito: comExame ? vals[2] ?? null : null, exame_oral: oral ? vals[3] ?? null : null,
         faltas: me?.podeLancarFaltas ? Math.max(0, parseInt(l.faltas) || 0) : Number(notas?.find((n) => n.student_id === a.id && n.subject_id === disciplina.id && n.trimestre === Number(tri))?.faltas ?? 0),
@@ -114,7 +114,7 @@ function Notas() {
       ) : (
         <>
           <p className="mb-3 text-sm text-muted-foreground">
-            {nomeClasse(classe)} · {disciplina.nome} · {qual ? "Avaliação qualitativa" : `Escala 0–${max} · MT${tri} = (MAC + NPT) / 2`}
+            {nomeClasse(classe)} · {disciplina.nome} · {qual ? "Avaliação qualitativa" : isClasseExame(classe) && tri === "3" ? `Escala 0–${max} · MT3 = MACT3` : `Escala 0–${max} · MT${tri} = (MAC + NPT) / 2`}
             {comExame && " · Inclui Exame escrito" + (oral ? " e oral" : "")}
           </p>
           <div className="overflow-auto rounded-md border bg-card">
@@ -122,7 +122,7 @@ function Notas() {
               <thead className="bg-secondary">
                 <tr className="text-left">
                   <th className="p-2">Nº</th><th className="p-2">Nome do Aluno</th>
-                  {qual ? <th className="p-2">Avaliação</th> : <><th className="p-2">MAC</th><th className="p-2">NPT</th><th className="p-2">MT{tri}</th></>}
+                  {qual ? <th className="p-2">Avaliação</th> : isClasseExame(classe) && tri === "3" ? <th className="p-2">MACT3</th> : <><th className="p-2">MAC</th><th className="p-2">NPT</th><th className="p-2">MT{tri}</th></>}
                   {comExame && <th className="p-2">Exame Escrito</th>}
                   {oral && <th className="p-2">Exame Oral</th>}
                   <th className="p-2">Faltas</th>
@@ -131,7 +131,7 @@ function Notas() {
               <tbody>
                 {visiveis.map((a, i) => {
                   const l = linhas[a.id] ?? vazia;
-                  const mt = mediaTrimestral({ mac: num(l.mac), npt: num(l.npt) });
+                  const mt = mediaTrimestral({ mac: num(l.mac), npt: num(l.npt), trimestre: Number(tri) }, classe);
                   return (
                     <tr key={a.id} className="border-t">
                       <td className="p-2">{i + 1}</td><td className="p-2">{a.nome}</td>
@@ -144,8 +144,12 @@ function Notas() {
                         </td>
                       ) : (
                         <>
-                          <td className="p-2"><Input disabled={!podeLancarNotas} className="w-20" value={l.mac} onChange={(e) => upd(a.id, "mac", e.target.value)} /></td>
-                          <td className="p-2"><Input disabled={!podeLancarNotas} className="w-20" value={l.npt} onChange={(e) => upd(a.id, "npt", e.target.value)} /></td>
+                          {isClasseExame(classe) && tri === "3" ? (
+                            <td className="p-2"><Input disabled={!podeLancarNotas} className="w-20" value={l.mac} onChange={(e) => upd(a.id, "mac", e.target.value)} /></td>
+                          ) : <>
+                            <td className="p-2"><Input disabled={!podeLancarNotas} className="w-20" value={l.mac} onChange={(e) => upd(a.id, "mac", e.target.value)} /></td>
+                            <td className="p-2"><Input disabled={!podeLancarNotas} className="w-20" value={l.npt} onChange={(e) => upd(a.id, "npt", e.target.value)} /></td>
+                          </>}
                           <td className={`p-2 font-semibold ${mt == null ? "" : mt < notaMinima(classe) ? "neg" : "pos"}`}>{fmt(mt)}</td>
                         </>
                       )}
