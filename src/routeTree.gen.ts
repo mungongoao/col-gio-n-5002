@@ -20,11 +20,12 @@ import { Route as AuthenticatedConfiguracoesRouteImport } from './routes/_authen
 import { Route as AuthenticatedDisciplinasRouteImport } from './routes/_authenticated/disciplinas'
 import { Route as AuthenticatedEstatisticasRouteImport } from './routes/_authenticated/estatisticas'
 import { Route as AuthenticatedListaNominalRouteImport } from './routes/_authenticated/lista-nominal'
+import { Route as AuthenticatedLixoRouteImport } from './routes/_authenticated/lixo'
 import { Route as AuthenticatedNotasRouteImport } from './routes/_authenticated/notas'
 import { Route as AuthenticatedPainelRouteImport } from './routes/_authenticated/painel'
 import { Route as AuthenticatedPautasRouteImport } from './routes/_authenticated/pautas'
 import { Route as AuthenticatedUtilizadoresRouteImport } from './routes/_authenticated/utilizadores'
-import { Route as AuthenticatedLixoRouteImport } from './routes/_authenticated/lixo'
+import { Route as ApiPublicJobsPurgarLixoRouteImport } from './routes/api/public/jobs/purgar-lixo'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -85,6 +86,11 @@ const AuthenticatedListaNominalRoute =
     path: '/lista-nominal',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedLixoRoute = AuthenticatedLixoRouteImport.update({
+  id: '/lixo',
+  path: '/lixo',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedNotasRoute = AuthenticatedNotasRouteImport.update({
   id: '/notas',
   path: '/notas',
@@ -106,10 +112,10 @@ const AuthenticatedUtilizadoresRoute =
     path: '/utilizadores',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
-const AuthenticatedLixoRoute = AuthenticatedLixoRouteImport.update({
-  id: '/lixo',
-  path: '/lixo',
-  getParentRoute: () => AuthenticatedRouteRoute,
+const ApiPublicJobsPurgarLixoRoute = ApiPublicJobsPurgarLixoRouteImport.update({
+  id: '/api/public/jobs/purgar-lixo',
+  path: '/api/public/jobs/purgar-lixo',
+  getParentRoute: () => rootRouteImport,
 } as any)
 
 export interface FileRoutesByFullPath {
@@ -123,11 +129,12 @@ export interface FileRoutesByFullPath {
   '/disciplinas': typeof AuthenticatedDisciplinasRoute
   '/estatisticas': typeof AuthenticatedEstatisticasRoute
   '/lista-nominal': typeof AuthenticatedListaNominalRoute
+  '/lixo': typeof AuthenticatedLixoRoute
   '/notas': typeof AuthenticatedNotasRoute
   '/painel': typeof AuthenticatedPainelRoute
   '/pautas': typeof AuthenticatedPautasRoute
   '/utilizadores': typeof AuthenticatedUtilizadoresRoute
-  '/lixo': typeof AuthenticatedLixoRoute
+  '/api/public/jobs/purgar-lixo': typeof ApiPublicJobsPurgarLixoRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -140,11 +147,12 @@ export interface FileRoutesByTo {
   '/disciplinas': typeof AuthenticatedDisciplinasRoute
   '/estatisticas': typeof AuthenticatedEstatisticasRoute
   '/lista-nominal': typeof AuthenticatedListaNominalRoute
+  '/lixo': typeof AuthenticatedLixoRoute
   '/notas': typeof AuthenticatedNotasRoute
   '/painel': typeof AuthenticatedPainelRoute
   '/pautas': typeof AuthenticatedPautasRoute
   '/utilizadores': typeof AuthenticatedUtilizadoresRoute
-  '/lixo': typeof AuthenticatedLixoRoute
+  '/api/public/jobs/purgar-lixo': typeof ApiPublicJobsPurgarLixoRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -159,11 +167,12 @@ export interface FileRoutesById {
   '/_authenticated/disciplinas': typeof AuthenticatedDisciplinasRoute
   '/_authenticated/estatisticas': typeof AuthenticatedEstatisticasRoute
   '/_authenticated/lista-nominal': typeof AuthenticatedListaNominalRoute
+  '/_authenticated/lixo': typeof AuthenticatedLixoRoute
   '/_authenticated/notas': typeof AuthenticatedNotasRoute
   '/_authenticated/painel': typeof AuthenticatedPainelRoute
   '/_authenticated/pautas': typeof AuthenticatedPautasRoute
   '/_authenticated/utilizadores': typeof AuthenticatedUtilizadoresRoute
-  '/_authenticated/lixo': typeof AuthenticatedLixoRoute
+  '/api/public/jobs/purgar-lixo': typeof ApiPublicJobsPurgarLixoRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -178,11 +187,12 @@ export interface FileRouteTypes {
     | '/disciplinas'
     | '/estatisticas'
     | '/lista-nominal'
+    | '/lixo'
     | '/notas'
     | '/painel'
     | '/pautas'
     | '/utilizadores'
-    | '/lixo'
+    | '/api/public/jobs/purgar-lixo'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -195,11 +205,12 @@ export interface FileRouteTypes {
     | '/disciplinas'
     | '/estatisticas'
     | '/lista-nominal'
+    | '/lixo'
     | '/notas'
     | '/painel'
     | '/pautas'
     | '/utilizadores'
-    | '/lixo'
+    | '/api/public/jobs/purgar-lixo'
   id:
     | '__root__'
     | '/'
@@ -213,11 +224,12 @@ export interface FileRouteTypes {
     | '/_authenticated/disciplinas'
     | '/_authenticated/estatisticas'
     | '/_authenticated/lista-nominal'
+    | '/_authenticated/lixo'
     | '/_authenticated/notas'
     | '/_authenticated/painel'
     | '/_authenticated/pautas'
     | '/_authenticated/utilizadores'
-    | '/_authenticated/lixo'
+    | '/api/public/jobs/purgar-lixo'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -225,6 +237,7 @@ export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
+  ApiPublicJobsPurgarLixoRoute: typeof ApiPublicJobsPurgarLixoRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -306,6 +319,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedListaNominalRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/lixo': {
+      id: '/_authenticated/lixo'
+      path: '/lixo'
+      fullPath: '/lixo'
+      preLoaderRoute: typeof AuthenticatedLixoRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/notas': {
       id: '/_authenticated/notas'
       path: '/notas'
@@ -334,12 +354,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedUtilizadoresRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/lixo': {
-      id: '/_authenticated/lixo'
-      path: '/lixo'
-      fullPath: '/lixo'
-      preLoaderRoute: typeof AuthenticatedLixoRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
+    '/api/public/jobs/purgar-lixo': {
+      id: '/api/public/jobs/purgar-lixo'
+      path: '/api/public/jobs/purgar-lixo'
+      fullPath: '/api/public/jobs/purgar-lixo'
+      preLoaderRoute: typeof ApiPublicJobsPurgarLixoRouteImport
+      parentRoute: typeof rootRouteImport
     }
   }
 }
@@ -352,11 +372,11 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedDisciplinasRoute: typeof AuthenticatedDisciplinasRoute
   AuthenticatedEstatisticasRoute: typeof AuthenticatedEstatisticasRoute
   AuthenticatedListaNominalRoute: typeof AuthenticatedListaNominalRoute
+  AuthenticatedLixoRoute: typeof AuthenticatedLixoRoute
   AuthenticatedNotasRoute: typeof AuthenticatedNotasRoute
   AuthenticatedPainelRoute: typeof AuthenticatedPainelRoute
   AuthenticatedPautasRoute: typeof AuthenticatedPautasRoute
   AuthenticatedUtilizadoresRoute: typeof AuthenticatedUtilizadoresRoute
-  AuthenticatedLixoRoute: typeof AuthenticatedLixoRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
@@ -367,11 +387,11 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDisciplinasRoute: AuthenticatedDisciplinasRoute,
   AuthenticatedEstatisticasRoute: AuthenticatedEstatisticasRoute,
   AuthenticatedListaNominalRoute: AuthenticatedListaNominalRoute,
+  AuthenticatedLixoRoute: AuthenticatedLixoRoute,
   AuthenticatedNotasRoute: AuthenticatedNotasRoute,
   AuthenticatedPainelRoute: AuthenticatedPainelRoute,
   AuthenticatedPautasRoute: AuthenticatedPautasRoute,
   AuthenticatedUtilizadoresRoute: AuthenticatedUtilizadoresRoute,
-  AuthenticatedLixoRoute: AuthenticatedLixoRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
@@ -382,6 +402,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
   ResetPasswordRoute: ResetPasswordRoute,
+  ApiPublicJobsPurgarLixoRoute: ApiPublicJobsPurgarLixoRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

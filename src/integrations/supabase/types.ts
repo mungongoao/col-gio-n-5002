@@ -145,8 +145,8 @@ export type Database = {
           boletim_coord_manha: string
           boletim_coord_tarde: string
           cor_fundo: string
-          cor_texto: string
           cor_paginas: string
+          cor_texto: string
           direccao_municipal: string
           id: number
           logo_url: string | null
@@ -161,8 +161,8 @@ export type Database = {
           boletim_coord_manha?: string
           boletim_coord_tarde?: string
           cor_fundo?: string
-          cor_texto?: string
           cor_paginas?: string
+          cor_texto?: string
           direccao_municipal?: string
           id?: number
           logo_url?: string | null
@@ -176,6 +176,9 @@ export type Database = {
           ano_lectivo?: string
           boletim_coord_manha?: string
           boletim_coord_tarde?: string
+          cor_fundo?: string
+          cor_paginas?: string
+          cor_texto?: string
           direccao_municipal?: string
           id?: number
           logo_url?: string | null
@@ -372,6 +375,7 @@ export type Database = {
         Returns: boolean
       }
       is_staff: { Args: { _user_id: string }; Returns: boolean }
+      purgar_lixo_expirado: { Args: never; Returns: undefined }
       restaurar_utilizador: { Args: { _uid: string }; Returns: undefined }
       revogar_usuario: { Args: { _uid: string }; Returns: undefined }
       set_own_gender: { Args: { _genero: string }; Returns: undefined }
