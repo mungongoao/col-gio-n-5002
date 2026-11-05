@@ -137,7 +137,7 @@ function Boletim({ aluno, n, classe, tipo, inst, disciplinas, notas, faltasT }: 
       <table>
         <thead>
           {tipo === "final" ? (
-            <tr><th>Disciplina</th>{qual ? <th>Avaliação</th> : exame ? <><th>MFD</th><th>NE</th><th>MF</th></> : <><th>MT1</th><th>MT2</th><th>MT3</th><th>MFD</th></>}</tr>
+            <tr><th>Disciplina</th>{qual ? <th>Avaliação</th> : exame ? <><th>NE</th><th>MFD</th><th>MF</th><th>Observação</th></> : <><th>MT1</th><th>MT2</th><th>MT3</th><th>MFD</th></>}</tr>
           ) : (
             <tr><th>Disciplina</th>{qual ? <th>Avaliação</th> : isClasseExame(classe) && tipo === "3" ? <><th>MACT3</th><th>MT3</th></> : <><th>MAC</th><th>NPT</th><th>MT{tipo}</th></>}</tr>
           )}
@@ -149,7 +149,7 @@ function Boletim({ aluno, n, classe, tipo, inst, disciplinas, notas, faltasT }: 
               {tipo === "final" ? (
                 qual ? <td>{r!.qual ?? "—"}</td> : <>
                   {exame
-                    ? <><td className={cls(r!.mfd)}>{fmt(r!.mfd)}</td><td className={cls(r!.exame)}>{fmt(r!.exame)}</td><td className={cls(r!.mf)}><b>{fmt(r!.mf)}</b></td></>
+                    ? <><td className={cls(r!.exame)}>{fmt(r!.exame)}</td><td className={cls(r!.mfd)}>{fmt(r!.mfd)}</td><td className={cls(r!.mf)}><b>{fmt(r!.mf)}</b></td><td>{r!.positiva == null ? "—" : r!.positiva ? "Apto" : "Não Apto"}</td></>
                     : <><td className={cls(r!.mt1)}>{fmt(r!.mt1)}</td><td className={cls(r!.mt2)}>{fmt(r!.mt2)}</td><td className={cls(r!.mt3)}>{fmt(r!.mt3)}</td><td className={cls(r!.mfd)}><b>{fmt(r!.mfd)}</b></td></>}
                 </>
               ) : (
