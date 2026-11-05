@@ -109,6 +109,7 @@ function RootComponent() {
   const router = useRouter();
   useEffect(() => {
     void registerPwa();
+    try { document.documentElement.style.setProperty("--tema-principal", localStorage.getItem("jzymar-cor-tema-principal") || "#1e3a5f"); } catch { /* armazenamento opcional */ }
   }, []);
   useEffect(() => {
     let active = true;
