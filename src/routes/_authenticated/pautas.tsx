@@ -92,10 +92,10 @@ function Pautas() {
                     <tr>
                       <th rowSpan={2}>Nº</th><th rowSpan={2}>Nome do Aluno</th><th rowSpan={2}>G</th>
                       {[1, 2, 3].map((t) => <th key={t} colSpan={qual ? 1 : exame && t === 3 ? 2 : 3}>{t}º Trimestre</th>)}
-                      {!qual && exame && <th colSpan={temExameOral(disciplina.nome) ? 2 : 1}>Exame</th>}
+                      {!qual && exame && <th colSpan={temExameOral(disciplina.nome) ? 2 : 1}>NE</th>}
                       {!qual && <th rowSpan={2}>MFD</th>}
-                      {!qual && exame && <th rowSpan={2}>CF</th>}
-                      <th rowSpan={2}>Obs.</th>
+                      {!qual && exame && <th rowSpan={2}>MF</th>}
+                      <th rowSpan={2}>Observação</th>
                     </tr>
                     <tr>
                       {[1, 2, 3].map((t) => qual ? <th key={t}>Aval.</th> : exame && t === 3 ? [<th key={`mact3-${t}`}>MACT3</th>, <th key={`mt3-${t}`}>MT3</th>] : [<th key={`a${t}`}>MAC</th>, <th key={`b${t}`}>NPT</th>, <th key={`c${t}`}>MT{t}</th>])}
