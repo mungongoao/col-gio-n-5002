@@ -186,7 +186,7 @@ h1, h2, h3 { font-family: var(--font-serif); }
 :root { --grade-positive: oklch(0.48 0.2 260); --grade-negative: oklch(0.5 0.22 27); }
 @theme inline { --color-grade-positive: var(--grade-positive); --color-grade-negative: var(--grade-negative); }
 #lovable-badge { display: none !important; visibility: hidden !important; pointer-events: none !important; }
-.auth-page { min-height: 100svh; background: var(--sidebar); }
+.auth-page { min-height: 100svh; background: var(--tema-principal, var(--sidebar)); }
 .auth-brand { border-bottom: 1px solid var(--border); }
 
 @page boletim { size: A5 portrait; margin: 0; }
