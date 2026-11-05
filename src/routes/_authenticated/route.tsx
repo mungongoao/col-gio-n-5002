@@ -96,7 +96,7 @@ function Layout() {
 
   return (
     <div className="flex min-h-screen flex-col md:flex-row">
-      <aside className="sticky top-0 z-30 flex w-full shrink-0 flex-col bg-sidebar text-sidebar-foreground md:static md:h-auto md:min-h-screen md:w-64 print:hidden">
+      <aside className="sticky top-0 z-30 flex w-full shrink-0 flex-col bg-[var(--tema-principal)] text-white md:static md:h-auto md:min-h-screen md:w-64 print:hidden">
         <div className="flex items-center gap-3 border-b border-sidebar-border p-3 md:p-4">
           {inst?.logo_url && <img src={inst.logo_url} alt="" className="h-10 w-10 rounded bg-background object-contain p-0.5" />}
           <div className="min-w-0 flex-1 truncate text-sm font-semibold leading-tight md:whitespace-normal">{inst?.nome_escola}</div>
@@ -121,7 +121,7 @@ function Layout() {
         </div>
       </aside>
       <main className="min-w-0 flex-1 overflow-x-auto">
-        <header className="z-20 flex flex-wrap md:sticky items-center justify-between gap-2 border-b bg-primary px-3 py-3 text-primary-foreground shadow sm:px-6 print:hidden md:top-0">
+        <header className="z-20 flex flex-wrap md:sticky items-center justify-between gap-2 border-b bg-[var(--tema-principal)] px-3 py-3 text-white shadow sm:px-6 print:hidden md:top-0">
           <div className="min-w-0 text-base font-bold leading-tight sm:text-lg md:text-xl">{inst?.nome_escola}</div>
           <span className="shrink-0 rounded-full bg-background px-3 py-1 text-xs font-semibold text-primary sm:text-sm">Ano lectivo {inst?.ano_lectivo}</span>
         </header>
