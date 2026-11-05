@@ -25,6 +25,7 @@ import { Route as AuthenticatedNotasRouteImport } from './routes/_authenticated/
 import { Route as AuthenticatedPainelRouteImport } from './routes/_authenticated/painel'
 import { Route as AuthenticatedPautasRouteImport } from './routes/_authenticated/pautas'
 import { Route as AuthenticatedUtilizadoresRouteImport } from './routes/_authenticated/utilizadores'
+import { Route as ApiPublicJobsPurgarLixoRouteImport } from './routes/api/public/jobs/purgar-lixo'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -111,6 +112,11 @@ const AuthenticatedUtilizadoresRoute =
     path: '/utilizadores',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const ApiPublicJobsPurgarLixoRoute = ApiPublicJobsPurgarLixoRouteImport.update({
+  id: '/api/public/jobs/purgar-lixo',
+  path: '/api/public/jobs/purgar-lixo',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -128,6 +134,7 @@ export interface FileRoutesByFullPath {
   '/painel': typeof AuthenticatedPainelRoute
   '/pautas': typeof AuthenticatedPautasRoute
   '/utilizadores': typeof AuthenticatedUtilizadoresRoute
+  '/api/public/jobs/purgar-lixo': typeof ApiPublicJobsPurgarLixoRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -145,6 +152,7 @@ export interface FileRoutesByTo {
   '/painel': typeof AuthenticatedPainelRoute
   '/pautas': typeof AuthenticatedPautasRoute
   '/utilizadores': typeof AuthenticatedUtilizadoresRoute
+  '/api/public/jobs/purgar-lixo': typeof ApiPublicJobsPurgarLixoRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -164,6 +172,7 @@ export interface FileRoutesById {
   '/_authenticated/painel': typeof AuthenticatedPainelRoute
   '/_authenticated/pautas': typeof AuthenticatedPautasRoute
   '/_authenticated/utilizadores': typeof AuthenticatedUtilizadoresRoute
+  '/api/public/jobs/purgar-lixo': typeof ApiPublicJobsPurgarLixoRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -183,6 +192,7 @@ export interface FileRouteTypes {
     | '/painel'
     | '/pautas'
     | '/utilizadores'
+    | '/api/public/jobs/purgar-lixo'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -200,6 +210,7 @@ export interface FileRouteTypes {
     | '/painel'
     | '/pautas'
     | '/utilizadores'
+    | '/api/public/jobs/purgar-lixo'
   id:
     | '__root__'
     | '/'
@@ -218,6 +229,7 @@ export interface FileRouteTypes {
     | '/_authenticated/painel'
     | '/_authenticated/pautas'
     | '/_authenticated/utilizadores'
+    | '/api/public/jobs/purgar-lixo'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -225,6 +237,7 @@ export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
+  ApiPublicJobsPurgarLixoRoute: typeof ApiPublicJobsPurgarLixoRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -341,6 +354,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedUtilizadoresRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/api/public/jobs/purgar-lixo': {
+      id: '/api/public/jobs/purgar-lixo'
+      path: '/api/public/jobs/purgar-lixo'
+      fullPath: '/api/public/jobs/purgar-lixo'
+      preLoaderRoute: typeof ApiPublicJobsPurgarLixoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -382,6 +402,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
   ResetPasswordRoute: ResetPasswordRoute,
+  ApiPublicJobsPurgarLixoRoute: ApiPublicJobsPurgarLixoRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
