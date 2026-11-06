@@ -166,13 +166,13 @@ function Pautas() {
                   <thead>
                     <tr>
                       <th rowSpan={2}>Nº</th><th rowSpan={2}>Nome do Aluno</th><th rowSpan={2}>G</th>
-                      {disciplinas.map((d) => <th key={d.id} colSpan={qual ? 1 : exame ? 4 : 3}>{d.nome}{d.extra ? "*" : ""}</th>)}
+                      {disciplinas.map((d) => <th key={d.id} colSpan={qual ? 1 : 3}>{d.nome}{d.extra ? "*" : ""}</th>)}
                       {!qual && <th rowSpan={2}>MF</th>}
                       <th rowSpan={2}>Resultado Final</th>
                     </tr>
                     <tr>
                       {disciplinas.map((d) => qual ? <th key={d.id}>Aval.</th> : [
-                        ...(exame ? [<th key={d.id + 5}>NE</th>, <th key={d.id + 4}>MFD</th>, <th key={d.id + 6}>MF</th>, <th key={d.id + 7}>Observação</th>] : [<th key={d.id + 1}>MT1</th>, <th key={d.id + 2}>MT2</th>, <th key={d.id + 3}>MT3</th>]),
+                        ...(exame ? [<th key={d.id + 5}>NE</th>, <th key={d.id + 4}>MFD</th>, <th key={d.id + 6}>MF</th>] : [<th key={d.id + 1}>MT1</th>, <th key={d.id + 2}>MT2</th>, <th key={d.id + 3}>MT3</th>]),
                       ])}
                     </tr>
                   </thead>
@@ -188,8 +188,7 @@ function Pautas() {
                               <td key={d.id + 5}>{fmt(r.exame)}</td>,
                               <td key={d.id + 4} className={cls(r.mfd)}>{fmt(r.mfd)}</td>,
                               <td key={d.id + 6} className={cls(r.mf)}><b>{fmt(r.mf)}</b></td>,
-                              <td key={d.id + 7}>{r.positiva == null ? "—" : r.positiva ? "Apto" : "Não Apto"}</td>,
-                            ] : [
+                                            ] : [
                               <td key={d.id + 1} className={cls(r.mt1)}>{fmt(r.mt1)}</td>, <td key={d.id + 2} className={cls(r.mt2)}>{fmt(r.mt2)}</td>, <td key={d.id + 3} className={cls(r.mt3)}>{fmt(r.mt3)}</td>,
                             ]),
                           ])}
