@@ -16,16 +16,17 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { PageTitle } from "@/components/escola";
 
 export const Route = createFileRoute("/_authenticated/disciplinas")({
-  head: () => ({ meta: [{ title: "Disciplinas — J. ZYMAR" }, { name: "description", content: "Cadastro de disciplinas por nível de ensino e classe." }] }),
+  head: () => ({ meta: [{ title: "Disciplinas — Gestão Pedagógica" }, { name: "description", content: "Cadastro de disciplinas por nível de ensino e classe." }] }),
   component: Disciplinas,
 });
 
 const NIVEIS: Record<string, { grupos: string[][] }> = {
   "Iniciação": { grupos: [["INIC"]] },
   "Ensino Primário": { grupos: [["1", "2", "3", "4"], ["5", "6"]] },
-  "Primeiro Ciclo": { grupos: [["7", "8", "9"]] },
+  "I.º Ciclo do Ensino Secundário": { grupos: [["7", "8", "9"]] },
+  "Ensino de Jovens e Adultos": { grupos: [["EJA1", "EJA2"]] },
 };
-const TODAS_EXTRA = ["1", "2", "3", "4", "5", "6", "7", "8", "9"];
+const TODAS_EXTRA = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "EJA1", "EJA2"];
 
 function Disciplinas() {
   const { data: me } = useMe();
@@ -90,7 +91,7 @@ function Disciplinas() {
             <label className="flex items-center gap-2 text-sm"><Switch checked={extra} onCheckedChange={setExtra} /> Disciplina Extracurricular</label>
           </div>
           {editarId ? <p className="text-sm font-semibold">{nomeClasse(lista.find(d => d.id === editarId)?.classe ?? "INIC")}</p> : extra ? (
-            <p className="text-sm text-muted-foreground">Será adicionada a todas as classes do Ensino Primário (1ª–6ª) e do Primeiro Ciclo (7ª–9ª).</p>
+            <p className="text-sm text-muted-foreground">Será adicionada a todas as classes e anos de ensino disponíveis.</p>
           ) : (
             <div className="space-y-3">
               <Select value={nivel} onValueChange={(v) => { setNivel(v); setMarcadas([]); }}>
