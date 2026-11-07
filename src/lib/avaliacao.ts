@@ -1,6 +1,6 @@
 // Regras de avaliação (Ministério da Educação de Angola, ano lectivo 2026/2027)
 
-export const CLASSES = ["INIC", "1", "2", "3", "4", "5", "6", "7", "8", "9", "EJA1", "EJA2"] as const;
+export const CLASSES = ["7", "8", "9", "EJA1", "EJA2"] as const;
 export type Classe = (typeof CLASSES)[number];
 
 export const QUALITATIVOS = ["Regular", "Bom", "Excelente"] as const;
@@ -8,25 +8,22 @@ export const QUALITATIVOS = ["Regular", "Bom", "Excelente"] as const;
 export function nomeClasse(c: string) {
   if (c === "EJA1") return "I.º Ano — Ensino de Jovens e Adultos";
   if (c === "EJA2") return "II.º Ano — Ensino de Jovens e Adultos";
-  return c === "INIC" ? "Iniciação" : `${c}ª Classe`;
+  return `${c}ª Classe`;
 }
 
 export function cicloDe(c: string) {
-  if (c === "INIC") return "Educação Pré-Escolar";
   if (c === "EJA1" || c === "EJA2") return "Ensino de Jovens e Adultos";
-  const n = Number(c);
-  if (n <= 6) return "Ensino Primário";
-  return "I Ciclo do Ensino Secundário";
+  return "I.º Ciclo do Ensino Secundário";
 }
 
-export const isQualitativa = (c: string) => c === "INIC";
-export const escalaMax = (c: string) => (c === "INIC" ? 0 : Number(c) <= 6 ? 10 : 20);
+export const isQualitativa = (_c: string) => false;
+export const escalaMax = (_c: string) => 20;
 export const notaMinima = (c: string) => escalaMax(c) / 2;
 export const isClasseExame = (c: string) => c === "6" || c === "9";
 export const temExameOral = (disciplina: string) => /portugu|ingl/i.test(disciplina);
 
 export const rotuloResultado = (c: string, ok: boolean) =>
-  isClasseExame(c) || c === "INIC" ? (ok ? "Apto" : "Não Apto") : ok ? "Transita" : "Não Transita";
+  isClasseExame(c) ? (ok ? "Apto" : "Não Apto") : ok ? "Transita" : "Não Transita";
 
 export type Nota = {
   trimestre: number;
@@ -65,7 +62,7 @@ export type ResumoDisciplina = {
   exame: number | null;
   mf: number | null;
   cf: number | null; // compatibilidade: alias de MF nas classes de exame
-  qual: string | null; // iniciação
+  qual: string | null; // reservado para compatibilidade
   positiva: boolean | null;
 };
 
