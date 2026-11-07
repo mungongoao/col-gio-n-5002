@@ -44,9 +44,9 @@ describe("regras de avaliação das classes com exame", () => {
   });
 });
 
-describe("Ensino de Jovens e Adultos", () => {
+describe("Ensino de Jovens Adultos", () => {
   it("usa no I.º Ano os critérios da 7.ª classe, sem exame", () => {
-    expect(cicloDe("EJA1")).toBe("Ensino de Jovens e Adultos");
+    expect(cicloDe("EJA1")).toBe("Ensino de Jovens Adultos");
     expect(nomeClasse("EJA1")).toContain("I.º Ano");
     expect(escalaMax("EJA1")).toBe(20);
     expect(notaMinima("EJA1")).toBe(10);
@@ -59,7 +59,7 @@ describe("Ensino de Jovens e Adultos", () => {
   });
 
   it("usa no II.º Ano os critérios da 8.ª classe, sem exame", () => {
-    expect(cicloDe("EJA2")).toBe("Ensino de Jovens e Adultos");
+    expect(cicloDe("EJA2")).toBe("Ensino de Jovens Adultos");
     expect(escalaMax("EJA2")).toBe(20);
     expect(notaMinima("EJA2")).toBe(10);
     const r = resumoDisciplina("EJA2", "Língua Portuguesa", [
