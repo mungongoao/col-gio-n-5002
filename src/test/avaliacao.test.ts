@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { mediaTrimestral, resumoDisciplina, resultadoFinal, type Nota } from "@/lib/avaliacao";
+import { mediaTrimestral, resumoDisciplina, resultadoFinal, escalaMax, notaMinima, cicloDe, nomeClasse, type Nota } from "@/lib/avaliacao";
 
 const nota = (trimestre: number, mac: number | null, npt: number | null, exame: number | null = null): Nota => ({
   trimestre, mac, npt, qualitativo: null, exame_escrito: exame, exame_oral: null, faltas: 0,
@@ -41,5 +41,31 @@ describe("regras de avaliação das classes com exame", () => {
     ]);
     expect(resultadoFinal("6", [{ extra: false, r: aprovada }])?.texto).toBe("Apto");
     expect(resultadoFinal("6", [{ extra: false, r: { ...aprovada, mf: null, cf: null, positiva: null } }])).toBeNull();
+  });
+});
+
+describe("Ensino de Jovens e Adultos", () => {
+  it("usa no I.º Ano os critérios da 7.ª classe, sem exame", () => {
+    expect(cicloDe("EJA1")).toBe("Ensino de Jovens e Adultos");
+    expect(nomeClasse("EJA1")).toContain("I.º Ano");
+    expect(escalaMax("EJA1")).toBe(20);
+    expect(notaMinima("EJA1")).toBe(10);
+    const r = resumoDisciplina("EJA1", "Matemática", [
+      nota(1, 12, 14), nota(2, 14, 16), nota(3, 16, 18),
+    ]);
+    expect(r.mt3).toBe(17);
+    expect(r.mf).toBe(r.mfd);
+    expect(r.exame).toBeNull();
+  });
+
+  it("usa no II.º Ano os critérios da 8.ª classe, sem exame", () => {
+    expect(cicloDe("EJA2")).toBe("Ensino de Jovens e Adultos");
+    expect(escalaMax("EJA2")).toBe(20);
+    expect(notaMinima("EJA2")).toBe(10);
+    const r = resumoDisciplina("EJA2", "Língua Portuguesa", [
+      nota(1, 10, 12), nota(2, 12, 14), nota(3, 14, 16),
+    ]);
+    expect(r.mf).toBe(r.mfd);
+    expect(r.exame).toBeNull();
   });
 });
