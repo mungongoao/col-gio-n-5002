@@ -7,7 +7,7 @@ export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
       { title: "Gestão Pedagógica" },
-      { name: "description", content: "Portal de gestão pedagógica: alunos, notas, pautas e boletins do Complexo Escolar J. ZYMAR." },
+      { name: "description", content: "Portal de gestão pedagógica: alunos, notas, pautas e boletins do Colégio N.º 5002." },
       { property: "og:title", content: "Gestão Pedagógica" },
       { property: "og:description", content: "Alunos, notas, pautas e boletins num só lugar." },
     ],
