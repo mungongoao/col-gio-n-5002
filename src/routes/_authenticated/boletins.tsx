@@ -20,7 +20,7 @@ export const Route = createFileRoute("/_authenticated/boletins")({
 
 function Boletins() {
   const { data: me } = useMe();
-  const [classe, setClasse] = useState("1");
+  const [classe, setClasse] = useState("7");
   const [tipo, setTipo] = useState("1");
   const [sel, setSel] = useState<number[]>([]);
   const [pesquisa, setPesquisa] = useState("");
@@ -172,9 +172,7 @@ function Boletim({ aluno, n, classe, tipo, inst, disciplinas, notas, faltasT }: 
         {disciplinas.some((d) => d.extra) && <div style={{ fontSize: 9 }}>* Extra-curricular (não conta para o resultado).</div>}
       </div>
       <div className="mt-6 flex justify-center">
-        {classe === "INIC" || Number(classe) <= 5
-          ? <Assinatura cargo="O Coordenador da Manhã" nome={inst?.boletim_coord_manha} />
-          : <Assinatura cargo="O Coordenador da Tarde" nome={inst?.boletim_coord_tarde} />}
+        <Assinatura cargo="O Coordenador da Tarde" nome={inst?.boletim_coord_tarde} />
       </div>
     </div>
   );
