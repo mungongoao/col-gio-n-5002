@@ -21,16 +21,14 @@ export const Route = createFileRoute("/_authenticated/disciplinas")({
 });
 
 const NIVEIS: Record<string, { grupos: string[][] }> = {
-  "Iniciação": { grupos: [["INIC"]] },
-  "Ensino Primário": { grupos: [["1", "2", "3", "4"], ["5", "6"]] },
   "I.º Ciclo do Ensino Secundário": { grupos: [["7", "8", "9"]] },
   "Ensino de Jovens e Adultos": { grupos: [["EJA1", "EJA2"]] },
 };
-const TODAS_EXTRA = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "EJA1", "EJA2"];
+const TODAS_EXTRA = ["7", "8", "9", "EJA1", "EJA2"];
 
 function Disciplinas() {
   const { data: me } = useMe();
-  const [nivel, setNivel] = useState("Ensino Primário");
+  const [nivel, setNivel] = useState("I.º Ciclo do Ensino Secundário");
   const [editarId, setEditarId] = useState<string | null>(null);
   const [nome, setNome] = useState("");
   const [extra, setExtra] = useState(false);
@@ -90,8 +88,8 @@ function Disciplinas() {
             <Input placeholder="Nome da disciplina" value={nome} onChange={(e) => setNome(e.target.value)} className="w-full sm:max-w-sm" />
             <label className="flex items-center gap-2 text-sm"><Switch checked={extra} onCheckedChange={setExtra} /> Disciplina Extracurricular</label>
           </div>
-          {editarId ? <p className="text-sm font-semibold">{nomeClasse(lista.find(d => d.id === editarId)?.classe ?? "INIC")}</p> : extra ? (
-            <p className="text-sm text-muted-foreground">Será adicionada a todas as classes e anos de ensino disponíveis.</p>
+          {editarId ? <p className="text-sm font-semibold">{nomeClasse(lista.find(d => d.id === editarId)?.classe ?? "7")}</p> : extra ? (
+            <p className="text-sm text-muted-foreground">Será adicionada às classes e aos anos dos dois níveis de ensino disponíveis.</p>
           ) : (
             <div className="space-y-3">
               <Select value={nivel} onValueChange={(v) => { setNivel(v); setMarcadas([]); }}>
@@ -116,7 +114,7 @@ function Disciplinas() {
       </CardContent></Card>
 
       <div className="grid gap-4 sm:grid-cols-2">
-        {["INIC", ...TODAS_EXTRA].map((c) => (
+        {TODAS_EXTRA.map((c) => (
           <Card key={c}><CardContent className="p-4">
             <h3 className="mb-2 font-semibold">{nomeClasse(c)}</h3>
             {(porClasse.get(c) ?? []).length === 0 ? <p className="text-sm text-muted-foreground">Nenhuma disciplina.</p> : (
