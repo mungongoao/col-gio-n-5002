@@ -134,7 +134,7 @@ function Estatisticas() {
                 <tr>{Array.from({ length: 6 }).map((_, i) => <Fragment key={i}><th>MF</th><th>F</th>{i >= 2 && <th>%</th>}</Fragment>)}</tr>
               </thead>
               <tbody>
-                {["Educação Pré-Escolar", "Ensino Primário", "I Ciclo do Ensino Secundário"].map((ciclo) => {
+                {["I.º Ciclo do Ensino Secundário", "Ensino de Jovens e Adultos"].map((ciclo) => {
                   const ls = linhas.filter((l) => l.ciclo === ciclo);
                   if (!ls.some((l) => l.matriculados.mf > 0)) return null;
                   return (
