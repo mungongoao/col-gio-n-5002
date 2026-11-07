@@ -15,9 +15,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 export const Route = createFileRoute("/auth")({
   head: () => ({
     meta: [
-      { title: "Entrar — J. ZYMAR" },
+      { title: "Entrar — Gestão Pedagógica" },
       { name: "description", content: "Acesso ao sistema de gestão pedagógica." },
-      { property: "og:title", content: "Entrar — J. ZYMAR" },
+      { property: "og:title", content: "Entrar — Gestão Pedagógica" },
       { property: "og:description", content: "Acesso ao sistema de gestão pedagógica." },
     ],
   }),
@@ -102,7 +102,7 @@ function AuthPage() {
           <div className="mx-auto mb-3 flex h-20 w-20 items-center justify-center rounded-md bg-secondary p-2">
             {inst?.logo_url ? <img src={inst.logo_url} alt="Logótipo da instituição" className="h-full w-full object-contain" /> : <GraduationCap className="h-12 w-12 text-primary" />}
           </div>
-          <p className="mb-2 text-sm font-semibold text-primary">{inst?.nome_escola ?? "Complexo Escolar Privado J. ZYMAR"}</p>
+          <p className="mb-2 text-sm font-semibold text-primary">{inst?.nome_escola ?? "Colégio N.º 5002"}</p>
           <CardTitle className="text-center text-2xl">{recuperar ? "Recuperar Palavra-passe" : aba === "registar" ? "Cadastrar" : "Iniciar Sessão"}</CardTitle>
         </CardHeader>
         <CardContent>
