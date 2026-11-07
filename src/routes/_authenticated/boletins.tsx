@@ -166,9 +166,9 @@ function Boletim({ aluno, n, classe, tipo, inst, disciplinas, notas, faltasT }: 
         </tbody>
       </table>
       <div style={{ fontSize: 11, marginTop: 6 }}>
-        <div><b>Total de faltas:</b> {faltas}</div>
-        {mediaFinal != null && <div><b>Média Final:</b> <b className={cls(mediaFinal)}>{fmt(mediaFinal)}</b></div>}
+        <div><b>Total de Faltas:</b> {faltas}</div>
         <div><b>Resultado:</b> <b className={resultado ? (resultado.startsWith("Não") ? "neg" : "pos") : ""}>{resultado ?? "—"}</b></div>
+        {mediaFinal != null && <div><b>Média:</b> <b className={cls(mediaFinal)}>{fmt(mediaFinal)}</b></div>}
         {disciplinas.some((d) => d.extra) && <div style={{ fontSize: 9 }}>* Extra-curricular (não conta para o resultado).</div>}
       </div>
       <div className="mt-6 flex justify-center">
