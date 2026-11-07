@@ -22,7 +22,7 @@ export const Route = createFileRoute("/_authenticated/disciplinas")({
 
 const NIVEIS: Record<string, { grupos: string[][] }> = {
   "I.º Ciclo do Ensino Secundário": { grupos: [["7", "8", "9"]] },
-  "Ensino de Jovens e Adultos": { grupos: [["EJA1", "EJA2"]] },
+  "Ensino de Jovens Adultos": { grupos: [["EJA1", "EJA2"]] },
 };
 const TODAS_EXTRA = ["7", "8", "9", "EJA1", "EJA2"];
 
