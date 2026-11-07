@@ -1,16 +1,19 @@
 // Regras de avaliação (Ministério da Educação de Angola, ano lectivo 2026/2027)
 
-export const CLASSES = ["INIC", "1", "2", "3", "4", "5", "6", "7", "8", "9"] as const;
+export const CLASSES = ["INIC", "1", "2", "3", "4", "5", "6", "7", "8", "9", "EJA1", "EJA2"] as const;
 export type Classe = (typeof CLASSES)[number];
 
 export const QUALITATIVOS = ["Regular", "Bom", "Excelente"] as const;
 
 export function nomeClasse(c: string) {
+  if (c === "EJA1") return "I.º Ano — Ensino de Jovens e Adultos";
+  if (c === "EJA2") return "II.º Ano — Ensino de Jovens e Adultos";
   return c === "INIC" ? "Iniciação" : `${c}ª Classe`;
 }
 
 export function cicloDe(c: string) {
   if (c === "INIC") return "Educação Pré-Escolar";
+  if (c === "EJA1" || c === "EJA2") return "Ensino de Jovens e Adultos";
   const n = Number(c);
   if (n <= 6) return "Ensino Primário";
   return "I Ciclo do Ensino Secundário";
