@@ -4,7 +4,7 @@ export const TURMAS = ["A", "B", "C", "D", "E", "F", "G", "H", "I"] as const;
 export const alunoSchema = z.object({
   nome: z.string().trim().min(3, "Nome demasiado curto").max(120),
   genero: z.enum(["M", "F"]),
-  classe: z.enum(["INIC", "1", "2", "3", "4", "5", "6", "7", "8", "9"]),
+  classe: z.enum(["INIC", "1", "2", "3", "4", "5", "6", "7", "8", "9", "EJA1", "EJA2"]),
   turma: z.enum(TURMAS),
   estado: z.enum(["Activo", "Desistente"]),
 });
