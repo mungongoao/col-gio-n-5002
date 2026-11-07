@@ -19,7 +19,7 @@ import { ClasseSelect, DocCabecalho, PageTitle } from "@/components/escola";
 export const Route = createFileRoute("/_authenticated/alunos")({
  head: () => ({ meta: [{ title: "Cadastro de Alunos — Gestão Pedagógica" }, { name: "description", content: "Cadastro e actualização dos alunos da instituição." }, { property: "og:title", content: "Cadastro de Alunos — Gestão Pedagógica" }, { property: "og:description", content: "Cadastro e actualização dos alunos da instituição." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }] }), component: Alunos,
 });
-const vazio = { nome: "", genero: "M", classe: "7", turma: "A", estado: "Activo" };
+const vazio = { nome: "", genero: "M", classe: "1", turma: "A", estado: "Activo" };
 function Alunos() {
  const { data: me } = useMe(); const { data: alunos = [] } = useAlunos(); const { data: inst } = useInstituicao(); const qc = useQueryClient();
  const [f, setF] = useState(vazio); const [editId, setEditId] = useState<number | null>(null); const [eliminarId, setEliminarId] = useState<number | null>(null);
