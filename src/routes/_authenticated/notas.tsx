@@ -24,7 +24,7 @@ const vazia: Linha = { mac: "", npt: "", qualitativo: "", exame_escrito: "", exa
 
 function Notas() {
   const { data: me } = useMe();
-  const [classe, setClasse] = useState("1");
+  const [classe, setClasse] = useState("7");
   const [turma, setTurma] = useState("todas");
   const [disc, setDisc] = useState("");
   const [tri, setTri] = useState("1");
