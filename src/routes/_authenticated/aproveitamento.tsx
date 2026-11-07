@@ -1,3 +1,4 @@
+import { nomeClasse } from "@/lib/avaliacao";
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { BookOpenCheck, CalendarX } from "lucide-react";
@@ -58,7 +59,7 @@ function Aproveitamento() {
           const percentagem = avaliadas.length ? Math.round((positivas / avaliadas.length) * 100) : 0;
           const faltas = registos.reduce((total, n) => total + (n.faltas ?? 0), 0);
           return <Card key={aluno.id}>
-            <CardHeader><CardTitle>{aluno.nome}</CardTitle><p className="text-sm text-muted-foreground">{aluno.classe === "INIC" ? "Iniciação" : `${aluno.classe}.ª Classe`}</p></CardHeader>
+            <CardHeader><CardTitle>{aluno.nome}</CardTitle><p className="text-sm text-muted-foreground">{nomeClasse(aluno.classe)}</p></CardHeader>
             <CardContent className="grid grid-cols-2 gap-4">
               <div className="border-l-4 border-primary pl-3"><BookOpenCheck className="mb-2 h-5 w-5 text-primary" /><div className="text-3xl font-semibold">{percentagem}%</div><div className="text-sm text-muted-foreground">Aproveitamento</div></div>
               <div className="border-l-4 border-destructive pl-3"><CalendarX className="mb-2 h-5 w-5 text-destructive" /><div className="text-3xl font-semibold">{faltas}</div><div className="text-sm text-muted-foreground">Faltas</div></div>
