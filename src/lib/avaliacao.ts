@@ -14,7 +14,6 @@ export function nomeClasse(c: string) {
 export function cicloDe(c: string) {
   if (c === "INIC") return "Educação Pré-Escolar";
   if (c === "EJA1" || c === "EJA2") return "Ensino de Jovens e Adultos";
-  if (c === "EJA1" || c === "EJA2") return "Ensino de Jovens e Adultos";
   const n = Number(c);
   if (n <= 6) return "Ensino Primário";
   return "I Ciclo do Ensino Secundário";
