@@ -92,7 +92,7 @@ function AuthPage() {
     setLoading(false);
     if (error) return void toast.error(error.message);
     if (signup.session) await supabase.rpc("set_own_gender", { _genero: genero });
-    toast.success("Registo feito. Confirme o seu email e aguarde a credenciação.");
+    toast.success("Registo efectuado. O primeiro cadastro recebe acesso de ADM; os seguintes ficam pendentes de credenciação.");
   }
 
   return (
@@ -145,7 +145,7 @@ function AuthPage() {
                   </Select>
                 </div>
                 <Button className="w-full" disabled={loading}>Criar conta</Button>
-                <p className="text-center text-xs text-muted-foreground">A conta fica pendente até ser credenciada pelo ADM ou Pedagógico.</p>
+                <p className="text-center text-xs text-muted-foreground">O primeiro utilizador cadastrado recebe automaticamente acesso de ADM. Todos os cadastros seguintes ficam pendentes até serem credenciados.</p>
               </form>
             </TabsContent>
           </Tabs>}
