@@ -25,54 +25,108 @@ const CAMPOS = [
 
 function Config() {
   const { data: me } = useMe();
-  const { data: inst } = useInstituicao();
+  const { data: inst, isLoading: instLoading } = useInstituicao();
   const qc = useQueryClient();
   type K = "id" | "republica" | "ministerio" | "direccao_municipal" | "nome_escola" | "ano_lectivo" | "logo_url" | "pauta_pedagogico" | "pauta_direccao" | "boletim_coord_manha" | "boletim_coord_tarde" | "cor_fundo" | "cor_texto" | "cor_paginas";
   const [f, setF] = useState<Partial<Record<K, string>>>({});
   const [corTemaPrincipal, setCorTemaPrincipal] = useState("#1e3a5f");
-  useEffect(() => { try { setCorTemaPrincipal(localStorage.getItem("jzymar-cor-tema-principal") || "#1e3a5f"); } catch { /* armazenamento opcional */ } }, []);
-  useEffect(() => { document.documentElement.style.setProperty("--tema-principal", corTemaPrincipal); }, [corTemaPrincipal]);
+  const [aGuardar, setAGuardar] = useState(false);
+
+  useEffect(() => {
+    try { setCorTemaPrincipal(localStorage.getItem("jzymar-cor-tema-principal") || "#1e3a5f"); } catch { /* armazenamento opcional */ }
+  }, []);
+  useEffect(() => {
+    document.documentElement.style.setProperty("--tema-principal", corTemaPrincipal);
+  }, [corTemaPrincipal]);
   useEffect(() => {
     if (inst) setF(Object.fromEntries(Object.entries(inst).map(([k, v]) => [k, String(v ?? "")])) as Partial<Record<K, string>>);
   }, [inst]);
 
   if (!me?.isAdmin) return <p>Apenas o ADM tem acesso a esta página.</p>;
 
-  const set = (k: K) => (e: React.ChangeEvent<HTMLInputElement>) => setF({ ...f, [k]: e.target.value });
+  const set = (k: K) => (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setF((prev) => ({ ...prev, [k]: value }));
+  };
 
   function carregarLogo(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
-    if (file.size > 400_000) return void toast.error("O logótipo deve ter menos de 400 KB.");
-    const r = new FileReader();
-    r.onload = () => setF((p) => ({ ...p, logo_url: r.result as string }));
-    r.readAsDataURL(file);
+    if (!file.type.startsWith("image/")) {
+      toast.error("Selecciona um ficheiro de imagem válido.");
+      e.target.value = "";
+      return;
+    }
+    if (file.size > 400_000) {
+      toast.error("O logótipo deve ter menos de 400 KB.");
+      e.target.value = "";
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = () => {
+      if (typeof reader.result !== "string") {
+        toast.error("Não foi possível ler o logótipo.");
+        return;
+      }
+      setF((prev) => ({ ...prev, logo_url: reader.result as string }));
+      toast.success("Logótipo carregado. Clica em Guardar para aplicar.");
+    };
+    reader.onerror = () => toast.error("Falha ao carregar o ficheiro do logótipo.");
+    reader.readAsDataURL(file);
   }
 
   async function guardar() {
+    if (aGuardar) return;
+    setAGuardar(true);
     const { id: _id, ...rest } = f;
-    const { error } = await supabase.from("institution_settings").update({ ...rest, logo_url: f.logo_url || null, cor_fundo: f.cor_fundo || "#f8fafc", cor_texto: f.cor_texto || "#243247", cor_paginas: f.cor_paginas || "#ffffff" }).eq("id", 1);
-    if (error) return void toast.error(error.message);
-    toast.success("Informações guardadas.");
-    qc.invalidateQueries({ queryKey: ["instituicao"] });
+    const payload = {
+      id: 1,
+      ...rest,
+      logo_url: f.logo_url || null,
+      cor_fundo: f.cor_fundo || "#f8fafc",
+      cor_texto: f.cor_texto || "#243247",
+      cor_paginas: f.cor_paginas || "#ffffff",
+    };
+    try {
+      const { error } = await supabase
+        .from("institution_settings")
+        .upsert(payload, { onConflict: "id" });
+      if (error) throw error;
+      await qc.invalidateQueries({ queryKey: ["instituicao"] });
+      toast.success("Informações da instituição guardadas e aplicadas.");
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Não foi possível guardar as informações.";
+      toast.error(message);
+    } finally {
+      setAGuardar(false);
+    }
   }
 
   return (
     <div className="max-w-3xl space-y-6">
-      <PageTitle title="Informações da Instituição"><Button onClick={guardar}>Guardar</Button></PageTitle>
+      <PageTitle title="Informações da Instituição">
+        <Button onClick={guardar} disabled={aGuardar || instLoading}>
+          {aGuardar ? "A guardar..." : "Guardar"}
+        </Button>
+      </PageTitle>
       <Card>
         <CardHeader><CardTitle>Cabeçalho dos documentos</CardTitle></CardHeader>
         <CardContent className="grid gap-4 sm:grid-cols-2">
           {CAMPOS.map(([k, l]) => (
-            <div key={k}><Label>{l}</Label><Input value={f[k] ?? ""} onChange={set(k)} /></div>
+            <div key={k}><Label>{l}</Label><Input type="text" value={f[k] ?? ""} onChange={set(k)} /></div>
           ))}
           <div className="sm:col-span-2">
             <Label>Logótipo da instituição (aparece também na página inicial)</Label>
-            <div className="mt-2 flex items-center gap-4">
-              {f.logo_url && <img src={f.logo_url} alt="Logótipo" className="h-20 w-20 rounded border object-contain" />}
-              <Input type="file" accept="image/*" onChange={carregarLogo} className="max-w-xs" />
-              {f.logo_url && <Button variant="outline" size="sm" onClick={() => setF({ ...f, logo_url: "" })}>Remover</Button>}
+            <div className="mt-2 flex flex-wrap items-center gap-4">
+              {f.logo_url ? (
+                <img src={f.logo_url} alt="Pré-visualização do logótipo" className="h-20 w-20 rounded border bg-white object-contain p-1" />
+              ) : (
+                <div className="flex h-20 w-20 items-center justify-center rounded border text-xs text-muted-foreground">Sem logo</div>
+              )}
+              <Input type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml" onChange={carregarLogo} className="max-w-xs" />
+              {f.logo_url && <Button type="button" variant="outline" size="sm" onClick={() => setF((prev) => ({ ...prev, logo_url: "" }))}>Remover</Button>}
             </div>
+            <p className="mt-2 text-xs text-muted-foreground">Formatos aceites: PNG, JPG, WEBP ou SVG. Tamanho máximo: 400 KB. Depois de carregar, clica em Guardar.</p>
           </div>
         </CardContent>
       </Card>
@@ -87,21 +141,29 @@ function Config() {
       <Card>
         <CardHeader><CardTitle>Tema principal</CardTitle></CardHeader>
         <CardContent className="grid gap-4 sm:grid-cols-3">
-          <div className="space-y-2 sm:col-span-3"><Label>Cor do tema principal / fundo externo</Label><Input type="color" value={corTemaPrincipal} onChange={(e) => { setCorTemaPrincipal(e.target.value); try { localStorage.setItem("jzymar-cor-tema-principal", e.target.value); } catch { /* armazenamento opcional */ } }} className="h-11 p-1" /><p className="text-xs text-muted-foreground">Aplica-se à barra fixa, cabeçalho institucional, página inicial e fundo externo de autenticação. A alteração é imediata e fica guardada neste navegador.</p></div>
+          <div className="space-y-2 sm:col-span-3">
+            <Label>Cor do tema principal / fundo externo</Label>
+            <Input type="color" value={corTemaPrincipal} onChange={(e) => {
+              const value = e.target.value;
+              setCorTemaPrincipal(value);
+              try { localStorage.setItem("jzymar-cor-tema-principal", value); } catch { /* armazenamento opcional */ }
+            }} className="h-11 p-1" />
+            <p className="text-xs text-muted-foreground">Aplica-se à barra fixa, cabeçalho institucional, página inicial e fundo externo de autenticação. A alteração fica guardada neste navegador.</p>
+          </div>
         </CardContent>
       </Card>
       <Card>
         <CardHeader><CardTitle>Rodapé das Pautas</CardTitle></CardHeader>
         <CardContent className="grid gap-4 sm:grid-cols-2">
-          <div><Label>O Pedagógico (nome para assinatura)</Label><Input value={f.pauta_pedagogico ?? ""} onChange={set("pauta_pedagogico")} /></div>
-          <div><Label>A Direcção (nome para assinatura)</Label><Input value={f.pauta_direccao ?? ""} onChange={set("pauta_direccao")} /></div>
+          <div><Label>O Pedagógico (nome para assinatura)</Label><Input type="text" value={f.pauta_pedagogico ?? ""} onChange={set("pauta_pedagogico")} /></div>
+          <div><Label>A Direcção (nome para assinatura)</Label><Input type="text" value={f.pauta_direccao ?? ""} onChange={set("pauta_direccao")} /></div>
         </CardContent>
       </Card>
       <Card>
         <CardHeader><CardTitle>Rodapé do Boletim de Notas</CardTitle></CardHeader>
         <CardContent className="grid gap-4 sm:grid-cols-2">
-          <div><Label>O Coordenador da Manhã</Label><Input value={f.boletim_coord_manha ?? ""} onChange={set("boletim_coord_manha")} /></div>
-          <div><Label>O Coordenador da Tarde</Label><Input value={f.boletim_coord_tarde ?? ""} onChange={set("boletim_coord_tarde")} /></div>
+          <div><Label>O Coordenador da Manhã</Label><Input type="text" value={f.boletim_coord_manha ?? ""} onChange={set("boletim_coord_manha")} /></div>
+          <div><Label>O Coordenador da Tarde</Label><Input type="text" value={f.boletim_coord_tarde ?? ""} onChange={set("boletim_coord_tarde")} /></div>
         </CardContent>
       </Card>
     </div>
