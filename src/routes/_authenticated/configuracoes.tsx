@@ -95,8 +95,12 @@ function Config() {
       await qc.invalidateQueries({ queryKey: ["instituicao"] });
       toast.success("Informações da instituição guardadas e aplicadas.");
     } catch (error) {
-      const message = error instanceof Error ? error.message : "Não foi possível guardar as informações.";
-      toast.error(message);
+      // Os erros PostgREST podem ser objectos simples, não instâncias de Error.
+      const details = error && typeof error === "object" && "message" in error
+        ? String((error as { message: unknown }).message)
+        : error instanceof Error ? error.message : String(error ?? "");
+      toast.error(details || "Não foi possível guardar as informações. Verifica as permissões e tenta novamente.");
+      console.error("Erro ao guardar definições da instituição:", error);
     } finally {
       setAGuardar(false);
     }
