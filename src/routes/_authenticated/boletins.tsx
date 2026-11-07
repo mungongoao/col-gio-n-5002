@@ -14,7 +14,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Assinatura, ClasseSelect, DocCabecalho, PageTitle } from "@/components/escola";
 
 export const Route = createFileRoute("/_authenticated/boletins")({
-  head: () => ({ meta: [{ title: "Boletins — J. ZYMAR" }, { name: "description", content: "Boletins trimestrais e final." }] }),
+  head: () => ({ meta: [{ title: "Boletins — Gestão Pedagógica" }, { name: "description", content: "Boletins trimestrais e final." }] }),
   component: Boletins,
 });
 
@@ -132,7 +132,7 @@ function Boletim({ aluno, n, classe, tipo, inst, disciplinas, notas, faltasT }: 
       </div>
       <div style={{ fontSize: 11, marginBottom: 6 }}>
         <div><b>Nome:</b> <span className="text-grade-negative font-semibold">{aluno.nome}</span></div>
-        <div><b>Classe:</b> {classe === "INIC" ? "Iniciação" : `${classe}ª`} &nbsp; <b>Nº:</b> {n} &nbsp; <b>Género:</b> {aluno.genero}</div>
+        <div><b>Classe:</b> {nomeClasse(classe)} &nbsp; <b>Nº:</b> {n} &nbsp; <b>Género:</b> {aluno.genero}</div>
       </div>
       <table>
         <thead>
