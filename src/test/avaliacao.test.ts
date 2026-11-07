@@ -7,16 +7,16 @@ const nota = (trimestre: number, mac: number | null, npt: number | null, exame: 
 
 describe("regras de avaliação das classes com exame", () => {
   it("calcula MT1 e MT2 pela média de MAC e NPT", () => {
-    expect(mediaTrimestral(nota(1, 6, 8), "6")).toBe(7);
+    expect(mediaTrimestral(nota(1, 6, 8), "9")).toBe(7);
     expect(mediaTrimestral(nota(2, 8, 10), "9")).toBe(9);
   });
 
   it("usa MACT3 directamente como MT3 e ignora NPT antigo sem o apagar", () => {
-    expect(mediaTrimestral(nota(3, 7.5, 9, 10), "6")).toBe(7.5);
+    expect(mediaTrimestral(nota(3, 7.5, 9, 10), "9")).toBe(7.5);
   });
 
-  it("calcula MFD e MF ponderada a 60/40 na 6.ª classe", () => {
-    const r = resumoDisciplina("6", "Matemática", [
+  it("calcula MFD e MF ponderada a 60/40 na 9.ª classe", () => {
+    const r = resumoDisciplina("9", "Matemática", [
       nota(1, 6, 6), nota(2, 8, 8), nota(3, 10, 4, 10),
     ]);
     expect(r.mfd).toBe(8);
@@ -36,11 +36,11 @@ describe("regras de avaliação das classes com exame", () => {
   });
 
   it("só declara o resultado final quando todas as disciplinas curriculares têm notas", () => {
-    const aprovada = resumoDisciplina("6", "Matemática", [
+    const aprovada = resumoDisciplina("9", "Matemática", [
       nota(1, 6, 6), nota(2, 8, 8), nota(3, 10, 0, 10),
     ]);
-    expect(resultadoFinal("6", [{ extra: false, r: aprovada }])?.texto).toBe("Apto");
-    expect(resultadoFinal("6", [{ extra: false, r: { ...aprovada, mf: null, cf: null, positiva: null } }])).toBeNull();
+    expect(resultadoFinal("9", [{ extra: false, r: aprovada }])?.texto).toBe("Apto");
+    expect(resultadoFinal("9", [{ extra: false, r: { ...aprovada, mf: null, cf: null, positiva: null } }])).toBeNull();
   });
 });
 
