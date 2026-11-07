@@ -21,7 +21,7 @@ export const Route = createFileRoute("/_authenticated/pautas")({
 function Pautas() {
   const { data: me } = useMe();
   const [tipo, setTipo] = useState("mini");
-  const [classe, setClasse] = useState("1");
+  const [classe, setClasse] = useState("7");
   const [disc, setDisc] = useState("");
   const [tri, setTri] = useState("1");
   const { data: inst } = useInstituicao();
