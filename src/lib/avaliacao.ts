@@ -6,13 +6,13 @@ export type Classe = (typeof CLASSES)[number];
 export const QUALITATIVOS = ["Regular", "Bom", "Excelente"] as const;
 
 export function nomeClasse(c: string) {
-  if (c === "EJA1") return "I.º Ano — Ensino de Jovens e Adultos";
-  if (c === "EJA2") return "II.º Ano — Ensino de Jovens e Adultos";
+  if (c === "EJA1") return "I.º Ano — Ensino de Jovens Adultos";
+  if (c === "EJA2") return "II.º Ano — Ensino de Jovens Adultos";
   return `${c}ª Classe`;
 }
 
 export function cicloDe(c: string) {
-  if (c === "EJA1" || c === "EJA2") return "Ensino de Jovens e Adultos";
+  if (c === "EJA1" || c === "EJA2") return "Ensino de Jovens Adultos";
   return "I.º Ciclo do Ensino Secundário";
 }
 
