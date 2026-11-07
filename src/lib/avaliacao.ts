@@ -19,7 +19,7 @@ export function cicloDe(c: string) {
 export const isQualitativa = (_c: string) => false;
 export const escalaMax = (_c: string) => 20;
 export const notaMinima = (c: string) => escalaMax(c) / 2;
-export const isClasseExame = (c: string) => c === "6" || c === "9";
+export const isClasseExame = (c: string) => c === "9";
 export const temExameOral = (disciplina: string) => /portugu|ingl/i.test(disciplina);
 
 export const rotuloResultado = (c: string, ok: boolean) =>
