@@ -71,7 +71,7 @@ function Utilizadores() {
     <div>
       <PageTitle title="Gestão de Utilizadores"><Button variant="outline" onClick={() => window.location.assign("/lixo")}>Lixo</Button></PageTitle>
       <Table>
-        <TableHeader><TableRow><TableHead>Nome</TableHead><TableHead>Email</TableHead><TableHead>Estado</TableHead><TableHead>Cargo</TableHead><TableHead className="text-right">Acções</TableHead></TableRow></TableHeader>
+        <TableHeader><TableRow><TableHead>Nome</TableHead><TableHead>Email</TableHead><TableHead>Telefone</TableHead><TableHead>Estado</TableHead><TableHead>Cargo</TableHead><TableHead className="text-right">Acções</TableHead></TableRow></TableHeader>
         <TableBody>
           {users.map((u) => {
             const atual = u.papeis[0] ?? (u.cargo_pretendido as Papel);
@@ -80,6 +80,7 @@ function Utilizadores() {
               <TableRow key={u.id}>
                 <TableCell>{u.nome}</TableCell>
                 <TableCell>{u.email}</TableCell>
+                <TableCell>{u.telefone || "—"}</TableCell>
                 <TableCell>
                   <Badge variant={u.status === "APROVADO" ? "default" : u.status === "REVOGADO" ? "destructive" : "secondary"}>{u.status}</Badge>
                 </TableCell>
@@ -93,6 +94,13 @@ function Utilizadores() {
                 </TableCell>
                 <TableCell className="text-right whitespace-nowrap">
                   <div className="flex flex-nowrap items-center justify-end gap-2">
+                    {u.telefone && (
+                      <Button size="sm" variant="outline" onClick={() => {
+                        const funcao = NOMES_PAPEL[u.cargo_pretendido as Papel] ?? u.cargo_pretendido ?? "Não informada";
+                        const mensagem = `Olá ${u.nome}. O seu cadastro no sistema do Colégio Nº 5002 CNE Mukolongondjo está em processo de validação.\nNome: ${u.nome}\nFunção: ${funcao}\nE-mail: ${u.email}\nTelefone: ${u.telefone}\nData de cadastro: ${new Date(u.created_at).toLocaleString("pt-AO")}.\nAguarde a confirmação da sua credencial.`;
+                        window.location.href = `sms:${u.telefone}?body=${encodeURIComponent(mensagem)}`;
+                      }}>Enviar SMS</Button>
+                    )}
                     {u.id !== me.id && !protegido && (
                       <>
                         <Button size="sm" onClick={() => credenciar(u.id, atual)}>{u.status === "APROVADO" ? "Actualizar" : "Credenciar"}</Button>
