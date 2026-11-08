@@ -94,10 +94,11 @@ function Utilizadores() {
                 </TableCell>
                 <TableCell className="text-right whitespace-nowrap">
                   <div className="flex flex-nowrap items-center justify-end gap-2">
-                    {u.telefone && (
+                    {me.isAdmin && u.telefone && (
                       <Button size="sm" variant="outline" onClick={() => {
                         const funcao = NOMES_PAPEL[u.cargo_pretendido as Papel] ?? u.cargo_pretendido ?? "Não informada";
-                        const mensagem = `Olá ${u.nome}. O seu cadastro no sistema do Colégio Nº 5002 CNE Mukolongondjo está em processo de validação.\nNome: ${u.nome}\nFunção: ${funcao}\nE-mail: ${u.email}\nTelefone: ${u.telefone}\nData de cadastro: ${new Date(u.created_at).toLocaleString("pt-AO")}.\nAguarde a confirmação da sua credencial.`;
+                        const estado = u.status === "APROVADO" ? "A sua credencial foi validada. Já pode aceder ao sistema." : u.status === "REVOGADO" ? "O acesso à sua conta foi revogado. Contacte a Direcção." : "O seu cadastro está em processo de validação. Aguarde a confirmação da sua credencial.";
+                        const mensagem = `Olá ${u.nome}. ${estado}\nNome: ${u.nome}\nFunção: ${funcao}\nE-mail: ${u.email}\nTelefone: ${u.telefone}\nData de cadastro: ${new Date(u.created_at).toLocaleString("pt-AO")}\nColégio Nº 5002 CNE Mukolongondjo.`;
                         window.location.href = `sms:${u.telefone}?body=${encodeURIComponent(mensagem)}`;
                       }}>Enviar SMS</Button>
                     )}
