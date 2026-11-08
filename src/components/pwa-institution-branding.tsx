@@ -16,7 +16,7 @@ export function PwaInstitutionBranding() {
     let manifestUrl: string | undefined;
 
     const imagem = new Image();
-    imagem.onload = () => {
+    imagem.onload = async () => {
       if (cancelado) return;
 
       const criarIcone = (tamanho: number, maskable = false) => {
@@ -39,18 +39,15 @@ export function PwaInstitutionBranding() {
       const icon192 = criarIcone(192);
       const icon512 = criarIcone(512);
       const iconMaskable = criarIcone(512, true);
-      if (!icon192 || !icon512 || !iconMaskable) return;
+      if (!icon192 || !icon512 || !iconMaskable || cancelado) return;
+
+      const manifestoOriginal = await fetch("/manifest.webmanifest")
+        .then((resposta) => resposta.ok ? resposta.json() : {})
+        .catch(() => ({}));
+      if (cancelado) return;
 
       const manifesto = {
-        name: "Gestão Pedagógica",
-        short_name: "Escola",
-        lang: "pt",
-        start_url: "/",
-        scope: "/",
-        display: "standalone",
-        orientation: "any",
-        background_color: "#ffffff",
-        theme_color: "#1e3a5f",
+        ...manifestoOriginal,
         icons: [
           { src: icon192, sizes: "192x192", type: "image/png", purpose: "any" },
           { src: icon512, sizes: "512x512", type: "image/png", purpose: "any" },
