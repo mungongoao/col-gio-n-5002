@@ -107,7 +107,7 @@ function AuthPage() {
     setLoading(false);
     if (error) return void toast.error(error.message);
     if (signup.session) await supabase.rpc("set_own_gender", { _genero: genero });
-    toast.success("Registo efectuado. O primeiro cadastro recebe acesso de ADM; os seguintes ficam pendentes de credenciação.");
+    toast.success("Registo efectuado. Confirme o seu email; depois regressará ao sistema para aguardar a validação da credencial.");
   }
 
   return (
