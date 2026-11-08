@@ -13,6 +13,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { entradaExterna } from "@/lib/gestao";
 import { registerPwa } from "@/lib/pwa-register";
+import { PwaInstitutionBranding } from "@/components/pwa-institution-branding";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
