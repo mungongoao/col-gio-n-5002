@@ -142,6 +142,7 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
+      <PwaInstitutionBranding />
       <div className="flex min-h-screen flex-col">
         <div className="flex-1">
           <Outlet />
