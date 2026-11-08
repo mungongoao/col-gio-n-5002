@@ -200,6 +200,7 @@ export type Database = {
           id: string
           nome: string
           status: string
+          telefone: string | null
         }
         Insert: {
           cargo_pretendido?: string
@@ -210,6 +211,7 @@ export type Database = {
           id: string
           nome?: string
           status?: string
+          telefone?: string | null
         }
         Update: {
           cargo_pretendido?: string
@@ -220,6 +222,7 @@ export type Database = {
           id?: string
           nome?: string
           status?: string
+          telefone?: string | null
         }
         Relationships: []
       }
