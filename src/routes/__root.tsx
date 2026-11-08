@@ -136,9 +136,21 @@ function RootComponent() {
     return () => data.subscription.unsubscribe();
   }, [router, queryClient]);
 
+  const caminho = router.state.location.pathname.toLowerCase();
+  const paginaDocumento = /(?:boletim|pauta|documento|imprimir|relatorio|relatório)/i.test(caminho);
+
   return (
     <QueryClientProvider client={queryClient}>
-      <Outlet />
+      <div className="flex min-h-screen flex-col">
+        <div className="flex-1">
+          <Outlet />
+        </div>
+        {!paginaDocumento && (
+          <footer className="border-t px-4 py-3 text-center text-xs font-medium uppercase tracking-wide text-muted-foreground print:hidden">
+            © 2026 - SEBASTIÃO MUNGONGO — TODOS OS DIREITOS, RESERVADOS
+          </footer>
+        )}
+      </div>
       <Toaster richColors position="top-right" />
     </QueryClientProvider>
   );
