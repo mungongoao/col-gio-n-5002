@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { z } from "zod";
 import { Eye, EyeOff, GraduationCap } from "lucide-react";
 import { useInstituicao } from "@/lib/dados";
@@ -27,6 +27,7 @@ export const Route = createFileRoute("/auth")({
 const registoSchema = z.object({
   nome: z.string().trim().min(3, "Nome demasiado curto").max(100),
   email: z.string().trim().email("Email inválido").max(255),
+  telefone: z.string().trim().min(9, "Introduza um telefone válido").max(20),
   senha: z.string().min(8, "A palavra-passe deve ter pelo menos 8 caracteres").max(72),
 });
 
@@ -36,6 +37,7 @@ function AuthPage() {
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
   const [nome, setNome] = useState("");
+  const [telefone, setTelefone] = useState("");
   const [cargo, setCargo] = useState("professor");
   const [genero, setGenero] = useState("M");
   const [aba, setAba] = useState("entrar");
@@ -45,6 +47,19 @@ function AuthPage() {
   const [codigo, setCodigo] = useState("");
   const [validado, setValidado] = useState(false);
   const { data: inst } = useInstituicao();
+
+  useEffect(() => {
+    let active = true;
+    const irParaPainel = async () => {
+      const { data } = await supabase.auth.getSession();
+      if (active && data.session?.user?.email_confirmed_at) navigate({ to: "/painel", replace: true });
+    };
+    void irParaPainel();
+    const { data } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === "SIGNED_IN" && session?.user?.email_confirmed_at) navigate({ to: "/painel", replace: true });
+    });
+    return () => { active = false; data.subscription.unsubscribe(); };
+  }, [navigate]);
 
   async function recuperarConta(e: React.FormEvent) {
     e.preventDefault(); setLoading(true);
@@ -81,13 +96,13 @@ function AuthPage() {
 
   async function registar(e: React.FormEvent) {
     e.preventDefault();
-    const p = registoSchema.safeParse({ nome, email, senha });
+    const p = registoSchema.safeParse({ nome, email, telefone, senha });
     if (!p.success) return void toast.error(p.error.issues[0]?.message);
     setLoading(true);
     const { data: signup, error } = await supabase.auth.signUp({
       email: p.data.email,
       password: p.data.senha,
-      options: { emailRedirectTo: window.location.origin + "/auth", data: { nome: p.data.nome, cargo, genero } },
+      options: { emailRedirectTo: window.location.origin + "/auth", data: { nome: p.data.nome, cargo, genero, telefone: p.data.telefone } },
     });
     setLoading(false);
     if (error) return void toast.error(error.message);
@@ -121,6 +136,7 @@ function AuthPage() {
             <TabsContent value="entrar">
               <form onSubmit={entrar} className="mt-4 space-y-4">
                 <div><Label>Email</Label><Input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} /></div>
+                <div><Label>Telefone / Número para SMS</Label><Input type="tel" required placeholder="+244 9XX XXX XXX" value={telefone} onChange={(e) => setTelefone(e.target.value)} /></div>
                 <div><Label>Palavra-passe</Label><div className="relative"><Input type={mostrar ? "text" : "password"} required value={senha} onChange={(e) => setSenha(e.target.value)} className="pr-12" /><Button type="button" size="icon" variant="ghost" className="absolute right-0 top-0" aria-label={mostrar ? "Ocultar palavra-passe" : "Mostrar palavra-passe"} onClick={() => setMostrar(!mostrar)}>{mostrar ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}</Button></div></div>
                 <Button className="w-full" disabled={loading}>Entrar</Button>
                 <Button type="button" variant="link" className="w-full" onClick={() => setRecuperar(true)}>Esqueci a palavra-passe</Button>
