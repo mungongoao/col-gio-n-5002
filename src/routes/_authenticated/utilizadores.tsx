@@ -157,7 +157,7 @@ function Atribuicoes({ user, onClose }: { user: { id: string; nome: string }; on
   const [ciclo, setCiclo] = useState("");
   const [classe, setClasse] = useState("");
   const [busy, setBusy] = useState(false);
-  const classes = ciclo === "primario" ? ["INIC", "1", "2", "3", "4", "5", "6"] : ["7", "8", "9"];
+  const classes = ciclo === "primeiro" ? ["7", "8", "9"] : ciclo === "eja" ? ["EJA1", "EJA2"] : [];
   const listadas = disc.filter(d => classe === "todas" ? classes.includes(d.classe) : d.classe === classe);
   const qc = useQueryClient();
   const { data: atrib = [] } = useQuery({
@@ -181,8 +181,8 @@ function Atribuicoes({ user, onClose }: { user: { id: string; nome: string }; on
     <Dialog open onOpenChange={(o) => !o && onClose()}>
       <DialogContent className="max-h-[80vh] overflow-auto">
         <DialogHeader><DialogTitle>Disciplinas de {user.nome}</DialogTitle></DialogHeader>
-        <Select value={ciclo} onValueChange={v => {setCiclo(v);setClasse("");}}><SelectTrigger aria-label="Ciclo"><SelectValue placeholder="Ciclo" /></SelectTrigger><SelectContent><SelectItem value="primario">Ensino Primário</SelectItem><SelectItem value="primeiro">Primeiro Ciclo</SelectItem></SelectContent></Select>
-        {ciclo && <Select value={classe} onValueChange={setClasse}><SelectTrigger aria-label="Classe"><SelectValue placeholder="Classe" /></SelectTrigger><SelectContent>{ciclo === "primeiro" && <SelectItem value="todas">7ª, 8ª e 9ª Classes</SelectItem>}{classes.map(c => <SelectItem key={c} value={c}>{nomeClasse(c)}</SelectItem>)}</SelectContent></Select>}
+        <Select value={ciclo} onValueChange={v => {setCiclo(v);setClasse("");}}><SelectTrigger aria-label="Nível de Ensino"><SelectValue placeholder="Nível de Ensino" /></SelectTrigger><SelectContent><SelectItem value="primeiro">I.º Ciclo do Ensino Secundário</SelectItem><SelectItem value="eja">Ensino de Jovens Adultos</SelectItem></SelectContent></Select>
+        {ciclo && <Select value={classe} onValueChange={setClasse}><SelectTrigger aria-label="Classe ou Ano"><SelectValue placeholder="Classe ou Ano" /></SelectTrigger><SelectContent>{ciclo === "primeiro" && <SelectItem value="todas">7.ª, 8.ª e 9.ª Classes</SelectItem>}{ciclo === "eja" && <SelectItem value="todas">EJA - I.º e II.º anos</SelectItem>}{classes.map(c => <SelectItem key={c} value={c}>{nomeClasse(c)}</SelectItem>)}</SelectContent></Select>}
         <div className="space-y-3">{classes.filter(c => listadas.some(d => d.classe === c)).map(c => <section key={c}><h3 className="mb-2 font-semibold">{nomeClasse(c)}</h3>{listadas.filter(d => d.classe === c).flatMap(d => {
           const actual = atrib.find(a => a.subject_id === d.id);
           const turmas = Array.from(new Set([...alunos.filter(a => a.classe === c).map(a => a.turma), ...(actual?.turmas ?? [])])).sort();
