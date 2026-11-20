@@ -22,7 +22,7 @@ describe("regras de avaliação das classes com exame", () => {
     expect(r.mfd).toBe(8);
     expect(r.exame).toBe(10);
     expect(r.mf).toBe(8.8);
-    expect(r.positiva).toBe(true);
+    expect(r.positiva).toBe(false);
   });
 
   it("aplica escala de 0 a 20 e aprovação mínima de 10 na 9.ª classe", () => {
@@ -39,7 +39,7 @@ describe("regras de avaliação das classes com exame", () => {
     const aprovada = resumoDisciplina("9", "Matemática", [
       nota(1, 6, 6), nota(2, 8, 8), nota(3, 10, 0, 10),
     ]);
-    expect(resultadoFinal("9", [{ extra: false, r: aprovada }])?.texto).toBe("Apto");
+    expect(resultadoFinal("9", [{ extra: false, r: aprovada }])?.texto).toBe("Não Apto");
     expect(resultadoFinal("9", [{ extra: false, r: { ...aprovada, mf: null, cf: null, positiva: null } }])).toBeNull();
   });
 });
