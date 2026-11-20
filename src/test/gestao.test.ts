@@ -7,7 +7,7 @@ describe("Gestão de alunos", () => {
     expect(alunoSchema.safeParse({nome:"Aluno",genero:"M",classe:"6",turma:"J",estado:"Activo"}).success).toBe(false);
   });
   it("não inclui BI, idade, telefone ou ID nos dados editáveis", () => {
-    expect(alunoSchema.parse({nome:"Aluno",genero:"F",classe:"7",turma:"A",estado:"Activo",id:2600,bi:"remover",idade:10,telefone:"remover"})).toEqual({nome:"Aluno",genero:"F",classe:"1",turma:"A",estado:"Activo"});
+    expect(alunoSchema.parse({nome:"Aluno",genero:"F",classe:"7",turma:"A",estado:"Activo",id:2600,bi:"remover",idade:10,telefone:"remover"})).toEqual({nome:"Aluno",genero:"F",classe:"7",turma:"A",estado:"Activo"});
   });
   it("não autoriza editar outra turma", () => {
     expect(turmaPermitida([{subject_id:"portugues",turmas:["A"]}],"portugues","B")).toBe(false);
