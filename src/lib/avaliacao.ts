@@ -6,8 +6,8 @@ export type Classe = (typeof CLASSES)[number];
 export const QUALITATIVOS = ["Regular", "Bom", "Excelente"] as const;
 
 export function nomeClasse(c: string) {
-  if (c === "EJA1") return "EJA - I° ano";
-  if (c === "EJA2") return "EJA - II° ano";
+  if (c === "EJA1") return "EJA - I.º Ano";
+  if (c === "EJA2") return "EJA - II.º Ano";
   return `${c}ª Classe`;
 }
 

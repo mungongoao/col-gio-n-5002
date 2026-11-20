@@ -7,7 +7,7 @@ describe("Gestão de alunos", () => {
     expect(alunoSchema.safeParse({nome:"Aluno",genero:"M",classe:"6",turma:"J",estado:"Activo"}).success).toBe(false);
   });
   it("não inclui BI, idade, telefone ou ID nos dados editáveis", () => {
-    expect(alunoSchema.parse({nome:"Aluno",genero:"F",classe:"1",turma:"A",estado:"Activo",id:2600,bi:"remover",idade:10,telefone:"remover"})).toEqual({nome:"Aluno",genero:"F",classe:"1",turma:"A",estado:"Activo"});
+    expect(alunoSchema.parse({nome:"Aluno",genero:"F",classe:"7",turma:"A",estado:"Activo",id:2600,bi:"remover",idade:10,telefone:"remover"})).toEqual({nome:"Aluno",genero:"F",classe:"7",turma:"A",estado:"Activo"});
   });
   it("não autoriza editar outra turma", () => {
     expect(turmaPermitida([{subject_id:"portugues",turmas:["A"]}],"portugues","B")).toBe(false);
@@ -22,8 +22,8 @@ describe("Gestão de alunos", () => {
   });
 });
 describe("Entrada externa", () => {
-  it("encaminha primeira entrada por ligação externa", () => { expect(entradaExterna("/boletins",false,false,false)).toBe(true); });
-  it("refresh de login ou cadastro volta ao início", () => { expect(entradaExterna("/auth",false,true,true)).toBe(true); });
-  it("preserva refresh e navegação interna autenticada", () => { expect(entradaExterna("/notas",true,true,false)).toBe(false); });
-  it("preserva recuperação de palavra-passe", () => { expect(entradaExterna("/reset-password",false,false,false)).toBe(false); });
+  it("encaminha primeira entrada por ligação externa", () => { expect(entradaExterna("/boletins",true,false)).toBe(true); });
+  it("refresh de login ou cadastro volta ao início", () => { expect(entradaExterna("/auth",false,true)).toBe(false); });
+  it("preserva refresh e navegação interna autenticada", () => { expect(entradaExterna("/notas",true,true)).toBe(false); });
+  it("preserva recuperação de palavra-passe", () => { expect(entradaExterna("/reset-password",false,false)).toBe(false); });
 });
